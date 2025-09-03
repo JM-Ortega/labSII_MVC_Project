@@ -8,7 +8,7 @@ import co.unicauca.workflow.degree_ptoject.domain.services.IRegistrationService;
 import co.unicauca.workflow.degree_ptoject.domain.services.ISignInService;
 import co.unicauca.workflow.degree_ptoject.domain.services.UserService;
 import co.unicauca.workflow.degree_ptoject.infra.security.Argon2PasswordHasher;
-import co.unicauca.workflow.degree_ptoject.presentation.RegisterController;
+import co.unicauca.workflow.degree_ptoject.presentation.SigninController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,43 +16,27 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class main extends Application {
-/*
-  @Override
-  public void start(Stage stage) throws Exception {
-    Parent root = FXMLLoader.load(
-        getClass().getResource("/co/unicauca/workflow/degree_ptoject/view/signin.fxml")
-    );
-    stage.setTitle("Login");
-    stage.setScene(new Scene(root));
-    stage.show();
-  }
-  
-  public static void main(String[] args) {
-    launch(args);
-  }
-*/
 
     @Override
     public void start(Stage stage) throws Exception {
-        // 1) Composición de dependencias
-        IUserRepository repo = Factory.getInstance().getRepository("Default");
+        // Composición de dependencias
+        IUserRepository repo = Factory.getInstance().getRepository("default");
         IPasswordHasher hasher = new Argon2PasswordHasher();
         UserService userService = new UserService(repo, hasher);
 
         ISignInService signInService = userService;
         IRegistrationService registrationService = userService;
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                "/co/unicauca/workflow/degree_ptoject/view/register.fxml"
-        ));
+        FXMLLoader loader = new FXMLLoader(
+            getClass().getResource("/co/unicauca/workflow/degree_ptoject/view/signin.fxml")
+        );
         Parent root = loader.load();
 
-        RegisterController ctrl = loader.getController();
-        ctrl.setServices(registrationService, signInService);
+        SigninController signinCtrl = loader.getController();
+        signinCtrl.setServices(registrationService, signInService);
 
-        Scene scene = new Scene(root);
-        stage.setTitle("Registro");
-        stage.setScene(scene);
+        stage.setTitle("Login");
+        stage.setScene(new Scene(root));
         stage.setResizable(false);
         stage.centerOnScreen();
         stage.show();

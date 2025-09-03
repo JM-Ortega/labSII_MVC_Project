@@ -18,17 +18,20 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="580.0" prefWidth="812.0" stylesheets="@../desing/register.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.unicauca.workflow.degree_ptoject.presentation.RegisterController">
+<BorderPane prefHeight="600.0" prefWidth="800.0" stylesheets="@../desing/register.css" xmlns="http://javafx.com/javafx/21.0.3" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.unicauca.workflow.degree_ptoject.presentation.RegisterController">
 
     <top>
         <AnchorPane prefHeight="100.0" BorderPane.alignment="CENTER">
             <children>
-                <ImageView fitHeight="110.0" fitWidth="820.0" pickOnBounds="true" preserveRatio="true">
+                <!-- Imagen cabecera ajustada a 800px -->
+                <ImageView fitHeight="110.0" fitWidth="800.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                     <image>
                         <Image url="@../images/Paisaje%20recortado.jpg" />
                     </image>
                 </ImageView>
-                <ImageView fitHeight="70.0" layoutX="740.0" layoutY="10.0" preserveRatio="true">
+
+                <!-- Escudo en esquina -->
+                <ImageView fitHeight="70.0" layoutX="730.0" layoutY="10.0" preserveRatio="true">
                     <image>
                         <Image url="@../images/escudo.png" />
                     </image>
@@ -44,15 +47,12 @@
             </padding>
 
             <columnConstraints>
-                <ColumnConstraints hgrow="ALWAYS" percentWidth="47.0" />
-                <ColumnConstraints hgrow="ALWAYS" percentWidth="53.0" />
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="45.0" />
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="55.0" />
             </columnConstraints>
 
             <!-- NOMBRES -->
             <Label styleClass="label-title" text="NOMBRES" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                <font>
-                    <Font name="Roboto Regular" size="12.0" />
-                </font>
             </Label>
             <VBox fillWidth="true" spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="1">
                 <children>
@@ -81,10 +81,10 @@
 
             <!-- CONTRASEÑA -->
             <Label styleClass="label-title" text="CONTRASEÑA" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <VBox fillWidth="true" prefHeight="547.0" prefWidth="1342.0" spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <VBox fillWidth="true" spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="3">
                 <children>
                     <PasswordField fx:id="txtPassword" promptText="**********" styleClass="campo_de_entrada" />
-                    <Label fx:id="errPassword" maxWidth="Infinity" prefHeight="33.0" prefWidth="392.0" styleClass="error error-hidden wrap" text=" " textFill="RED" wrapText="true" />
+                    <Label fx:id="errPassword" maxWidth="Infinity" styleClass="error error-hidden wrap" text=" " textFill="RED" wrapText="true" />
                 </children>
             </VBox>
 
@@ -98,11 +98,11 @@
             </VBox>
 
             <!-- CELULAR -->
-            <Label styleClass="label-title" text="Celular" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <Label styleClass="label-title" text="CELULAR" GridPane.columnIndex="1" GridPane.rowIndex="5" />
             <VBox fillWidth="true" spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="6">
                 <children>
                     <TextField fx:id="txtCelular" promptText="(opcional) Digite un numero de celular" styleClass="campo_de_entrada" />
-                    <Label fx:id="errCelular" maxWidth="Infinity" prefHeight="28.0" prefWidth="392.0" styleClass="error error-hidden wrap" text=" " textFill="RED" wrapText="true" />
+                    <Label fx:id="errCelular" maxWidth="Infinity" styleClass="error error-hidden wrap" text=" " textFill="RED" wrapText="true" />
                 </children>
             </VBox>
 
@@ -118,19 +118,21 @@
             <!-- Botón -->
             <Button maxWidth="220" onAction="#handleRegister" styleClass="primary" text="Registrarse" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="9" />
 
-            <!-- Hint SIEMPRE visible -->
-            <Label fx:id="lblPwdHint" styleClass="hint wrap" text="* La contraseña debe tener mínimo 6 caracteres, al menos un dígito, un carácter especial y una mayúscula" textFill="BLUE" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <!-- Hint contraseña -->
+            <Label fx:id="lblPwdHint" prefHeight="36.0" prefWidth="382.0" styleClass="hint wrap" text="* La contraseña debe tener mínimo 6 caracteres, al menos un dígito, un carácter especial y una mayúscula" textFill="BLUE" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4">
+            </Label>
+
             <rowConstraints>
                 <RowConstraints />
                 <RowConstraints />
                 <RowConstraints />
-                <RowConstraints maxHeight="86.0" minHeight="45.0" prefHeight="45.0" />
-                <RowConstraints maxHeight="86.0" minHeight="36.0" prefHeight="67.0" />
-                <RowConstraints maxHeight="40.0" minHeight="0.0" prefHeight="40.0" />
-                <RowConstraints maxHeight="51.0" minHeight="32.0" prefHeight="45.0" />
-                <RowConstraints maxHeight="33.0" minHeight="14.0" prefHeight="20.0" />
-                <RowConstraints maxHeight="39.0" minHeight="27.0" prefHeight="27.0" />
-                <RowConstraints maxHeight="48.0" minHeight="31.0" prefHeight="31.0" />
+                <RowConstraints maxHeight="45.0" minHeight="26.0" prefHeight="26.0" />
+                <RowConstraints maxHeight="45.0" minHeight="24.0" prefHeight="31.0" />
+                <RowConstraints maxHeight="34.0" minHeight="2.0" prefHeight="10.0" />
+                <RowConstraints maxHeight="64.0" minHeight="45.0" prefHeight="45.0" />
+                <RowConstraints maxHeight="44.0" minHeight="20.0" prefHeight="24.0" />
+                <RowConstraints maxHeight="50.0" minHeight="30.0" prefHeight="32.0" />
+                <RowConstraints maxHeight="49.0" minHeight="36.0" prefHeight="49.0" />
             </rowConstraints>
         </GridPane>
     </center>
@@ -142,7 +144,7 @@
             </padding>
             <children>
                 <Label text="¿Ya tienes una cuenta?" />
-                <Hyperlink onAction="#goToLogin" text="Inicia sesión" />
+                <Hyperlink onAction="#goToLogin" text="Inicia sesión" textFill="#0059ff" />
             </children>
         </HBox>
     </bottom>

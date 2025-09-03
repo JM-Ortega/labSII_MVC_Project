@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="580.0" prefWidth="812.0" stylesheets="@../desing/register.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.unicauca.workflow.degree_ptoject.presentation.RegisterController">
+
+    <top>
+        <AnchorPane prefHeight="100.0" BorderPane.alignment="CENTER">
+            <children>
+                <ImageView fitHeight="110.0" fitWidth="820.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/Paisaje%20recortado.jpg" />
+                    </image>
+                </ImageView>
+                <ImageView fitHeight="70.0" layoutX="740.0" layoutY="10.0" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/escudo.png" />
+                    </image>
+                </ImageView>
+            </children>
+        </AnchorPane>
+    </top>
+
+    <center>
+        <GridPane hgap="28" vgap="14" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="6" left="26" right="26" top="22" />
+            </padding>
+
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="47.0" />
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="53.0" />
+            </columnConstraints>
+
+            <!-- NOMBRES -->
+            <Label styleClass="label-title" text="NOMBRES" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <font>
+                    <Font name="Roboto Regular" size="12.0" />
+                </font>
+            </Label>
+            <VBox fillWidth="true" spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                <children>
+                    <TextField fx:id="txtNombres" promptText="Ingrese su/s nombre/s" styleClass="campo_de_entrada" />
+                    <Label fx:id="errNombres" maxWidth="Infinity" styleClass="error error-hidden wrap" text=" " textFill="RED" wrapText="true" />
+                </children>
+            </VBox>
+
+            <!-- USUARIO -->
+            <Label styleClass="label-title" text="USUARIO" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            <VBox fillWidth="true" spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <children>
+                    <TextField fx:id="txtUsuario" promptText="Ingrese su correo institucional" styleClass="campo_de_entrada" />
+                    <Label fx:id="errUsuario" maxWidth="Infinity" styleClass="error error-hidden wrap" text=" " textFill="RED" wrapText="true" />
+                </children>
+            </VBox>
+
+            <!-- APELLIDOS -->
+            <Label styleClass="label-title" text="APELLIDOS" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <VBox fillWidth="true" spacing="6" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                <children>
+                    <TextField fx:id="txtApellidos" promptText="Ingrese sus apellidos" styleClass="campo_de_entrada" />
+                    <Label fx:id="errApellidos" maxWidth="Infinity" styleClass="error error-hidden wrap" text=" " textFill="RED" wrapText="true" />
+                </children>
+            </VBox>
+
+            <!-- CONTRASEÑA -->
+            <Label styleClass="label-title" text="CONTRASEÑA" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <VBox fillWidth="true" prefHeight="547.0" prefWidth="1342.0" spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                <children>
+                    <PasswordField fx:id="txtPassword" promptText="**********" styleClass="campo_de_entrada" />
+                    <Label fx:id="errPassword" maxWidth="Infinity" prefHeight="33.0" prefWidth="392.0" styleClass="error error-hidden wrap" text=" " textFill="RED" wrapText="true" />
+                </children>
+            </VBox>
+
+            <!-- PROGRAMA -->
+            <Label styleClass="label-title" text="SELECCIONE SU PROGRAMA" GridPane.rowIndex="5" />
+            <VBox fillWidth="true" spacing="6" GridPane.rowIndex="6">
+                <children>
+                    <ComboBox fx:id="cbPrograma" maxWidth="Infinity" promptText="Seleccione..." />
+                    <Label fx:id="errPrograma" maxWidth="Infinity" styleClass="error error-hidden wrap" text=" " wrapText="true" />
+                </children>
+            </VBox>
+
+            <!-- CELULAR -->
+            <Label styleClass="label-title" text="Celular" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <VBox fillWidth="true" spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                <children>
+                    <TextField fx:id="txtCelular" promptText="(opcional) Digite un numero de celular" styleClass="campo_de_entrada" />
+                    <Label fx:id="errCelular" maxWidth="Infinity" prefHeight="28.0" prefWidth="392.0" styleClass="error error-hidden wrap" text=" " textFill="RED" wrapText="true" />
+                </children>
+            </VBox>
+
+            <!-- ROL -->
+            <Label styleClass="label-title" text="SELECCIONE SU ROL" GridPane.rowIndex="7" />
+            <VBox fillWidth="true" spacing="6" GridPane.rowIndex="8">
+                <children>
+                    <ComboBox fx:id="cbRol" maxWidth="Infinity" promptText="Seleccione..." />
+                    <Label fx:id="errRol" maxWidth="Infinity" styleClass="error error-hidden wrap" text=" " wrapText="true" />
+                </children>
+            </VBox>
+
+            <!-- Botón -->
+            <Button maxWidth="220" onAction="#handleRegister" styleClass="primary" text="Registrarse" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="9" />
+
+            <!-- Hint SIEMPRE visible -->
+            <Label fx:id="lblPwdHint" styleClass="hint wrap" text="* La contraseña debe tener mínimo 6 caracteres, al menos un dígito, un carácter especial y una mayúscula" textFill="BLUE" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <rowConstraints>
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints maxHeight="86.0" minHeight="45.0" prefHeight="45.0" />
+                <RowConstraints maxHeight="86.0" minHeight="36.0" prefHeight="67.0" />
+                <RowConstraints maxHeight="40.0" minHeight="0.0" prefHeight="40.0" />
+                <RowConstraints maxHeight="51.0" minHeight="32.0" prefHeight="45.0" />
+                <RowConstraints maxHeight="33.0" minHeight="14.0" prefHeight="20.0" />
+                <RowConstraints maxHeight="39.0" minHeight="27.0" prefHeight="27.0" />
+                <RowConstraints maxHeight="48.0" minHeight="31.0" prefHeight="31.0" />
+            </rowConstraints>
+        </GridPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" spacing="6" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="12" top="6" />
+            </padding>
+            <children>
+                <Label text="¿Ya tienes una cuenta?" />
+                <Hyperlink onAction="#goToLogin" text="Inicia sesión" />
+            </children>
+        </HBox>
+    </bottom>
+</BorderPane>

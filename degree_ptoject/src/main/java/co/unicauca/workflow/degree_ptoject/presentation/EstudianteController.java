@@ -19,14 +19,21 @@ import javafx.scene.layout.StackPane;
  */
 public class EstudianteController implements Initializable {
 
-    @FXML private Button btnPrincipal;
-    @FXML private Button btnFormatoA;
-    @FXML private Button btnSalir;
-    @FXML private Label nombreDocente;
-    @FXML private StackPane stackPane;
-    @FXML private Pane pnPrincipal;
-    @FXML private Pane pnFormatoA;
-    
+    @FXML
+    private Button btnPrincipal;
+    @FXML
+    private Button btnFormatoA;
+    @FXML
+    private Button btnSalir;
+    @FXML
+    private Label nombreDocente;
+    @FXML
+    private StackPane stackPane;
+    @FXML
+    private Pane pnPrincipal;
+    @FXML
+    private Pane pnFormatoA;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         btnPrincipal.getStyleClass().add("btn-pressed");
@@ -35,11 +42,17 @@ public class EstudianteController implements Initializable {
         pnPrincipal.getStyleClass().add("Principal_container");
         stackPane.getStyleClass().add("stack_container");
         showPane(pnPrincipal);
-    }    
+    }
+
     @FXML
-    private void switchToLogin(ActionEvent event) throws IOException {
-        main.setRoot("login");
-        btnSalir.getStyleClass().add("btn-pressed");
+    private void switchToLogin(ActionEvent event) {
+        try {
+            main.navigate("signin", "Login");
+            btnSalir.getStyleClass().add("btn-pressed");
+        } catch (IOException e) {
+            System.err.println("No se pudo abrir la vista de Login");
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -57,8 +70,8 @@ public class EstudianteController implements Initializable {
         btnPrincipal.getStyleClass().add("btn-default");
         showPane(pnFormatoA);
     }
-    
-       private void showPane(Pane pane) {
+
+    private void showPane(Pane pane) {
         stackPane.getChildren().forEach(node -> node.setVisible(false));
         pane.setVisible(true);
     }

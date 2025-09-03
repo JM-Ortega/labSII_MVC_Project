@@ -1,15 +1,13 @@
 package co.unicauca.workflow.degree_ptoject.presentation;
 
-import co.unicauca.workflow.degree_ptoject.domain.services.IRegistrationService;
 import co.unicauca.workflow.degree_ptoject.domain.services.ISignInService;
+import co.unicauca.workflow.degree_ptoject.main;
+import java.io.IOException;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 public class SigninController {
 
@@ -19,11 +17,8 @@ public class SigninController {
     private PasswordField txtConrtaseña;
 
     private ISignInService authService;
-    private IRegistrationService registrationService;
 
-
-    public void setServices(IRegistrationService registrationService, ISignInService signInService) {
-        this.registrationService = registrationService;
+    public void setServices(ISignInService signInService) {
         this.authService = signInService;
     }
 
@@ -67,7 +62,13 @@ public class SigninController {
                     alerta.setHeaderText(null);
                     alerta.setContentText("Inicio de sesión como estudiante exitoso.");
                     alerta.showAndWait();
-                    // TODO: navegar a la vista de estudiante
+
+                    try {
+                        main.navigate("estudiante", "Panel Estudiante");
+                    } catch (IOException e) {
+                        new Alert(Alert.AlertType.ERROR, "Error al abrir la vista de estudiante.").showAndWait();
+                        e.printStackTrace();
+                    }
                 }
                 case 2 -> {
                     Alert alerta = new Alert(Alert.AlertType.INFORMATION);
@@ -75,8 +76,15 @@ public class SigninController {
                     alerta.setHeaderText(null);
                     alerta.setContentText("Inicio de sesión como docente exitoso.");
                     alerta.showAndWait();
-                    // TODO: navegar a la vista de docente
+
+                    try {
+                        main.navigate("docente", "Panel Docente");
+                    } catch (IOException e) {
+                        new Alert(Alert.AlertType.ERROR, "Error al abrir la vista de docente.").showAndWait();
+                        e.printStackTrace();
+                    }
                 }
+
                 default -> {
                     Alert alerta = new Alert(Alert.AlertType.ERROR);
                     alerta.setTitle("Error");
@@ -90,29 +98,12 @@ public class SigninController {
         }
     }
 
-
     @FXML
     private void goToRegister() {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/co/unicauca/workflow/degree_ptoject/view/register.fxml")
-            );
-            Parent root = loader.load();
-
-            RegisterController regCtrl = loader.getController();
-            regCtrl.setServices(this.registrationService, this.authService);
-
-            Stage stage = (Stage) txtCorreo.getScene().getWindow();
-            stage.setTitle("Registro");
-            stage.setScene(new Scene(root));
-            stage.centerOnScreen();
-        } catch (Exception ex) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText(null);
-            alert.setContentText("No fue posible abrir la pantalla de registro.");
-            alert.showAndWait();
-            ex.printStackTrace();
-        }
+            main.navigate("register", "Registro");
+        } catch (IOException e) {
+            /* mostrar alerta */ }
     }
+
 }

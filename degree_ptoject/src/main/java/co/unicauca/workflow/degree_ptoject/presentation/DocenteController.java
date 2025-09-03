@@ -38,9 +38,14 @@ public class DocenteController implements Initializable {
     }
 
     @FXML
-    private void switchToLogin(ActionEvent event) throws IOException {
-        main.setRoot("login");
-        btnSalir.getStyleClass().add("btn-pressed");
+    private void switchToLogin(ActionEvent event) {
+        try {
+            main.navigate("signin", "Login");
+            btnSalir.getStyleClass().add("btn-pressed");
+        } catch (IOException e) {
+            System.err.println("No se pudo abrir la vista de Login");
+            e.printStackTrace();
+        }
     }
 
     @FXML

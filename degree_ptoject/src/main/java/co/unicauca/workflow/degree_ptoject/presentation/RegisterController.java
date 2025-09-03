@@ -5,7 +5,11 @@ import co.unicauca.workflow.degree_ptoject.domain.models.Rol;
 import co.unicauca.workflow.degree_ptoject.domain.services.IRegistrationService;
 import co.unicauca.workflow.degree_ptoject.domain.services.ISignInService;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 public class RegisterController {
 
@@ -112,7 +116,23 @@ public class RegisterController {
 
     @FXML
     private void goToLogin() {
-        new Alert(Alert.AlertType.INFORMATION, "Pantalla de login en construcción.").showAndWait();
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/co/unicauca/workflow/degree_ptoject/view/signin.fxml")
+            );
+            Parent root = loader.load();
+
+            SigninController sc = loader.getController();
+            sc.setServices(this.registrationService, this.signInService);
+
+            Stage stage = (Stage) txtNombres.getScene().getWindow();
+            stage.setTitle("Login");
+            stage.setScene(new Scene(root));
+            stage.centerOnScreen();
+        } catch (Exception ex) {
+            showError(errGeneral, "No fue posible abrir la pantalla de login.");
+            ex.printStackTrace();
+        }
     }
 
     // ===== Helpers =====

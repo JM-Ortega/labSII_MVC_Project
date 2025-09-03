@@ -1,5 +1,6 @@
 package co.unicauca.workflow.degree_ptoject;
 
+import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,7 +17,7 @@ public class main extends Application {
     stage.setScene(new Scene(root));
     stage.show();
   }
-
+  
   public static void main(String[] args) {
     launch(args);
   }

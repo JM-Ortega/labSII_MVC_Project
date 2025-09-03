@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" scaleShape="false" styleClass="fondo" stylesheets="@../desing/Signin.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" scaleShape="false" styleClass="fondo" stylesheets="@../desing/Signin.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.unicauca.workflow.degree_ptoject.presentation.SigninController">
    <children>
       <ImageView fitHeight="600.0" fitWidth="452.0" layoutX="-7.0">
          <image>
@@ -31,7 +31,7 @@
                   <Font name="Roboto SemiBold" size="16.0" />
                </font>
             </Label>
-            <TextField prefHeight="30.0" prefWidth="297.0" promptText="Ingrese su correo institucional" styleClass="campo_de_entrada">
+            <TextField fx:id="txtCorreo" prefHeight="30.0" prefWidth="297.0" promptText="usuario@unicauca.edu.co" styleClass="campo_de_entrada">
                <font>
                   <Font name="Roboto Regular" size="14.0" />
                </font>
@@ -44,14 +44,14 @@
                   <Insets />
                </VBox.margin>
             </Label>
-            <PasswordField promptText="***************" styleClass="campo_de_entrada">
+            <PasswordField fx:id="txtConrtaseña" promptText="***************" styleClass="campo_de_entrada">
                <font>
                   <Font name="Calibri" size="14.0" />
                </font>
             </PasswordField>
          </children>
       </VBox>
-      <Button layoutX="578.0" layoutY="473.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="90.0" styleClass="boton" text="Ingresar" textFill="WHITE">
+      <Button layoutX="578.0" layoutY="473.0" mnemonicParsing="false" onAction="#ingresar" prefHeight="28.0" prefWidth="90.0" styleClass="boton" text="Ingresar" textFill="WHITE">
          <font>
             <Font name="Roboto Bold" size="14.0" />
          </font>

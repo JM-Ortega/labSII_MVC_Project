@@ -199,4 +199,27 @@ public class SqliteRepository implements IUserRepository {
             return false;
         }
     }
+
+    @Override
+    public String getName(String email) {
+        String nombres = null;
+        String sql = "SELECT nombres FROM User WHERE email = ?";
+        
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, email);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                nombres = rs.getString("nombres");
+            }
+            rs.close();
+            pstmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return nombres;
+    }
+    
 }

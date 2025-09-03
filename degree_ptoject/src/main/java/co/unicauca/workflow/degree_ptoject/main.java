@@ -1,5 +1,6 @@
 package co.unicauca.workflow.degree_ptoject;
 
+import java.io.IOException;
 import co.unicauca.workflow.degree_ptoject.access.Factory;
 import co.unicauca.workflow.degree_ptoject.access.IUserRepository;
 import co.unicauca.workflow.degree_ptoject.domain.services.IPasswordHasher;

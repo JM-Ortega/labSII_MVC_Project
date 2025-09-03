@@ -1,0 +1,19 @@
+.Docente_container{
+    -fx-backround-color: white;
+}
+
+.Principal_container{
+    -fx-backround-color: white;
+}
+
+.stack_container{
+    -fx-backround-color: white;
+}
+
+.btn-default{
+    -fx-background-color: #4670A4;
+}
+
+.btn-pressed{
+    -fx-background-color: #6798D4;
+}

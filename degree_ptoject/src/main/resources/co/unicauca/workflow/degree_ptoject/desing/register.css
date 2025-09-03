@@ -1,0 +1,45 @@
+
+.root {
+    -fx-background-color: white;
+    -fx-font-family: "Roboto", "Calibri", "Segoe UI", "Arial";
+    -fx-font-size: 13px;
+}
+
+
+.password-field {
+    -fx-font-family: "Calibri", "Segoe UI", "Arial";
+}
+
+/* Etiquetas */
+.label-title { 
+    -fx-font-size: 13px; 
+    -fx-font-weight: bold; 
+    -fx-text-fill: #333; 
+}
+
+
+.campo_de_entrada {
+    -fx-background-color: white;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent transparent #0066CC transparent;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-radius: 0;
+    -fx-padding: 6 0 6 0;
+}
+
+
+.hint  { -fx-text-fill: #1e3f8a; -fx-font-size: 11px; }
+.error { -fx-text-fill: #ff0000; -fx-font-size: 11px; }
+.error-hidden { -fx-opacity: 0; }
+.wrap { -fx-text-overrun: clip; }
+
+
+.button.primary {
+    -fx-background-color: #0a66cc;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 8 16 8 16;
+}
+.button.primary:hover { -fx-background-color: #0b5bb5; }

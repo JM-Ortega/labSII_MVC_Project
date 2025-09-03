@@ -1,94 +1,83 @@
 package co.unicauca.workflow.degree_ptoject.domain.services;
 
-
 import co.unicauca.workflow.degree_ptoject.access.IUserRepository;
+import co.unicauca.workflow.degree_ptoject.domain.models.Programa;
+import co.unicauca.workflow.degree_ptoject.domain.models.Rol;
+
 import co.unicauca.workflow.degree_ptoject.domain.models.User;
-import jakarta.validation.*;
-import java.util.LinkedHashMap;
+import static co.unicauca.workflow.degree_ptoject.infra.operation.RegistrationValidator.validate;
+
 import java.util.Map;
-import java.util.Set;
+
 import java.util.Arrays;
 
 public class UserService implements IRegistrationService, ISignInService {
 
     private final IUserRepository repo;
     private final IPasswordHasher hasher;
-    private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     public UserService(IUserRepository repo, IPasswordHasher hasher) {
         this.repo = repo;
         this.hasher = hasher;
     }
-    /*
+
     @Override
-    public RegistrationResult register(RegisterUserDTO dto) {
+    public RegistrationResult register(String nombres,
+            String apellidos,
+            String email,
+            String password,
+            Programa programa,
+            Rol rol,
+            String celular) {
+        // Normalizar entradas
+        String nom = safe(nombres);
+        String ape = safe(apellidos);
+        String mail = safe(email).toLowerCase();
+        String cel = emptyToNull(celular);
 
-        if (dto == null) {
-            return RegistrationResult.fail("Datos de registro vacíos");
-        }
-
-        Set<ConstraintViolation<RegisterUserDTO>> v = validator.validate(dto);
-        if (!v.isEmpty()) {
-            Map<String, String> fe = new LinkedHashMap<>();
-            Map<String, Integer> prioPorCampo = new LinkedHashMap<>();
-
-            for (var e : v) {
-                String field = e.getPropertyPath().toString();
-                int pr = prioridad(e);
-                Integer actual = prioPorCampo.get(field);
-                if (actual == null || pr < actual) {
-                    prioPorCampo.put(field, pr);
-                    fe.put(field, e.getMessage());
-                }
-            }
+        //Validación de formato/reglas simples
+        Map<String, String> fe = validate(nom, ape, mail, password, programa, rol, cel);
+        if (!fe.isEmpty()) {
             return RegistrationResult.fail("Errores de validación", fe);
-
         }
 
-        String email = dto.getEmail().trim().toLowerCase();
-
-        if (repo.existsByEmail(email)) {
-            return RegistrationResult.fail("El email ya está registrado.", Map.of("email", "El email ya está registrado."));
+        //Regla con acceso a infraestructura: email único
+        if (repo.existsByEmail(mail)) {
+            return RegistrationResult.fail("El email ya está registrado.",
+                    Map.of("email", "El email ya está registrado."));
         }
 
-        String hash = hasher.hash(dto.getPassword().toCharArray());
+        // 3) Hash y persistencia
+        char[] pwd = password.toCharArray();
+        String hash = hasher.hash(pwd);
+        Arrays.fill(pwd, '\0'); // limpiar en memoria
 
         User u = new User(
-                dto.getNombres().trim(),
-                dto.getApellidos().trim(),
-                (dto.getCelular() == null || dto.getCelular().isBlank()) ? null : dto.getCelular().trim(),
-                dto.getPrograma(),
-                dto.getRol(),
-                email,
+                nom,
+                ape,
+                cel,
+                programa,
+                rol,
+                mail,
                 hash
         );
 
         boolean ok = repo.save(u);
         return ok ? RegistrationResult.ok(u.getId())
                 : RegistrationResult.fail("No se pudo guardar el usuario.");
-    }*/
-
-    private static int prioridad(ConstraintViolation<?> v) {
-        Class<?> ann = v.getConstraintDescriptor().getAnnotation().annotationType();
-
-        if (ann == jakarta.validation.constraints.NotBlank.class
-                || ann == jakarta.validation.constraints.NotNull.class) {
-            return 1;
-        }
-
-        if (ann == jakarta.validation.constraints.Size.class) {
-            return 2;
-        }
-        if (ann == jakarta.validation.constraints.Email.class) {
-            return 3;
-        }
-        if (ann == jakarta.validation.constraints.Pattern.class) {
-            return 4;
-        }
-
-        return 99;
     }
 
+    // Helpers locales (útiles para normalizar)
+    private static String safe(String s) {
+        return (s == null) ? "" : s.trim();
+    }
+
+    private static String emptyToNull(String s) {
+        String t = safe(s);
+        return t.isEmpty() ? null : t;
+    }
+
+    // ===== ISignInService =====
     @Override
     public boolean validarSesion(String email, char[] passwordIngresada) {
         boolean flag = repo.validarIngrereso(email, passwordIngresada);

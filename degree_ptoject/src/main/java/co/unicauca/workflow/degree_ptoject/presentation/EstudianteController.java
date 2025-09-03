@@ -26,6 +26,7 @@ public class EstudianteController implements Initializable {
     @FXML private StackPane stackPane;
     @FXML private Pane pnPrincipal;
     @FXML private Pane pnFormatoA;
+    @FXML private Pane pnCabezeraFA;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -34,11 +35,13 @@ public class EstudianteController implements Initializable {
         btnSalir.getStyleClass().add("btn-default");
         pnPrincipal.getStyleClass().add("Principal_container");
         stackPane.getStyleClass().add("stack_container");
+        
         showPane(pnPrincipal);
+        
     }    
     @FXML
     private void switchToLogin(ActionEvent event) throws IOException {
-        main.setRoot("login");
+        main.setRoot("signin", "login");
         btnSalir.getStyleClass().add("btn-pressed");
     }
 
@@ -55,6 +58,7 @@ public class EstudianteController implements Initializable {
         btnFormatoA.getStyleClass().add("btn-pressed");
         btnPrincipal.getStyleClass().remove("btn-pressed");
         btnPrincipal.getStyleClass().add("btn-default");
+        pnCabezeraFA.getStyleClass().add("cabezera");
         showPane(pnFormatoA);
     }
     

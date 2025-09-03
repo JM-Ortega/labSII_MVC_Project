@@ -10,6 +10,10 @@
     -fx-backround-color: white;
 }
 
+.cabezera{
+    -fx-backround-color: grey;
+}
+
 .btn-default{
     -fx-background-color: #4670A4;
 }

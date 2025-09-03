@@ -39,7 +39,7 @@ public class DocenteController implements Initializable {
 
     @FXML
     private void switchToLogin(ActionEvent event) throws IOException {
-        main.setRoot("login");
+        main.setRoot("signin", "login");
         btnSalir.getStyleClass().add("btn-pressed");
     }
 

@@ -1,7 +1,10 @@
 package co.unicauca.workflow.degree_ptoject.presentation;
 
+import static co.unicauca.workflow.degree_ptoject.domain.models.Rol.Estudiante;
 import co.unicauca.workflow.degree_ptoject.domain.services.IRegistrationService;
 import co.unicauca.workflow.degree_ptoject.domain.services.ISignInService;
+import co.unicauca.workflow.degree_ptoject.main;
+import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -28,7 +31,7 @@ public class SigninController {
     }
 
     @FXML
-    private void ingresar() {
+    private void ingresar() throws IOException {
         if (txtCorreo.getText().trim().isEmpty() || txtConrtaseña.getText().trim().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
@@ -52,7 +55,6 @@ public class SigninController {
 
         try {
             int answer = authService.validacion(usuario, passwordIngresada);
-
             switch (answer) {
                 case 0 -> {
                     Alert alerta = new Alert(Alert.AlertType.WARNING);
@@ -67,7 +69,7 @@ public class SigninController {
                     alerta.setHeaderText(null);
                     alerta.setContentText("Inicio de sesión como estudiante exitoso.");
                     alerta.showAndWait();
-                    // TODO: navegar a la vista de estudiante
+                    main.setRoot("Estudiante", "Estudiante");
                 }
                 case 2 -> {
                     Alert alerta = new Alert(Alert.AlertType.INFORMATION);
@@ -75,7 +77,7 @@ public class SigninController {
                     alerta.setHeaderText(null);
                     alerta.setContentText("Inicio de sesión como docente exitoso.");
                     alerta.showAndWait();
-                    // TODO: navegar a la vista de docente
+                    main.setRoot("Docente", "Docente");
                 }
                 default -> {
                     Alert alerta = new Alert(Alert.AlertType.ERROR);

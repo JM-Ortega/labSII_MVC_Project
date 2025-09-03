@@ -4,7 +4,8 @@
  */
 package co.unicauca.workflow.degree_ptoject.domain.services;
 
-
+import co.unicauca.workflow.degree_ptoject.domain.models.Programa;
+import co.unicauca.workflow.degree_ptoject.domain.models.Rol;
 
 /**
  *
@@ -12,5 +13,13 @@ package co.unicauca.workflow.degree_ptoject.domain.services;
  */
 public interface IRegistrationService {
 
-    //RegistrationResult register(RegisterUserDTO dto);
+    RegistrationResult register(
+            String nombres,
+            String apellidos,
+            String email,
+            String password,
+            Programa programa,
+            Rol rol,
+            String celular
+    );
 }

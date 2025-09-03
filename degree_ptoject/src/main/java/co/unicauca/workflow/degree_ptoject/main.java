@@ -1,5 +1,6 @@
 package co.unicauca.workflow.degree_ptoject;
 
+import java.io.IOException;
 import co.unicauca.workflow.degree_ptoject.access.Factory;
 import co.unicauca.workflow.degree_ptoject.access.IUserRepository;
 import co.unicauca.workflow.degree_ptoject.domain.services.IPasswordHasher;
@@ -15,6 +16,21 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class main extends Application {
+/*
+  @Override
+  public void start(Stage stage) throws Exception {
+    Parent root = FXMLLoader.load(
+        getClass().getResource("/co/unicauca/workflow/degree_ptoject/view/signin.fxml")
+    );
+    stage.setTitle("Login");
+    stage.setScene(new Scene(root));
+    stage.show();
+  }
+  
+  public static void main(String[] args) {
+    launch(args);
+  }
+*/
 
     @Override
     public void start(Stage stage) throws Exception {

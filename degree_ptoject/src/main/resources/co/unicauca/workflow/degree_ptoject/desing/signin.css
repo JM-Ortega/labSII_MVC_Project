@@ -1,0 +1,24 @@
+/* Estilos del formulario Sign In*/
+.fondo{
+    -fx-background-color: #ffffff;
+}
+
+.controlador_sign_in{
+    -fx-spacing: 15;
+    -fx-alignement: top_left;
+    -fx-background-color: #ffffff;
+}
+
+.campo_de_entrada{
+    -fx-background-color: white;          /* Fondo blanco */
+    -fx-background-insets: 0;             /* Quita los rellenos */
+    -fx-background-radius: 0;             /* Esquinas rectas */
+    -fx-border-color: transparent transparent #0066CC transparent; /* Solo borde inferior azul */
+    -fx-border-width: 0 0 2 0;            /* Solo abajo con grosor 2px */
+    -fx-border-radius: 0;                 /* Esquinas rectas en el borde */
+    -fx-padding: 5 0 5 0;                 /* Espaciado interno */
+}
+
+.boton{
+    -fx-background-color: #0066CC;
+}

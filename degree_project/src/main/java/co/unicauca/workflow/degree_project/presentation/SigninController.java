@@ -1,6 +1,8 @@
 package co.unicauca.workflow.degree_project.presentation;
 
+import co.unicauca.workflow.degree_project.domain.models.User;
 import co.unicauca.workflow.degree_project.domain.services.ISignInService;
+import co.unicauca.workflow.degree_project.domain.services.IUserService;
 import co.unicauca.workflow.degree_project.main;
 import java.io.IOException;
 import javafx.fxml.FXML;
@@ -23,7 +25,7 @@ public class SigninController {
     }
 
     @FXML
-    private void ingresar() {
+    private void ingresar() throws IOException {
         if (txtCorreo.getText().trim().isEmpty() || txtConrtaseña.getText().trim().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
@@ -62,13 +64,13 @@ public class SigninController {
                     alerta.setHeaderText(null);
                     alerta.setContentText("Inicio de sesión como estudiante exitoso.");
                     alerta.showAndWait();
+                    User.setEmail(usuario);
 
-                    try {
-                        main.navigate("estudiante", "Panel Estudiante");
+                  /*  try {
                     } catch (IOException e) {
                         new Alert(Alert.AlertType.ERROR, "Error al abrir la vista de estudiante.").showAndWait();
                         e.printStackTrace();
-                    }
+                    }*/
                 }
                 case 2 -> {
                     Alert alerta = new Alert(Alert.AlertType.INFORMATION);
@@ -76,15 +78,20 @@ public class SigninController {
                     alerta.setHeaderText(null);
                     alerta.setContentText("Inicio de sesión como docente exitoso.");
                     alerta.showAndWait();
-
+                    
                     try {
-                        main.navigate("Docente", "Panel Docente");
+                        Object controller = main.navigateWithController("Docente", "Panel Docente");
+
+                        if (controller instanceof DocenteController dc) {
+                            dc.setService((IUserService) authService);
+                            dc.setEmail(usuario);
+                            dc.cargarDatos();
+                        }
                     } catch (IOException e) {
                         new Alert(Alert.AlertType.ERROR, "Error al abrir la vista de docente.").showAndWait();
                         e.printStackTrace();
                     }
                 }
-
                 default -> {
                     Alert alerta = new Alert(Alert.AlertType.ERROR);
                     alerta.setTitle("Error");

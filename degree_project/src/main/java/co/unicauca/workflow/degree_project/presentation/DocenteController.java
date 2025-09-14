@@ -1,5 +1,6 @@
 package co.unicauca.workflow.degree_project.presentation;
 
+import co.unicauca.workflow.degree_project.domain.services.IUserService;
 import co.unicauca.workflow.degree_project.main;
 import java.io.IOException;
 import java.net.URL;
@@ -30,6 +31,9 @@ public class DocenteController implements Initializable {
     @FXML private BorderPane bp;
     @FXML private AnchorPane ap;
     
+    private IUserService service;
+    private String email;
+    
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -41,8 +45,8 @@ public class DocenteController implements Initializable {
     @FXML
     void switchToLogin(ActionEvent event) {
         try {
-            main.navigate("signin", "Login");
             btnSalir.getStyleClass().add("btn-pressed");
+            main.navigate("signin", "Login");
         } catch (IOException e) {
             System.err.println("No se pudo abrir la vista de Login");
             e.printStackTrace();
@@ -75,6 +79,23 @@ public class DocenteController implements Initializable {
          Logger.getLogger(DocenteController.class.getName()).log(Level.SEVERE, null, ex);
      }
      bp.setCenter(root);
+    }
+
+    void setService(IUserService service) {
+        this.service = service;
+    }
+
+    void setEmail(String email) {
+        this.email = email;
+    }
+
+    void cargarDatos() {
+        if (service != null && email != null) {
+            String nombre = service.getName(email);
+            nombreDocente.setText(nombre);
+            } else {
+            System.err.println("Service o email no seteados");
+        }
     }
 }
 

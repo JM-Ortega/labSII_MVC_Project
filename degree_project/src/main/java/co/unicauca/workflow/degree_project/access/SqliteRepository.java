@@ -373,26 +373,23 @@ public class SqliteRepository implements IUserRepository {
     @Override
     public String getName(String email) {
         String sql = """
-            SELECT e.nombre AS nom
-            FROM Usuario u
-            LEFT JOIN Estudiante e ON e.id = u.id
-            WHERE u.correo = ?
-            UNION ALL
-            SELECT d.nombre AS nom
-            FROM Usuario u
-            LEFT JOIN Docente d ON d.id = u.id
-            WHERE u.correo = ? AND NOT EXISTS (SELECT 1 FROM Estudiante e2 WHERE e2.id = u.id)
-            LIMIT 1;
+        SELECT COALESCE(e.nombre, d.nombre) AS nom
+        FROM Usuario u
+        LEFT JOIN Estudiante e ON e.id = u.id
+        LEFT JOIN Docente d ON d.id = u.id
+        WHERE u.correo = ?
+        LIMIT 1;
         """;
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
-            pstmt.setString(2, email);
             try (ResultSet rs = pstmt.executeQuery()) {
-                return rs.next() ? rs.getString("nom") : null;
+                if (rs.next()) {
+                    return rs.getString("nom");
+                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
         }
+        return null;
     }
 }

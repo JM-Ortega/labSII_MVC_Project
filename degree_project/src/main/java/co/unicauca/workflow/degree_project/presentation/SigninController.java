@@ -78,7 +78,7 @@ public class SigninController {
                     alerta.showAndWait();
 
                     try {
-                        main.navigate("docente", "Panel Docente");
+                        main.navigate("Docente", "Panel Docente");
                     } catch (IOException e) {
                         new Alert(Alert.AlertType.ERROR, "Error al abrir la vista de docente.").showAndWait();
                         e.printStackTrace();

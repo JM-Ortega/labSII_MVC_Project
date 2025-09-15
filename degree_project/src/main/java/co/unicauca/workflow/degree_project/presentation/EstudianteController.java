@@ -5,8 +5,6 @@ import co.unicauca.workflow.degree_project.main;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -69,15 +67,21 @@ public class EstudianteController implements Initializable {
     }
 
     private void loadModule(String modulo) {
-     Parent root = null;
-     
-     try{
-        root = FXMLLoader.load(getClass().getResource(modulo+".fxml"));
+        try {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(modulo + ".fxml"));
+        Parent moduleRoot = loader.load();
 
-     }catch(IOException ex){
-         Logger.getLogger(DocenteController.class.getName()).log(Level.SEVERE, null, ex);
-     }
-     bp.setCenter(root);
+        Object controller = loader.getController();
+        if (controller instanceof FormatoAEstudianteController fa) {
+            fa.setService(service);
+            fa.setEmail(email);
+            fa.cargarDatos();
+        }
+
+        bp.setCenter(moduleRoot);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
     void setService(IUserService service) {

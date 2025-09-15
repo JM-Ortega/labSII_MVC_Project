@@ -10,7 +10,7 @@ import java.util.Map;
 
 import java.util.Arrays;
 
-public class UserService implements IRegistrationService, ISignInService {
+public class UserService implements IRegistrationService, ISignInService, IUserService {
 
     private final IUserRepository repo;
     private final IPasswordHasher hasher;
@@ -106,5 +106,11 @@ public class UserService implements IRegistrationService, ISignInService {
             }
         }
         return 0;
+    }
+
+    @Override
+    public String getName(String email) {
+        String nombre = repo.getName(email);
+        return nombre;
     }
 }

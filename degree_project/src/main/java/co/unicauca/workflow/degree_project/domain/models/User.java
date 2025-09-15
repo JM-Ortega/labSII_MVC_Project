@@ -11,7 +11,7 @@ public class User {
     private String celular;
     private Programa programa;
     private Rol rol;
-    private String email;
+    private static String email;
     private String passwordHash;
 
     public User() {
@@ -37,8 +37,8 @@ public class User {
         return nombres;
     }
 
-    public void setNombres(String nombres) {
-        this.nombres = nombres;
+    public void setNombres(String nombresU) {
+        nombres = nombresU;
     }
 
     public String getApellidos() {
@@ -73,12 +73,12 @@ public class User {
         this.rol = rol;
     }
 
-    public String getEmail() {
+    public static String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public static void setEmail(String usuario) {
+        email = usuario;
     }
 
     public String getPasswordHash() {

@@ -1,6 +1,5 @@
 package co.unicauca.workflow.degree_project.presentation;
 
-import co.unicauca.workflow.degree_project.domain.models.User;
 import co.unicauca.workflow.degree_project.domain.services.ISignInService;
 import co.unicauca.workflow.degree_project.domain.services.IUserService;
 import co.unicauca.workflow.degree_project.main;
@@ -64,7 +63,6 @@ public class SigninController {
                     alerta.setHeaderText(null);
                     alerta.setContentText("Inicio de sesión como estudiante exitoso.");
                     alerta.showAndWait();
-                    User.setEmail(usuario);
 
                   try {
                         Object controller = main.navigateWithController("Estudiante", "Panel Estudiante");

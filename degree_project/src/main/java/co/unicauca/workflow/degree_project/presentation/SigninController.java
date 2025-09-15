@@ -66,11 +66,18 @@ public class SigninController {
                     alerta.showAndWait();
                     User.setEmail(usuario);
 
-                  /*  try {
+                  try {
+                        Object controller = main.navigateWithController("Estudiante", "Panel Estudiante");
+
+                        if (controller instanceof EstudianteController dc) {
+                            dc.setService((IUserService) authService);
+                            dc.setEmail(usuario);
+                            dc.cargarDatos();
+                        }
                     } catch (IOException e) {
                         new Alert(Alert.AlertType.ERROR, "Error al abrir la vista de estudiante.").showAndWait();
                         e.printStackTrace();
-                    }*/
+                    }
                 }
                 case 2 -> {
                     Alert alerta = new Alert(Alert.AlertType.INFORMATION);

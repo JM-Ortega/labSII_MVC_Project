@@ -66,7 +66,7 @@ public class DocenteController implements Initializable {
         btnFormatoA.getStyleClass().add("btn-pressed");
         btnPrincipal.getStyleClass().remove("btn-pressed");
         btnPrincipal.getStyleClass().add("btn-default");
-        loadModule("/co/unicauca/workflow/degree_project/view/FormatoA");
+        loadModule("/co/unicauca/workflow/degree_project/view/FormatoADocente");
     }
     
     private void loadModule(String modulo) {

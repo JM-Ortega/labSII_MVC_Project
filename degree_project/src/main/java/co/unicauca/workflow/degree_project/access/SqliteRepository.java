@@ -1,8 +1,7 @@
 package co.unicauca.workflow.degree_project.access;
 
 import co.unicauca.workflow.degree_project.domain.models.User;
-import co.unicauca.workflow.degree_project.domain.models.Rol;       // Estudiante, Docente
-import co.unicauca.workflow.degree_project.domain.models.Programa; // sistemas, electronica, telematica, industrial
+import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 import co.unicauca.workflow.degree_project.domain.services.UserService;
 import co.unicauca.workflow.degree_project.infra.security.Argon2PasswordHasher;
 
@@ -20,202 +19,94 @@ public class SqliteRepository implements IUserRepository {
     }
 
     private void initDatabase() {
-        String sql1 = "PRAGMA foreign_keys = ON;";
+        String fkOn = "PRAGMA foreign_keys = ON;";
 
         String sqlRol = """
-            CREATE TABLE IF NOT EXISTS Rol (
-              idRol INTEGER PRIMARY KEY,
-              tipo  TEXT NOT NULL UNIQUE
-            );
-        """;
-
+        CREATE TABLE IF NOT EXISTS Rol (
+          idRol INTEGER PRIMARY KEY,
+          tipo  TEXT NOT NULL UNIQUE
+        );
+    """;
         String sqlPrograma = """
-            CREATE TABLE IF NOT EXISTS Programa (
-              idPrograma INTEGER PRIMARY KEY,
-              tipo       TEXT NOT NULL UNIQUE
-            );
-        """;
-
-        String seedRol = "INSERT OR IGNORE INTO Rol(tipo) VALUES ('Estudiante'), ('Docente');";
+        CREATE TABLE IF NOT EXISTS Programa (
+          idPrograma INTEGER PRIMARY KEY,
+          tipo       TEXT NOT NULL UNIQUE
+        );
+    """;
+        String seedRol = "INSERT OR IGNORE INTO Rol(tipo) VALUES ('Estudiante'), ('Docente'), ('Coordinador');";
 
         String seedPrograma = """
             INSERT OR IGNORE INTO Programa(tipo)
-            VALUES ('sistemas'), ('electronica'), ('telematica'), ('industrial');
+            VALUES 
+              ('Ingenieria_de_Sistemas'),
+              ('Ingenieria_Electronica_y_Telecomunicaciones'),
+              ('Automatica_Industrial'),
+              ('Tecnologia_en_Telematica');
         """;
 
         String sqlUsuario = """
-            CREATE TABLE IF NOT EXISTS Usuario (
-              id         TEXT PRIMARY KEY,          -- UUID
-              correo     TEXT NOT NULL UNIQUE,
-              contrasena TEXT NOT NULL,             -- hash
-              rol        INTEGER NOT NULL,
-              FOREIGN KEY (rol) REFERENCES Rol(idRol)
-            );
+        CREATE TABLE IF NOT EXISTS Usuario (
+          id         TEXT PRIMARY KEY,          -- UUID
+          correo     TEXT NOT NULL UNIQUE,
+          contrasena TEXT NOT NULL,             -- hash
+          rol        INTEGER NOT NULL,          -- FK a Rol
+          nombre     TEXT NOT NULL,
+          apellido   TEXT NOT NULL,
+          programa   INTEGER NOT NULL,          -- FK a Programa
+          celular    TEXT,
+          FOREIGN KEY (rol)      REFERENCES Rol(idRol),
+          FOREIGN KEY (programa) REFERENCES Programa(idPrograma)
+        );
+    """;
+
+        String sqlProyecto = """
+        CREATE TABLE IF NOT EXISTS Proyecto (
+          id             INTEGER PRIMARY KEY AUTOINCREMENT,
+          tipo           TEXT NOT NULL CHECK (tipo IN ('TESIS','PRACTICA_PROFESIONAL')),
+          estado         TEXT NOT NULL CHECK (estado IN ('EN_TRAMITE','CANCELADO','TERMINADO')) DEFAULT 'EN_TRAMITE',
+          titulo         TEXT NOT NULL,
+          estudiante_id  TEXT NOT NULL,
+          docente_id     TEXT NOT NULL,
+          fecha_creacion TEXT NOT NULL DEFAULT (datetime('now')),
+          FOREIGN KEY (estudiante_id) REFERENCES Usuario(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+          FOREIGN KEY (docente_id)    REFERENCES Usuario(id) ON UPDATE CASCADE ON DELETE RESTRICT
+        );
         """;
 
-        String sqlDocente = """
-            CREATE TABLE IF NOT EXISTS Docente (
-              id       TEXT PRIMARY KEY,            -- = Usuario.id
-              nombre   TEXT NOT NULL,
-              apellido TEXT NOT NULL,
-              programa INTEGER NOT NULL,
-              celular  TEXT,
-              FOREIGN KEY (id)       REFERENCES Usuario(id)   ON DELETE CASCADE,
-              FOREIGN KEY (programa) REFERENCES Programa(idPrograma)
-            );
+        String sqlArchivo = """
+        CREATE TABLE IF NOT EXISTS Archivo (
+          id             INTEGER PRIMARY KEY AUTOINCREMENT,
+          proyecto_id    INTEGER NOT NULL,
+          tipo           TEXT NOT NULL CHECK (tipo IN ('FORMATO_A','ANTEPROYECTO','FINAL','OTRO')),
+          nro_version    INTEGER NOT NULL CHECK (nro_version >= 1),
+          nombre_archivo TEXT NOT NULL CHECK (lower(nombre_archivo) LIKE '%.pdf'),
+          fecha_subida   TEXT NOT NULL DEFAULT (datetime('now')),
+          blob           BLOB NOT NULL,
+          FOREIGN KEY (proyecto_id) REFERENCES Proyecto(id) ON UPDATE CASCADE ON DELETE CASCADE,
+          UNIQUE (proyecto_id, tipo, nro_version)
+        );
         """;
 
-        String sqlEstudiante = """
-            CREATE TABLE IF NOT EXISTS Estudiante (
-              id       TEXT PRIMARY KEY,            -- = Usuario.id
-              nombre   TEXT NOT NULL,
-              apellido TEXT NOT NULL,
-              programa INTEGER NOT NULL,
-              celular  TEXT,
-              FOREIGN KEY (id)       REFERENCES Usuario(id)   ON DELETE CASCADE,
-              FOREIGN KEY (programa) REFERENCES Programa(idPrograma)
-            );
-        """;
-
-        // Coordinador singleton (solo 1)
-        String sqlCoordinador = """
-            CREATE TABLE IF NOT EXISTS Coordinador (
-              id       TEXT PRIMARY KEY,            -- = Usuario.id (si lo deseas)
-              nombre   TEXT NOT NULL,
-              apellido TEXT NOT NULL,
-              celular  TEXT
-            );
-        """;
-
-        String trgCoordinadorSingleton = """
-            CREATE TRIGGER IF NOT EXISTS trg_coordinador_singleton
-            BEFORE INSERT ON Coordinador
-            FOR EACH ROW
-            WHEN (SELECT COUNT(*) FROM Coordinador) >= 1
-            BEGIN
-              SELECT RAISE(ABORT, 'Solo puede existir un coordinador');
-            END;
-        """;
-
-        // FormatoA con PK compuesta (id,version)
-        String sqlFormatoA = """
-            CREATE TABLE IF NOT EXISTS FormatoA (
-              id           TEXT    NOT NULL,        -- expediente
-              version      INTEGER NOT NULL,        -- 1..3
-              idEstudiante TEXT    NOT NULL,
-              idProfesor   TEXT    NOT NULL,        -- Docente autor
-              pdf          BLOB    NOT NULL,
-              estadoFA     TEXT    NOT NULL,        -- a_evaluar | aceptado | rechazado
-              creado_en    INTEGER NOT NULL DEFAULT (unixepoch()),
-              actualizado_en INTEGER NOT NULL DEFAULT (unixepoch()),
-              PRIMARY KEY (id, version),
-              CHECK (version BETWEEN 1 AND 3),
-              CHECK (estadoFA IN ('a_evaluar','aceptado','rechazado')),
-              FOREIGN KEY (idEstudiante) REFERENCES Estudiante(id) ON DELETE CASCADE,
-              FOREIGN KEY (idProfesor)   REFERENCES Docente(id)    ON DELETE SET NULL
-            );
-        """;
-
-        String viewFormatoAActual = """
-            CREATE VIEW IF NOT EXISTS FormatoA_Actual AS
-            SELECT f.*
-            FROM FormatoA f
-            JOIN (SELECT id, MAX(version) AS v FROM FormatoA GROUP BY id) ult
-              ON ult.id = f.id AND ult.v = f.version;
-        """;
-
-        // ===== Reglas de negocio sin tabla Evaluacion =====
-        // Solo 1 "a_evaluar" por expediente
-        String idxAevaluar = """
-            CREATE UNIQUE INDEX IF NOT EXISTS ux_fa_un_aevaluar
-            ON FormatoA(id)
-            WHERE estadoFA = 'a_evaluar';
-        """;
-
-        String trgOneAevaluar = """
-            CREATE TRIGGER IF NOT EXISTS trg_fa_one_aevaluar_per_expediente
-            BEFORE INSERT ON FormatoA
-            FOR EACH ROW
-            WHEN NEW.estadoFA = 'a_evaluar'
-             AND EXISTS (SELECT 1 FROM FormatoA x WHERE x.id = NEW.id AND x.estadoFA = 'a_evaluar')
-            BEGIN
-              SELECT RAISE(ABORT, 'Ya existe una version a_evaluar para este expediente');
-            END;
-        """;
-
-        // v(n+1) solo si v(n) fue 'rechazado'
-        String trgChain = """
-            CREATE TRIGGER IF NOT EXISTS trg_fa_enforce_chain
-            BEFORE INSERT ON FormatoA
-            FOR EACH ROW
-            WHEN NEW.version > 1
-             AND NOT EXISTS (
-               SELECT 1 FROM FormatoA prev
-               WHERE prev.id = NEW.id
-                 AND prev.version = NEW.version - 1
-                 AND prev.estadoFA = 'rechazado'
-             )
-            BEGIN
-              SELECT RAISE(ABORT, 'Para crear la nueva version, la version anterior debe estar rechazada');
-            END;
-        """;
-
-        // No permitir nuevas versiones si ya hay una 'aceptado'
-        String trgNoAfterAccept = """
-            CREATE TRIGGER IF NOT EXISTS trg_fa_no_after_accept
-            BEFORE INSERT ON FormatoA
-            FOR EACH ROW
-            WHEN EXISTS (SELECT 1 FROM FormatoA acc WHERE acc.id = NEW.id AND acc.estadoFA = 'aceptado')
-            BEGIN
-              SELECT RAISE(ABORT, 'El expediente ya fue aceptado; no se permiten nuevas versiones');
-            END;
-        """;
-
-        // Restringir UPDATE de estado: solo desde 'a_evaluar' -> 'aceptado'/'rechazado'
-        String trgUpdateEstado = """
-            CREATE TRIGGER IF NOT EXISTS trg_fa_valid_state_update
-            BEFORE UPDATE OF estadoFA ON FormatoA
-            FOR EACH ROW
-            WHEN NOT (OLD.estadoFA = 'a_evaluar' AND NEW.estadoFA IN ('aceptado','rechazado'))
-            BEGIN
-              SELECT RAISE(ABORT, 'Transicion de estado invalida');
-            END;
-        """;
-
-        // Actualizar 'actualizado_en' en cada UPDATE
-        String trgTouchUpdate = """
-            CREATE TRIGGER IF NOT EXISTS trg_fa_touch_update
-            AFTER UPDATE ON FormatoA
-            FOR EACH ROW
-            BEGIN
-              UPDATE FormatoA
-              SET actualizado_en = unixepoch()
-              WHERE id = NEW.id AND version = NEW.version;
-            END;
-        """;
+        String idxArchivoProyecto = "CREATE INDEX IF NOT EXISTS idx_archivos_proyecto ON Archivo(proyecto_id);";
+        String idxArchivoTipo = "CREATE INDEX IF NOT EXISTS idx_archivos_tipo ON Archivo(proyecto_id, tipo, nro_version);";
 
         try (Statement stmt = conn.createStatement()) {
-            stmt.execute(sql1);
+            stmt.execute(fkOn);
+
+            // catálogos
             stmt.execute(sqlRol);
             stmt.execute(sqlPrograma);
             stmt.execute(seedRol);
             stmt.execute(seedPrograma);
+
+            // datos maestros
             stmt.execute(sqlUsuario);
-            stmt.execute(sqlDocente);
-            stmt.execute(sqlEstudiante);
 
-            stmt.execute(sqlCoordinador);
-            stmt.execute(trgCoordinadorSingleton);
-
-            stmt.execute(sqlFormatoA);
-            stmt.execute(viewFormatoAActual);
-
-            stmt.execute(idxAevaluar);
-            stmt.execute(trgOneAevaluar);
-            stmt.execute(trgChain);
-            stmt.execute(trgNoAfterAccept);
-            stmt.execute(trgUpdateEstado);
-            stmt.execute(trgTouchUpdate);
+            // negocio
+            stmt.execute(sqlProyecto);
+            stmt.execute(sqlArchivo);
+            stmt.execute(idxArchivoProyecto);
+            stmt.execute(idxArchivoTipo);
         } catch (SQLException ex) {
             Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -245,7 +136,6 @@ public class SqliteRepository implements IUserRepository {
         }
     }
 
-    // ================= Métodos IUserRepository (sin cambios) =================
     @Override
     public boolean save(User newUser) {
         try {
@@ -260,48 +150,24 @@ public class SqliteRepository implements IUserRepository {
                 return false;
             }
 
-            conn.setAutoCommit(false);
-
-            String sqlUsuarioIns = "INSERT INTO Usuario (id, correo, contrasena, rol) VALUES (?, ?, ?, ?)";
-            try (PreparedStatement p = conn.prepareStatement(sqlUsuarioIns)) {
+            String sql = """
+            INSERT INTO Usuario (id, correo, contrasena, rol, nombre, apellido, programa, celular)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """;
+            try (PreparedStatement p = conn.prepareStatement(sql)) {
                 p.setString(1, newUser.getId());
                 p.setString(2, newUser.getEmail());
                 p.setString(3, newUser.getPasswordHash());
-                p.setInt(4, newUser.getRol().ordinal() + 1); // asumiendo orden en tabla Rol
+                p.setInt(4, newUser.getRol().ordinal() + 1);        // mapea a Rol.idRol seed
+                p.setString(5, newUser.getNombres());
+                p.setString(6, newUser.getApellidos());
+                p.setInt(7, newUser.getPrograma().ordinal() + 1);   // mapea a Programa.idPrograma seed
+                p.setString(8, newUser.getCelular());
                 p.executeUpdate();
             }
-
-            if (newUser.getRol() == Rol.Estudiante) {
-                String sqlEstIns = "INSERT INTO Estudiante (id, nombre, apellido, programa, celular) VALUES (?, ?, ?, ?, ?)";
-                try (PreparedStatement p = conn.prepareStatement(sqlEstIns)) {
-                    p.setString(1, newUser.getId());
-                    p.setString(2, newUser.getNombres());
-                    p.setString(3, newUser.getApellidos());
-                    p.setInt(4, newUser.getPrograma().ordinal() + 1);
-                    p.setString(5, newUser.getCelular());
-                    p.executeUpdate();
-                }
-            } else {
-                String sqlDocIns = "INSERT INTO Docente (id, nombre, apellido, programa, celular) VALUES (?, ?, ?, ?, ?)";
-                try (PreparedStatement p = conn.prepareStatement(sqlDocIns)) {
-                    p.setString(1, newUser.getId());
-                    p.setString(2, newUser.getNombres());
-                    p.setString(3, newUser.getApellidos());
-                    p.setInt(4, newUser.getPrograma().ordinal() + 1);
-                    p.setString(5, newUser.getCelular());
-                    p.executeUpdate();
-                }
-            }
-
-            conn.commit();
-            conn.setAutoCommit(true);
             return true;
 
         } catch (SQLException ex) {
-            try {
-                conn.rollback();
-            } catch (SQLException ignored) {
-            }
             Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
@@ -310,11 +176,11 @@ public class SqliteRepository implements IUserRepository {
     @Override
     public String getRol(String email, char[] passwordIngresada) {
         String sql = """
-            SELECT u.contrasena, r.tipo
-            FROM Usuario u
-            INNER JOIN Rol r ON u.rol = r.idRol
-            WHERE u.correo = ?
-        """;
+        SELECT u.contrasena, r.tipo
+        FROM Usuario u
+        INNER JOIN Rol r ON u.rol = r.idRol
+        WHERE u.correo = ?
+    """;
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -372,31 +238,53 @@ public class SqliteRepository implements IUserRepository {
 
     @Override
     public String getName(String email) {
-        String sql = """
-        SELECT 
-            COALESCE(e.nombre, d.nombre) AS nombre,
-            COALESCE(e.apellido, d.apellido) AS apellido
-        FROM Usuario u
-        LEFT JOIN Estudiante e ON e.id = u.id
-        LEFT JOIN Docente d ON d.id = u.id
-        WHERE u.correo = ?
-        LIMIT 1;
-        """;
+        String sql = "SELECT nombre || ' ' || apellido AS nom FROM Usuario WHERE correo = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next() ? rs.getString("nom") : null;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
 
+    @Override
+    public AuthResult authenticate(String email, char[] passwordIngresada) {
+        String sql = """
+            SELECT u.id, u.contrasena, r.tipo AS rol, u.nombre, u.apellido
+            FROM Usuario u
+            JOIN Rol r ON r.idRol = u.rol
+            WHERE u.correo = ?
+        """;
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
 
             try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    String nombre = rs.getString("nombre");
-                    String apellido = rs.getString("apellido");
-                    return (nombre != null ? nombre : "") + 
-                           (apellido != null ? " " + apellido : "");
+                if (!rs.next()) {
+                    return null;
                 }
+
+                String hash = rs.getString("contrasena");
+                Argon2PasswordHasher hasher = new Argon2PasswordHasher();
+                boolean ok = hasher.verify(passwordIngresada, hash);
+
+                java.util.Arrays.fill(passwordIngresada, '\0');
+
+                if (!ok) {
+                    return null;
+                }
+
+                String userId = rs.getString("id");
+                String rol = rs.getString("rol");
+                String nombreCompleto = rs.getString("nombre") + " " + rs.getString("apellido");
+                return new AuthResult(userId, rol, nombreCompleto);
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
     }
+
 }

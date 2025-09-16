@@ -1,6 +1,7 @@
 package co.unicauca.workflow.degree_project.access;
 
 import co.unicauca.workflow.degree_project.domain.models.User;
+import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 
 
 
@@ -16,5 +17,7 @@ public interface IUserRepository {
     boolean existsByEmail(String email);
     
     String getName(String email);
+    
+    public AuthResult authenticate(String email, char[] passwordIngresada);
 
 }

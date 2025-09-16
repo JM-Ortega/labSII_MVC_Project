@@ -1,0 +1,49 @@
+/* Fondo general de la tabla */
+.table-view {
+    -fx-background-color: #F0F0F0;
+    -fx-border-color: white;   /* Borde externo blanco */
+    -fx-border-width: 2;       /* Grosor del borde externo */
+    -fx-table-cell-border-color: transparent;
+    -fx-table-header-border-color: transparent;
+}
+
+/* El "clip" de contenido interno */
+.table-view > .virtual-flow > .clipped-container > .sheet {
+    -fx-background-color: #F0F0F0;
+    -fx-border-color: white;   /* Borde interno blanco */
+    -fx-border-width: 2;
+}
+
+/* Cabecera con línea blanca */
+.table-view .column-header-background {
+    -fx-background-color: #F0F0F0;
+    -fx-border-color: transparent transparent white transparent;
+    -fx-border-width: 0 0 4 0;
+}
+
+/* Filler también con línea blanca */
+.table-view .column-header-background .filler {
+    -fx-background-color: #F0F0F0;
+    -fx-border-color: transparent transparent white transparent;
+    -fx-border-width: 0 0 4 0;
+}
+
+/* Headers transparentes */
+.table-view .column-header,
+.table-view .nested-column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+/* Filas */
+.table-row-cell {
+    -fx-background-color: #F0F0F0;
+    -fx-border-color: #C2C2C2 transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+}
+
+.table-cell {
+    -fx-border-color: transparent;
+    -fx-padding: 8 12 8 12;
+    -fx-alignment: center-left;
+}

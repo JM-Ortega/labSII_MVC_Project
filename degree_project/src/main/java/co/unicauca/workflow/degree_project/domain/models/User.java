@@ -11,7 +11,7 @@ public class User {
     private String celular;
     private Programa programa;
     private Rol rol;
-    private static String email;
+    private String email;
     private String passwordHash;
 
     public User() {
@@ -73,11 +73,11 @@ public class User {
         this.rol = rol;
     }
 
-    public static String getEmail() {
+    public String getEmail() {
         return email;
     }
 
-    public static void setEmail(String usuario) {
+    public void setEmail(String usuario) {
         email = usuario;
     }
 

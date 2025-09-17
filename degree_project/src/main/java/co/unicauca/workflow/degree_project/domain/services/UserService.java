@@ -5,12 +5,13 @@ import co.unicauca.workflow.degree_project.domain.models.Programa;
 import co.unicauca.workflow.degree_project.domain.models.Rol;
 import co.unicauca.workflow.degree_project.domain.models.User;
 import static co.unicauca.workflow.degree_project.infra.operation.RegistrationValidator.validate;
+import co.unicauca.workflow.degree_project.infra.security.Sesion;
 
 import java.util.Map;
 
 import java.util.Arrays;
 
-public class UserService implements IRegistrationService, ISignInService, IUserService {
+public class UserService implements IRegistrationService, ISignInService {
 
     private final IUserRepository repo;
     private final IPasswordHasher hasher;
@@ -94,6 +95,8 @@ public class UserService implements IRegistrationService, ISignInService, IUserS
         if (auth == null) {
             return 0;
         }
+        
+        Sesion.setUsuarioActual(auth);
 
         return switch (auth.rol()) {
             case "Estudiante" ->
@@ -105,11 +108,5 @@ public class UserService implements IRegistrationService, ISignInService, IUserS
             default ->
                 0;
         };
-    }
-
-    @Override
-    public String getName(String email) {
-        String nombre = repo.getName(email);
-        return nombre;
     }
 }

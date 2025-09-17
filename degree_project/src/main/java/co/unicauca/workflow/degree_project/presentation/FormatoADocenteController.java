@@ -1,6 +1,7 @@
 package co.unicauca.workflow.degree_project.presentation;
 
-import co.unicauca.workflow.degree_project.domain.services.IUserService;
+import co.unicauca.workflow.degree_project.domain.services.AuthResult;
+import co.unicauca.workflow.degree_project.infra.security.Sesion;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -15,30 +16,21 @@ import javafx.scene.control.Label;
 public class FormatoADocenteController implements Initializable {
     
     @FXML private Label nombreDocente; 
-
-    private IUserService service;
-    private String email;
     
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-    }    
-    
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setService(IUserService service) {
-        this.service = service;
+        cargarDatos();
     }
     
     public void cargarDatos() {
-        if (service != null && email != null) {
-            String nombreCompleto = service.getName(email);
-            nombreDocente.setText(nombreCompleto);
+        AuthResult usuario = Sesion.getUsuarioActual();
+        if(usuario != null){
+            nombreDocente.setText(usuario.nombre());
+        }else{
+            System.err.println("No hay usuario en sesion");
         }
     }
     

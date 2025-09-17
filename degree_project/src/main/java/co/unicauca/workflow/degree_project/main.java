@@ -77,13 +77,11 @@ public class main extends Application {
     }
     
     // --- Navegación con inicialización de controlador ---
-    public static Object navigateWithController(String name, String title) throws IOException {
+    public static void navigateWithController(String name, String title) throws IOException {
         String path = "/co/unicauca/workflow/degree_project/view/" + name + ".fxml";
         FXMLLoader loader = new FXMLLoader(main.class.getResource(path));
 
         Parent root = loader.load();
-        Object controller = loader.getController();
-
         scene.setRoot(root);
 
         if (primaryStage != null) {
@@ -93,8 +91,6 @@ public class main extends Application {
             primaryStage.setTitle(title);
             primaryStage.centerOnScreen();
         }
-
-        return controller;
     }
 
     //Carga FXML e INYECTA servicios si el controlador los necesita.

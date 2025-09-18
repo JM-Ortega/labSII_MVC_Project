@@ -78,7 +78,7 @@ public class SqliteRepository implements IUserRepository {
           id             INTEGER PRIMARY KEY AUTOINCREMENT,
           proyecto_id    INTEGER NOT NULL,
           tipo           TEXT NOT NULL CHECK (tipo IN ('FORMATO A','ANTEPROYECTO','FINAL','OTRO')),
-          estado           TEXT NOT NULL CHECK (tipo IN ('ACEPTADO','RECHAZADO','A EVALUAR')),
+          estado           TEXT NOT NULL CHECK (estado IN ('ACEPTADO','RECHAZADO','A EVALUAR')),
           nro_version    INTEGER NOT NULL CHECK (nro_version >= 1),
           nombre_archivo TEXT NOT NULL CHECK (lower(nombre_archivo) LIKE '%.pdf'),
           fecha_subida   TEXT NOT NULL DEFAULT (datetime('now')),

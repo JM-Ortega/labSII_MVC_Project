@@ -5,13 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="31ba49c8-c9f5-495d-ae60-c1a94e495720" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/0cd68ba7-08f8-42fa-9e25-ec247467d62d.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/0cd68ba7-08f8-42fa-9e25-ec247467d62d/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/62af2942-46b0-4363-a47d-5e0a53d2397a.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/62af2942-46b0-4363-a47d-5e0a53d2397a.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/co/unicauca/workflow/degree_project/presentation/CoordinadorController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/unicauca/workflow/degree_project/presentation/CoordinadorController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/co/unicauca/workflow/degree_project/styles/Coordinador.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/co/unicauca/workflow/degree_project/styles/Coordinador.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/co/unicauca/workflow/degree_project/view/Coordinador.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/co/unicauca/workflow/degree_project/view/Coordinador.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/co/unicauca/workflow/degree_project/access/SqliteRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/unicauca/workflow/degree_project/access/SqliteRepository.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,7 +32,8 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;feature/Coordinador&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/laure&quot;
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/laure/Desktop/Universidad/Proyecto sw/labSII_MVC_Project/degree_project&quot;
   }
 }</component>
   <component name="TaskManager">

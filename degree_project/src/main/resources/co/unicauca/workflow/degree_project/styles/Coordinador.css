@@ -1,0 +1,35 @@
+.fondo{
+    -fx-background-color: #ffffff;
+}
+
+.fondoPanel{
+    -fx-background-color:#4670A4
+}
+
+.button{
+    -fx-background-color: #4670A4;
+}
+
+.button:hover {
+    -fx-background-color: #6798D4;
+}
+
+.button.selected {
+    -fx-background-color: #6798D4; /* Color cuando está seleccionado */
+}
+
+.estado-rojo {
+    -fx-background-color: #EA2F2F;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-font-weight: bold;
+    -fx-pref-height: 29px;
+}
+
+.estado-verde {
+    -fx-background-color: green;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-font-weight: bold;
+    -fx-pref-height: 29px;
+}

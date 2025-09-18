@@ -10,7 +10,7 @@ import java.util.Map;
 
 import java.util.Arrays;
 
-public class UserService implements IRegistrationService, ISignInService {
+public class UserService implements IRegistrationService, ISignInService, IUserService {
 
     private final IUserRepository repo;
     private final IPasswordHasher hasher;
@@ -76,11 +76,10 @@ public class UserService implements IRegistrationService, ISignInService {
         return t.isEmpty() ? null : t;
     }
 
-    // ===== ISignInService =====
+// ===== ISignInService =====
     @Override
-    public boolean validarSesion(String email, char[] passwordIngresada) {
-        boolean flag = repo.validarIngrereso(email, passwordIngresada);
-        return flag;
+    public AuthResult validarSesion(String email, char[] passwordIngresada) {
+        return repo.authenticate(email, passwordIngresada);
     }
 
     @Override
@@ -91,20 +90,26 @@ public class UserService implements IRegistrationService, ISignInService {
 
     @Override
     public int validacion(String usuario, char[] passwordIngresada) {
-        //Toca pq despues de usar verify se me borra el array
-        char[] copia = Arrays.copyOf(passwordIngresada, passwordIngresada.length);
-
-        boolean flag = validarSesion(usuario, passwordIngresada);
-        if (!flag) {
+        AuthResult auth = validarSesion(usuario, passwordIngresada);
+        if (auth == null) {
             return 0;
-        } else {
-            switch (getRol(usuario, copia)) {
-                case "Estudiante":
-                    return 1;
-                case "Docente":
-                    return 2;
-            }
         }
-        return 0;
+
+        return switch (auth.rol()) {
+            case "Estudiante" ->
+                1;
+            case "Docente" ->
+                2;
+            case "Coordinador" ->
+                3;
+            default ->
+                0;
+        };
+    }
+
+    @Override
+    public String getName(String email) {
+        String nombre = repo.getName(email);
+        return nombre;
     }
 }

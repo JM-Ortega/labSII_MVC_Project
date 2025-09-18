@@ -499,7 +499,7 @@
     </routine>
     <schema id="191" parent="1" name="main">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2025-09-18.05:03:46</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-09-18.12:17:17</LastIntrospectionLocalTimestamp>
     </schema>
     <argument id="192" parent="16">
       <ArgumentDirection>R</ArgumentDirection>
@@ -1590,392 +1590,299 @@
     <argument id="554" parent="190">
       <Position>1</Position>
     </argument>
-    <table id="555" parent="191" name="Coordinador"/>
-    <table id="556" parent="191" name="Docente"/>
-    <table id="557" parent="191" name="Estudiante"/>
-    <table id="558" parent="191" name="FormatoA"/>
-    <table id="559" parent="191" name="Programa"/>
-    <table id="560" parent="191" name="Rol"/>
-    <table id="561" parent="191" name="Usuario"/>
-    <table id="562" parent="191" name="sqlite_master">
+    <table id="555" parent="191" name="Archivo"/>
+    <table id="556" parent="191" name="Programa"/>
+    <table id="557" parent="191" name="Proyecto"/>
+    <table id="558" parent="191" name="Rol"/>
+    <table id="559" parent="191" name="Usuario"/>
+    <table id="560" parent="191" name="sqlite_master">
       <System>1</System>
     </table>
-    <view id="563" parent="191" name="FormatoA_Actual">
-      <SourceTextLength>180</SourceTextLength>
-    </view>
-    <column id="564" parent="555" name="id">
-      <Position>1</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="565" parent="555" name="nombre">
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="566" parent="555" name="apellido">
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="567" parent="555" name="celular">
-      <Position>4</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <index id="568" parent="555" name="sqlite_autoindex_Coordinador_1">
-      <ColNames>id</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <Unique>1</Unique>
-    </index>
-    <key id="569" parent="555">
-      <ColNames>id</ColNames>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>sqlite_autoindex_Coordinador_1</UnderlyingIndexName>
-    </key>
-    <trigger id="570" parent="555" name="trg_coordinador_singleton">
-      <Condition>(SELECT COUNT(*) FROM Coordinador) &gt;= 1</Condition>
-      <Events>I</Events>
-      <SourceTextLength>221</SourceTextLength>
-      <Turn>before-row</Turn>
-    </trigger>
-    <column id="571" parent="556" name="id">
-      <Position>1</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="572" parent="556" name="nombre">
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="573" parent="556" name="apellido">
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="574" parent="556" name="programa">
-      <NotNull>1</NotNull>
-      <Position>4</Position>
-      <StoredType>INTEGER|0s</StoredType>
-    </column>
-    <column id="575" parent="556" name="celular">
-      <Position>5</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <foreign-key id="576" parent="556">
-      <ColNames>id</ColNames>
-      <OnDelete>cascade</OnDelete>
-      <RefColNames>id</RefColNames>
-      <RefTableName>Usuario</RefTableName>
-    </foreign-key>
-    <foreign-key id="577" parent="556">
-      <ColNames>programa</ColNames>
-      <RefColNames>idPrograma</RefColNames>
-      <RefTableName>Programa</RefTableName>
-    </foreign-key>
-    <index id="578" parent="556" name="sqlite_autoindex_Docente_1">
-      <ColNames>id</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <Unique>1</Unique>
-    </index>
-    <key id="579" parent="556">
-      <ColNames>id</ColNames>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>sqlite_autoindex_Docente_1</UnderlyingIndexName>
-    </key>
-    <column id="580" parent="557" name="id">
-      <Position>1</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="581" parent="557" name="nombre">
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="582" parent="557" name="apellido">
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="583" parent="557" name="programa">
-      <NotNull>1</NotNull>
-      <Position>4</Position>
-      <StoredType>INTEGER|0s</StoredType>
-    </column>
-    <column id="584" parent="557" name="celular">
-      <Position>5</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <foreign-key id="585" parent="557">
-      <ColNames>id</ColNames>
-      <OnDelete>cascade</OnDelete>
-      <RefColNames>id</RefColNames>
-      <RefTableName>Usuario</RefTableName>
-    </foreign-key>
-    <foreign-key id="586" parent="557">
-      <ColNames>programa</ColNames>
-      <RefColNames>idPrograma</RefColNames>
-      <RefTableName>Programa</RefTableName>
-    </foreign-key>
-    <index id="587" parent="557" name="sqlite_autoindex_Estudiante_1">
-      <ColNames>id</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <Unique>1</Unique>
-    </index>
-    <key id="588" parent="557">
-      <ColNames>id</ColNames>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>sqlite_autoindex_Estudiante_1</UnderlyingIndexName>
-    </key>
-    <check id="589" parent="558">
-      <Predicate>estadoFA IN (&apos;a_evaluar&apos;,&apos;aceptado&apos;,&apos;rechazado&apos;)</Predicate>
+    <table id="561" parent="191" name="sqlite_sequence">
+      <System>1</System>
+    </table>
+    <check id="562" parent="555">
+      <Predicate>lower(nombre_archivo) LIKE &apos;%.pdf&apos;</Predicate>
     </check>
-    <check id="590" parent="558">
-      <Predicate>version BETWEEN 1 AND 3</Predicate>
+    <check id="563" parent="555">
+      <Predicate>nro_version &gt;= 1</Predicate>
     </check>
-    <column id="591" parent="558" name="id">
-      <NotNull>1</NotNull>
+    <check id="564" parent="555">
+      <Predicate>tipo IN (&apos;ACEOTADO&apos;,&apos;RECHAZADO&apos;,&apos;A_EVALUAR&apos;)</Predicate>
+    </check>
+    <check id="565" parent="555">
+      <Predicate>tipo IN (&apos;FORMATO_A&apos;,&apos;ANTEPROYECTO&apos;,&apos;FINAL&apos;,&apos;OTRO&apos;)</Predicate>
+    </check>
+    <column id="566" parent="555" name="id">
+      <AutoIncrement>1</AutoIncrement>
       <Position>1</Position>
-      <StoredType>TEXT|0s</StoredType>
+      <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="592" parent="558" name="version">
+    <column id="567" parent="555" name="proyecto_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="593" parent="558" name="idEstudiante">
+    <column id="568" parent="555" name="tipo">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="594" parent="558" name="idProfesor">
+    <column id="569" parent="555" name="estado">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="595" parent="558" name="pdf">
+    <column id="570" parent="555" name="nro_version">
       <NotNull>1</NotNull>
       <Position>5</Position>
-      <StoredType>BLOB|0s</StoredType>
+      <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="596" parent="558" name="estadoFA">
+    <column id="571" parent="555" name="nombre_archivo">
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="597" parent="558" name="creado_en">
-      <DefaultExpression>(unixepoch())</DefaultExpression>
+    <column id="572" parent="555" name="fecha_subida">
+      <DefaultExpression>(datetime(&apos;now&apos;))</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>7</Position>
-      <StoredType>INTEGER|0s</StoredType>
+      <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="598" parent="558" name="actualizado_en">
-      <DefaultExpression>(unixepoch())</DefaultExpression>
+    <column id="573" parent="555" name="blob">
       <NotNull>1</NotNull>
       <Position>8</Position>
-      <StoredType>INTEGER|0s</StoredType>
+      <StoredType>BLOB|0s</StoredType>
     </column>
-    <foreign-key id="599" parent="558">
-      <ColNames>idEstudiante</ColNames>
+    <foreign-key id="574" parent="555">
+      <ColNames>proyecto_id</ColNames>
       <OnDelete>cascade</OnDelete>
+      <OnUpdate>cascade</OnUpdate>
       <RefColNames>id</RefColNames>
-      <RefTableName>Estudiante</RefTableName>
+      <RefTableName>Proyecto</RefTableName>
     </foreign-key>
-    <foreign-key id="600" parent="558">
-      <ColNames>idProfesor</ColNames>
-      <OnDelete>set-null</OnDelete>
-      <RefColNames>id</RefColNames>
-      <RefTableName>Docente</RefTableName>
-    </foreign-key>
-    <index id="601" parent="558" name="sqlite_autoindex_FormatoA_1">
-      <ColNames>id
-version</ColNames>
+    <index id="575" parent="555" name="sqlite_autoindex_Archivo_1">
+      <ColNames>proyecto_id
+tipo
+nro_version</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Unique>1</Unique>
     </index>
-    <index id="602" parent="558" name="ux_fa_un_aevaluar">
-      <ColNames>id</ColNames>
-      <Condition>estadoFA = &apos;a_evaluar&apos;</Condition>
-      <Unique>1</Unique>
+    <index id="576" parent="555" name="idx_archivos_tipo">
+      <ColNames>proyecto_id
+tipo
+nro_version</ColNames>
     </index>
-    <key id="603" parent="558">
-      <ColNames>id
-version</ColNames>
+    <index id="577" parent="555" name="idx_archivos_proyecto">
+      <ColNames>proyecto_id</ColNames>
+    </index>
+    <key id="578" parent="555">
+      <ColNames>id</ColNames>
       <Primary>1</Primary>
-      <UnderlyingIndexName>sqlite_autoindex_FormatoA_1</UnderlyingIndexName>
     </key>
-    <trigger id="604" parent="558" name="trg_fa_enforce_chain">
-      <Condition>NEW.version &gt; 1
-     AND NOT EXISTS (
-       SELECT 1 FROM FormatoA prev
-       WHERE prev.id = NEW.id
-         AND prev.version = NEW.version - 1
-         AND prev.estadoFA = &apos;rechazado&apos;
-     )</Condition>
-      <Events>I</Events>
-      <SourceTextLength>404</SourceTextLength>
-      <Turn>before-row</Turn>
-    </trigger>
-    <trigger id="605" parent="558" name="trg_fa_no_after_accept">
-      <Condition>EXISTS (SELECT 1 FROM FormatoA acc WHERE acc.id = NEW.id AND acc.estadoFA = &apos;aceptado&apos;)</Condition>
-      <Events>I</Events>
-      <SourceTextLength>292</SourceTextLength>
-      <Turn>before-row</Turn>
-    </trigger>
-    <trigger id="606" parent="558" name="trg_fa_one_aevaluar_per_expediente">
-      <Condition>NEW.estadoFA = &apos;a_evaluar&apos;
-     AND EXISTS (SELECT 1 FROM FormatoA x WHERE x.id = NEW.id AND x.estadoFA = &apos;a_evaluar&apos;)</Condition>
-      <Events>I</Events>
-      <SourceTextLength>325</SourceTextLength>
-      <Turn>before-row</Turn>
-    </trigger>
-    <trigger id="607" parent="558" name="trg_fa_valid_state_update">
-      <ColNames>estadoFA</ColNames>
-      <Condition>NOT (OLD.estadoFA = &apos;a_evaluar&apos; AND NEW.estadoFA IN (&apos;aceptado&apos;,&apos;rechazado&apos;))</Condition>
-      <Events>U</Events>
-      <SourceTextLength>264</SourceTextLength>
-      <Turn>before-row</Turn>
-    </trigger>
-    <trigger id="608" parent="558" name="trg_fa_touch_update">
-      <Events>U</Events>
-      <SourceTextLength>210</SourceTextLength>
-    </trigger>
-    <column id="609" parent="559" name="idPrograma">
+    <key id="579" parent="555">
+      <ColNames>proyecto_id
+tipo
+nro_version</ColNames>
+      <UnderlyingIndexName>sqlite_autoindex_Archivo_1</UnderlyingIndexName>
+    </key>
+    <column id="580" parent="556" name="idPrograma">
       <Position>1</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="610" parent="559" name="tipo">
+    <column id="581" parent="556" name="tipo">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <index id="611" parent="559" name="sqlite_autoindex_Programa_1">
+    <index id="582" parent="556" name="sqlite_autoindex_Programa_1">
       <ColNames>tipo</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Unique>1</Unique>
     </index>
-    <key id="612" parent="559">
+    <key id="583" parent="556">
       <ColNames>idPrograma</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="613" parent="559">
+    <key id="584" parent="556">
       <ColNames>tipo</ColNames>
       <UnderlyingIndexName>sqlite_autoindex_Programa_1</UnderlyingIndexName>
     </key>
-    <column id="614" parent="560" name="idRol">
+    <check id="585" parent="557">
+      <Predicate>estado IN (&apos;EN_TRAMITE&apos;,&apos;CANCELADO&apos;,&apos;TERMINADO&apos;)</Predicate>
+    </check>
+    <check id="586" parent="557">
+      <Predicate>tipo IN (&apos;TESIS&apos;,&apos;PRACTICA_PROFESIONAL&apos;)</Predicate>
+    </check>
+    <column id="587" parent="557" name="id">
+      <AutoIncrement>1</AutoIncrement>
       <Position>1</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="615" parent="560" name="tipo">
+    <column id="588" parent="557" name="tipo">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <index id="616" parent="560" name="sqlite_autoindex_Rol_1">
-      <ColNames>tipo</ColNames>
-      <NameSurrogate>1</NameSurrogate>
-      <Unique>1</Unique>
-    </index>
-    <key id="617" parent="560">
-      <ColNames>idRol</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <key id="618" parent="560">
-      <ColNames>tipo</ColNames>
-      <UnderlyingIndexName>sqlite_autoindex_Rol_1</UnderlyingIndexName>
-    </key>
-    <column id="619" parent="561" name="id">
-      <Position>1</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="620" parent="561" name="correo">
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="621" parent="561" name="contrasena">
+    <column id="589" parent="557" name="estado">
+      <DefaultExpression>&apos;EN_TRAMITE&apos;</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="622" parent="561" name="rol">
+    <column id="590" parent="557" name="titulo">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="591" parent="557" name="estudiante_id">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="592" parent="557" name="docente_id">
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="593" parent="557" name="fecha_creacion">
+      <DefaultExpression>(datetime(&apos;now&apos;))</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <foreign-key id="594" parent="557">
+      <ColNames>estudiante_id</ColNames>
+      <OnDelete>restrict</OnDelete>
+      <OnUpdate>cascade</OnUpdate>
+      <RefColNames>id</RefColNames>
+      <RefTableName>Usuario</RefTableName>
+    </foreign-key>
+    <foreign-key id="595" parent="557">
+      <ColNames>docente_id</ColNames>
+      <OnDelete>restrict</OnDelete>
+      <OnUpdate>cascade</OnUpdate>
+      <RefColNames>id</RefColNames>
+      <RefTableName>Usuario</RefTableName>
+    </foreign-key>
+    <key id="596" parent="557">
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="597" parent="558" name="idRol">
+      <Position>1</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="598" parent="558" name="tipo">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <index id="599" parent="558" name="sqlite_autoindex_Rol_1">
+      <ColNames>tipo</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <Unique>1</Unique>
+    </index>
+    <key id="600" parent="558">
+      <ColNames>idRol</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <key id="601" parent="558">
+      <ColNames>tipo</ColNames>
+      <UnderlyingIndexName>sqlite_autoindex_Rol_1</UnderlyingIndexName>
+    </key>
+    <column id="602" parent="559" name="id">
+      <Position>1</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="603" parent="559" name="correo">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="604" parent="559" name="contrasena">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="605" parent="559" name="rol">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <foreign-key id="623" parent="561">
+    <column id="606" parent="559" name="nombre">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="607" parent="559" name="apellido">
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="608" parent="559" name="programa">
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="609" parent="559" name="celular">
+      <Position>8</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <foreign-key id="610" parent="559">
       <ColNames>rol</ColNames>
       <RefColNames>idRol</RefColNames>
       <RefTableName>Rol</RefTableName>
     </foreign-key>
-    <index id="624" parent="561" name="sqlite_autoindex_Usuario_1">
+    <foreign-key id="611" parent="559">
+      <ColNames>programa</ColNames>
+      <RefColNames>idPrograma</RefColNames>
+      <RefTableName>Programa</RefTableName>
+    </foreign-key>
+    <index id="612" parent="559" name="sqlite_autoindex_Usuario_1">
       <ColNames>id</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Unique>1</Unique>
     </index>
-    <index id="625" parent="561" name="sqlite_autoindex_Usuario_2">
+    <index id="613" parent="559" name="sqlite_autoindex_Usuario_2">
       <ColNames>correo</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Unique>1</Unique>
     </index>
-    <key id="626" parent="561">
+    <key id="614" parent="559">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>sqlite_autoindex_Usuario_1</UnderlyingIndexName>
     </key>
-    <key id="627" parent="561">
+    <key id="615" parent="559">
       <ColNames>correo</ColNames>
       <UnderlyingIndexName>sqlite_autoindex_Usuario_2</UnderlyingIndexName>
     </key>
-    <column id="628" parent="562" name="type">
+    <column id="616" parent="560" name="type">
       <Position>1</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="629" parent="562" name="name">
+    <column id="617" parent="560" name="name">
       <Position>2</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="630" parent="562" name="tbl_name">
+    <column id="618" parent="560" name="tbl_name">
       <Position>3</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="631" parent="562" name="rootpage">
+    <column id="619" parent="560" name="rootpage">
       <Position>4</Position>
       <StoredType>INT|0s</StoredType>
     </column>
-    <column id="632" parent="562" name="sql">
+    <column id="620" parent="560" name="sql">
       <Position>5</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="633" parent="563" name="id">
+    <column id="621" parent="561" name="name">
       <Position>1</Position>
-      <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="634" parent="563" name="version">
+    <column id="622" parent="561" name="seq">
       <Position>2</Position>
-      <StoredType>INTEGER|0s</StoredType>
-    </column>
-    <column id="635" parent="563" name="idEstudiante">
-      <Position>3</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="636" parent="563" name="idProfesor">
-      <Position>4</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="637" parent="563" name="pdf">
-      <Position>5</Position>
-      <StoredType>BLOB|0s</StoredType>
-    </column>
-    <column id="638" parent="563" name="estadoFA">
-      <Position>6</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="639" parent="563" name="creado_en">
-      <Position>7</Position>
-      <StoredType>INTEGER|0s</StoredType>
-    </column>
-    <column id="640" parent="563" name="actualizado_en">
-      <Position>8</Position>
-      <StoredType>INTEGER|0s</StoredType>
     </column>
   </database-model>
 </dataSource>

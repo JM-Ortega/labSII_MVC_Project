@@ -1,74 +1,45 @@
 package co.unicauca.workflow.degree_project.presentation;
 
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import co.unicauca.workflow.degree_project.main;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 
 public class CoordinadorController implements Initializable{
+    @FXML
+    private AnchorPane contentArea;
+    
     @FXML
     private Button btnProyectos;
 
     @FXML
     private Button btnSalir;
-    
-    @FXML
-    private Label estado;
 
     private Button selectedButton = null; // botón actualmente seleccionado
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Configurar eventos para cada botón
-        btnProyectos.setOnAction(e -> selectButton(btnProyectos));
-        btnSalir.setOnAction(e -> selectButton(btnSalir));
+        btnProyectos.setOnMouseEntered(e -> btnProyectos.getStyleClass().add("hoverable"));
+        btnProyectos.setOnMouseExited(e -> btnProyectos.getStyleClass().remove("hoverable"));
         
-        // Establecer color según el texto del botón "estado"
-        aplicarEstiloEstado();
+        btnSalir.setOnMouseEntered(e -> btnSalir.getStyleClass().add("hoverable"));
+        btnSalir.setOnMouseExited(e -> btnSalir.getStyleClass().remove("hoverable"));
+
+        
+        // Configurar eventos para cada botón
+        btnProyectos.setOnAction(e -> {
+            loadUI("Coordinador_Proyectos");
+            selectButton(btnProyectos);
+        });
     }
-
-    private void aplicarEstiloEstado() {
-        // limpiar estilos previos
-        estado.getStyleClass().removeAll("estado-rojo", "estado-verde");
-
-        String txt = (estado.getText() == null) ? "" : estado.getText().trim();
-
-        if ("A evaluar".equalsIgnoreCase(txt)) {
-            if (!estado.getStyleClass().contains("estado-rojo")) {
-                estado.getStyleClass().add("estado-rojo");
-            }
-            // icono ojo abierto
-            Image img = new Image(getClass().getResourceAsStream(
-                    "/co/unicauca/workflow/degree_project/images/ojo_abierto.png"));
-            ImageView icon = new ImageView(img);
-            icon.setFitWidth(24);
-            icon.setFitHeight(22);
-            estado.setGraphic(icon);
-
-
-        } else if ("Evaluado".equalsIgnoreCase(txt)) {
-            if (!estado.getStyleClass().contains("estado-verde")) {
-                estado.getStyleClass().add("estado-verde");
-            }
-            // icono ojo cerrado
-            Image img = new Image(getClass().getResourceAsStream(
-                    "/co/unicauca/workflow/degree_project/images/ojo_cerrado.png"));
-            ImageView icon = new ImageView(img);
-            icon.setFitWidth(24);
-            icon.setFitHeight(22);
-            estado.setGraphic(icon);
-
-
-        } else {
-            estado.setGraphic(null); // si no es ninguno, sin icono
-        }
-    }
-
-    
+ 
     private void selectButton(Button button) {
         // Si ya hay un botón seleccionado, quitarle la clase CSS
         if (selectedButton != null) {
@@ -81,4 +52,40 @@ public class CoordinadorController implements Initializable{
         selectedButton = button;
     }
     
+     public void loadUI(String fxml) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                "/co/unicauca/workflow/degree_project/view/" + fxml + ".fxml"
+            ));
+            Parent root = loader.load();
+
+            // obtener controlador hijo
+            Object controller = loader.getController();
+
+            // Si el hijo necesita referencia al padre, la pasamos
+            if (controller instanceof Co_Proyecto_Controller cpc) {
+                cpc.setParentController(this);
+            } else if (controller instanceof Co_Observaciones_Controller coc) {
+                coc.setParentController(this);
+            }
+
+            contentArea.getChildren().setAll(root);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    @FXML
+    private void switchToSignin(ActionEvent event) {
+        try {
+            selectButton(btnSalir);
+            // Usa tu clase main para navegar
+            main.navigate("signin", "SignIn");
+
+        } catch (IOException e) {
+            System.err.println("No se pudo abrir la vista de Signin");
+            e.printStackTrace();
+        }
+    }
 }

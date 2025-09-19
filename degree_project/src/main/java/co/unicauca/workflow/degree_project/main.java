@@ -9,6 +9,9 @@ import co.unicauca.workflow.degree_project.domain.services.IPasswordHasher;
 import co.unicauca.workflow.degree_project.domain.services.IRegistrationService;
 import co.unicauca.workflow.degree_project.domain.services.ISignInService;
 import co.unicauca.workflow.degree_project.domain.services.UserService;
+import co.unicauca.workflow.degree_project.infra.communication.EmailMessage;
+import co.unicauca.workflow.degree_project.infra.communication.IEmailService;
+import co.unicauca.workflow.degree_project.infra.communication.LoggingEmailService;
 import co.unicauca.workflow.degree_project.infra.security.Argon2PasswordHasher;
 import co.unicauca.workflow.degree_project.presentation.RegisterController;
 import co.unicauca.workflow.degree_project.presentation.SigninController;
@@ -118,6 +121,17 @@ public class main extends Application {
     }
 
     public static void main(String[] args) {
-        launch(args);
+        
+        IEmailService emailService = new LoggingEmailService();
+
+        EmailMessage message = new EmailMessage(
+            "destinatario@ejemplo.com",
+            "Prueba de correo",
+            "Hola! Este es un correo simulado."
+        );
+
+        emailService.sendEmail(message);
+        
+        //launch(args);
     }
 }

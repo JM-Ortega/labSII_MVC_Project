@@ -38,7 +38,7 @@
 }
 
 .button.selected {
-    -fx-background-color: #6798D4; /* Color cuando está seleccionado */
+    -fx-background-color: #6798D4;
 }
 
 .estado-rojo {
@@ -79,26 +79,23 @@
     -fx-font-weight: bold;
 }
 
-/* Fondo general de la tabla */
 .table-view {
-    -fx-background-color: #f5f5f5;   /* gris claro */
-    -fx-table-cell-border-color: transparent; /* quita bordes internos */
-    -fx-border-color: transparent;   /* sin bordes externos */
+    -fx-background-color: #f5f5f5;
+    -fx-table-cell-border-color: transparent;
+    -fx-border-color: transparent;
 }
 
-/* Cada fila */
 .table-row-cell {
-    -fx-background-color: transparent;   /* fondo transparente (hereda gris) */
+    -fx-background-color: transparent;
     -fx-border-color: transparent transparent #d0d0d0 transparent; 
-    -fx-border-width: 0 0 1 0;   /* solo la línea de abajo */
+    -fx-border-width: 0 0 1 0;
     -fx-pref-height: 40px;
 }
 
-/* Celdas dentro de la fila */
 .table-cell {
-    -fx-border-color: transparent; /* sin bordes entre celdas */
-    -fx-alignment: CENTER-LEFT;    /* centrado vertical, alineado a la izquierda */
-    -fx-padding: 0 0 0 10;         /* aire a la izquierda */
+    -fx-border-color: transparent;
+    -fx-alignment: CENTER-LEFT;
+    -fx-padding: 0 0 0 10;
     -fx-font-family: "Roboto", sans-serif;
     -fx-font-size: 12px;
 }
@@ -106,7 +103,7 @@
 /* Cabecera */
 .table-view .column-header, 
 .table-view .column-header .label {
-    -fx-background-color: #e0e0e0;  /* gris un poco más oscuro */
+    -fx-background-color: #e0e0e0;
     -fx-font-family: "Roboto", sans-serif;
     -fx-font-size: 14px;
     -fx-font-weight: bold;

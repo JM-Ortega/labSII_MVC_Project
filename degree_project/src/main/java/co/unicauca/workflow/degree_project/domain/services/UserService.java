@@ -59,8 +59,6 @@ public class UserService implements IRegistrationService, ISignInService, IUserS
     // ===== Sign-in =====
     @Override
     public Optional<AuthResult> validarSesion(String email, char[] passwordIngresada) {
-        // repo.authenticate DEBE devolver Optional<AuthResult>
-        // (y adentro limpiar passwordIngresada cuando corresponda)
         return repo.authenticate(email, passwordIngresada);
     }
 

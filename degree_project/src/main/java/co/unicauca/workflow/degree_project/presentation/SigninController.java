@@ -3,6 +3,7 @@ package co.unicauca.workflow.degree_project.presentation;
 import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 import co.unicauca.workflow.degree_project.domain.services.ISignInService;
 import co.unicauca.workflow.degree_project.domain.services.IUserService;
+import co.unicauca.workflow.degree_project.infra.security.Sesion;
 import co.unicauca.workflow.degree_project.main;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -54,7 +55,8 @@ public class SigninController {
                 return;
             }
 
-            AuthResult auth = maybeAuth.get(); // éxito
+            AuthResult auth = maybeAuth.get();
+            Sesion.getInstancia().setUsuarioActual(auth);
 
             switch (auth.rol()) {
                 case "Estudiante" -> {
@@ -83,9 +85,8 @@ public class SigninController {
                             if (userService != null) {
                                 dc.setUserService(userService);
                             } else if (authService instanceof IUserService us) {
-                                dc.setUserService(us); // si tu UserService implementa IUserService
+                                dc.setUserService(us);
                             }
-                            dc.setAuth(auth);
                             dc.cargarDatos();
                         }
                     } catch (IOException e) {

@@ -6,6 +6,8 @@ import co.unicauca.workflow.degree_project.domain.models.Proyecto;
 import co.unicauca.workflow.degree_project.domain.models.TipoArchivo;
 import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 import co.unicauca.workflow.degree_project.domain.services.IProyectoService;
+import co.unicauca.workflow.degree_project.infra.security.Sesion;
+import co.unicauca.workflow.degree_project.main;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -86,27 +88,12 @@ public class FormatoADocenteController implements Initializable {
     private Label lblTablaMsg;
 
     private IProyectoService proyectoService;
-    private AuthResult auth;
 
     // Estado de archivos para nuevo proyecto
     private byte[] formatoABytes;
     private String formatoANombre;
     private byte[] cartaBytes;
     private String cartaNombre;
-
-    private static String safeText(TextField tf) {
-        return tf.getText() == null ? "" : tf.getText().trim();
-    }
-
-    private static void setError(Label lbl, String msg) {
-        lbl.setStyle("-fx-text-fill:#D84315;");
-        lbl.setText(msg);
-    }
-
-    private static void setOk(Label lbl, String msg) {
-        lbl.setStyle("-fx-text-fill:#2E7D32;");
-        lbl.setText(msg);
-    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -133,14 +120,32 @@ public class FormatoADocenteController implements Initializable {
         this.proyectoService = proyectoService;
     }
 
-    // =================== Eventos ===================
-
-    public void setAuth(AuthResult auth) {
-        this.auth = auth;
+    // =================== Utiles UI ===================
+    private static String safeText(TextField tf) {
+        return tf.getText() == null ? "" : tf.getText().trim();
     }
 
+    private static void setError(Label lbl, String msg) {
+        lbl.setStyle("-fx-text-fill:#D84315;");
+        lbl.setText(msg);
+    }
+
+    private static void setOk(Label lbl, String msg) {
+        lbl.setStyle("-fx-text-fill:#2E7D32;");
+        lbl.setText(msg);
+    }
+
+    // =================== Carga inicial ===================
     public void cargarDatos() {
-        nombreDocente.setText(auth != null ? auth.nombre() : "Docente");
+        AuthResult auth = Sesion.getInstancia().getUsuarioActual();
+        if (auth == null) {
+            try {
+                main.navigate("signin", "Login");
+            } catch (Exception ignored) {
+            }
+            return;
+        }
+        nombreDocente.setText(auth.nombre());
         ocultarPanelNuevo();
         if (lblPdfNombre != null) lblPdfNombre.setText("Ningún archivo seleccionado");
         if (lblCartaNombre != null) lblCartaNombre.setText("Ningún archivo seleccionado");
@@ -148,6 +153,7 @@ public class FormatoADocenteController implements Initializable {
         cargarTabla();
     }
 
+    // =================== Eventos ===================
     @FXML
     private void onIniciarNuevoProyecto() {
         lblNuevoProyectoMsg.setText("");
@@ -168,30 +174,19 @@ public class FormatoADocenteController implements Initializable {
 
         String estId = safeText(txtEstudianteId);
         if (estId.isEmpty()) {
-            lblEstudianteNombre.setText("Ingrese el ID del estudiante");
-            lblEstudianteNombre.setStyle("-fx-text-fill:#D84315;");
+            setError(lblEstudianteNombre, "Ingrese el ID del estudiante");
             return;
         }
-
         try {
             boolean libre = proyectoService.estudianteLibre(estId);
-            if (libre) {
-                lblEstudianteNombre.setText("Estudiante disponible");
-                lblEstudianteNombre.setStyle("-fx-text-fill:#2E7D32;");
-            } else {
-                lblEstudianteNombre.setText("Estudiante con proyecto en curso");
-                lblEstudianteNombre.setStyle("-fx-text-fill:#D84315;");
-            }
+            if (libre) setOk(lblEstudianteNombre, "Estudiante disponible");
+            else setError(lblEstudianteNombre, "Estudiante con proyecto en curso");
         } catch (IllegalArgumentException ex) {
-            // <-- aquí atrapamos "El estudiante no existe"
-            lblEstudianteNombre.setText(ex.getMessage());
-            lblEstudianteNombre.setStyle("-fx-text-fill:#D84315;");
+            setError(lblEstudianteNombre, ex.getMessage());
         } catch (Exception ex) {
-            lblEstudianteNombre.setText("Error al validar estudiante");
-            lblEstudianteNombre.setStyle("-fx-text-fill:#D84315;");
+            setError(lblEstudianteNombre, "Error al validar estudiante");
         }
     }
-
 
     @FXML
     private void onSeleccionarPdf() {
@@ -227,11 +222,15 @@ public class FormatoADocenteController implements Initializable {
         }
     }
 
-    // =================== Lógica de UI / Tabla ===================
-
     @FXML
     private void onCrearProyecto() {
         lblNuevoProyectoMsg.setText("");
+
+        AuthResult auth = Sesion.getInstancia().getUsuarioActual();
+        if (auth == null) {
+            setError(lblNuevoProyectoMsg, "Sesión no válida");
+            return;
+        }
 
         String estId = safeText(txtEstudianteId);
         String titulo = safeText(txtTitulo);
@@ -296,6 +295,7 @@ public class FormatoADocenteController implements Initializable {
         actualizarCupo();
     }
 
+    // =================== Tabla ===================
     private void configurarTabla() {
         colTitulo.setCellValueFactory(d -> d.getValue().tituloProperty());
         colEstudiante.setCellValueFactory(d -> d.getValue().estudianteProperty());
@@ -333,33 +333,32 @@ public class FormatoADocenteController implements Initializable {
 
                 boolean puedeSubir = proyectoService.canResubmit(row.proyectoId());
                 btnSubir.setVisible(puedeSubir);
-                btnSubir.setManaged(puedeSubir);     // si no puede, desaparece y no ocupa espacio
+                btnSubir.setManaged(puedeSubir);
 
-                boolean hayObs = proyectoService.tieneObservacionesFormatoA(row.proyectoId()); // último == OBSERVADO
+                boolean hayObs = proyectoService.tieneObservacionesFormatoA(row.proyectoId());
                 btnObs.setVisible(hayObs);
                 btnObs.setManaged(hayObs);
 
                 setGraphic(box);
             }
         });
-
-
     }
 
     private void cargarTabla() {
         lblTablaMsg.setText("");
+
+        AuthResult auth = Sesion.getInstancia().getUsuarioActual();
+        if (auth == null) return;
+
         String filtro = safeText(txtBuscar);
         List<Proyecto> proyectos = proyectoService.listarProyectosDocente(auth.userId(), filtro);
 
         ObservableList<RowVM> rows = FXCollections.observableArrayList();
         for (Proyecto p : proyectos) {
-            proyectoService.enforceAutoCancelIfNeeded(p.getId());
+            EstadoProyecto estadoFinal = proyectoService.enforceAutoCancelIfNeeded(p.getId());
             int version = proyectoService.maxVersionFormatoA(p.getId());
             String est = p.getEstudianteId();
-            String estado = p.getEstado() != null ? p.getEstado().name() : "";
-            EstadoProyecto estadoFinal = proyectoService.enforceAutoCancelIfNeeded(p.getId());
             rows.add(new RowVM(p.getId(), p.getTitulo(), est, version, estadoFinal.name()));
-
         }
         tblProyectos.setItems(rows);
         tblProyectos.refresh();
@@ -390,11 +389,9 @@ public class FormatoADocenteController implements Initializable {
     }
 
     // =================== Helpers ===================
-
     private void descargarObservaciones(RowVM row) {
         try {
             proyectoService.enforceAutoCancelIfNeeded(row.proyectoId());
-
             var arch = proyectoService.obtenerUltimoFormatoAConObservaciones(row.proyectoId());
             if (arch == null) {
                 setError(lblTablaMsg, "No hay Formato A con observaciones.");
@@ -409,7 +406,6 @@ public class FormatoADocenteController implements Initializable {
             if (dest == null) return;
 
             Files.write(dest.toPath(), arch.getBlob());
-
             setOk(lblTablaMsg, "Observaciones descargadas.");
             cargarTabla();
         } catch (Exception ex) {
@@ -418,6 +414,11 @@ public class FormatoADocenteController implements Initializable {
     }
 
     private void actualizarCupo() {
+        AuthResult auth = Sesion.getInstancia().getUsuarioActual();
+        if (auth == null) {
+            btnIniciarNuevoProyecto.setDisable(true);
+            return;
+        }
         boolean cupo = proyectoService.docenteTieneCupo(auth.userId());
         btnIniciarNuevoProyecto.setDisable(!cupo);
         lblCupoDocente.setText(cupo ? "" : "Límite de 7 proyectos en curso alcanzado");
@@ -456,7 +457,6 @@ public class FormatoADocenteController implements Initializable {
     public enum TipoTrabajoGrado {TESIS, PRACTICA_PROFESIONAL}
 
     // =================== ViewModel ===================
-
     public static class RowVM {
         private final long proyectoId;
         private final StringProperty titulo = new SimpleStringProperty();

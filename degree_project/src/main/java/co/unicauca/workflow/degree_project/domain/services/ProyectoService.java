@@ -202,11 +202,11 @@ public class ProyectoService implements IProyectoService {
         if (estado == null || !"EN_TRAMITE".equalsIgnoreCase(estado)) return false;
 
         int max = archivoRepo.getMaxVersionFormatoA(proyectoId);
-        if (max == 0) return true;                     // primera subida permitida
-        if (max >= 3) return false;                    // límite duro (además podrías haber cancelado ya)
+        if (max == 0) return true;
+        if (max >= 3) return false;
 
         Archivo ultimo = archivoRepo.getUltimoFormatoA(proyectoId);
-        if (ultimo == null) return true;               // por seguridad, debería ser max==0 si pasa esto
+        if (ultimo == null) return true;
         return ultimo.getEstado() == EstadoArchivo.OBSERVADO;
     }
 

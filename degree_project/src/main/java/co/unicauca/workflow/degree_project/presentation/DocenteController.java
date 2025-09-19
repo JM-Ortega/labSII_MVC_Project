@@ -2,6 +2,7 @@ package co.unicauca.workflow.degree_project.presentation;
 
 import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 import co.unicauca.workflow.degree_project.domain.services.IUserService;
+import co.unicauca.workflow.degree_project.infra.security.Sesion;
 import co.unicauca.workflow.degree_project.main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,14 +23,11 @@ public class DocenteController implements Initializable {
     @FXML private Button btnPrincipal;
     @FXML private Button btnFormatoA;
     @FXML private Button btnSalir;
-    @FXML
-    private Label nombreDocente;
+    @FXML private Label nombreDocente;
     @FXML private BorderPane bp;
     @FXML private AnchorPane ap;
 
-    // Servicios/datos inyectados
     private IUserService userService;
-    private AuthResult auth;        // <- sesión del usuario logueado
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -41,6 +39,7 @@ public class DocenteController implements Initializable {
     @FXML
     void switchToLogin(ActionEvent event) {
         try {
+            Sesion.getInstancia().limpiar();
             btnSalir.getStyleClass().add("btn-pressed");
             main.navigate("signin", "Login");
         } catch (IOException e) {
@@ -69,37 +68,34 @@ public class DocenteController implements Initializable {
         try {
             String path = modulo + ".fxml";
             FXMLLoader loader = main.newInjectedLoader(path);
-        Parent moduleRoot = loader.load();
+            Parent moduleRoot = loader.load();
 
-        Object controller = loader.getController();
-        if (controller instanceof FormatoADocenteController fa) {
-            fa.setAuth(auth);
-            fa.cargarDatos();
-        }
+            Object controller = loader.getController();
+            if (controller instanceof FormatoADocenteController fa) {
+                fa.cargarDatos();
+            }
 
-        bp.setCenter(moduleRoot);
+            bp.setCenter(moduleRoot);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
-    // ====== Setters para inyección desde SigninController ======
     public void setUserService(IUserService userService) {
         this.userService = userService;
     }
 
-    public void setAuth(AuthResult auth) {
-        this.auth = auth;
-    }
-
-    // ====== Cargar datos del encabezado del panel Docente ======
     public void cargarDatos() {
+        AuthResult auth = Sesion.getInstancia().getUsuarioActual();
         if (auth != null) {
-            // Si tu AuthResult tiene nombre completo:
-            nombreDocente.setText(auth.nombre()); // o auth.nombreCompleto()
+            nombreDocente.setText(auth.nombre());
         } else {
-            System.err.println("Auth (sesión) no seteado");
+            System.err.println("No hay sesión activa; redirigiendo a login.");
+            try {
+                main.navigate("signin", "Login");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

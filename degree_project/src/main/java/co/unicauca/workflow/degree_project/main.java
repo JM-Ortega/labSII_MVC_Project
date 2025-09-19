@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import co.unicauca.workflow.degree_project.access.Factory;
+import co.unicauca.workflow.degree_project.access.IArchivoRepository;
+import co.unicauca.workflow.degree_project.access.IProyectoRepository;
 import co.unicauca.workflow.degree_project.access.IUserRepository;
-import co.unicauca.workflow.degree_project.domain.services.IPasswordHasher;
-import co.unicauca.workflow.degree_project.domain.services.IRegistrationService;
-import co.unicauca.workflow.degree_project.domain.services.ISignInService;
-import co.unicauca.workflow.degree_project.domain.services.UserService;
+import co.unicauca.workflow.degree_project.domain.services.*;
 import co.unicauca.workflow.degree_project.infra.security.Argon2PasswordHasher;
+import co.unicauca.workflow.degree_project.presentation.FormatoADocenteController;
 import co.unicauca.workflow.degree_project.presentation.RegisterController;
 import co.unicauca.workflow.degree_project.presentation.SigninController;
 import javafx.application.Application;
@@ -31,10 +31,19 @@ public class main extends Application {
     private static ISignInService signInService;
     private static IRegistrationService registrationService;
 
+    private static IProyectoRepository proyectoRepo;
+    private static IArchivoRepository  archivoRepo;
+    private static IProyectoService proyectoService;
+
+
     @Override
     public void start(Stage stage) throws Exception {
         // 1) Composición de dependencias
         repo = Factory.getInstance().getRepository("default");
+        proyectoRepo = Factory.getInstance().getProyectoRepository("default");
+        archivoRepo = Factory.getInstance().getArchivoRepository("default");
+
+        proyectoService = new ProyectoService(proyectoRepo,archivoRepo,Factory.getInstance().getConnection());
         hasher = new Argon2PasswordHasher();
         userService = new UserService(repo, hasher);
         signInService = userService;
@@ -106,6 +115,7 @@ public class main extends Application {
                 switch (controller) {
                     case SigninController sc -> sc.setServices(signInService);
                     case RegisterController rc -> rc.setServices(registrationService);
+                    case FormatoADocenteController fadc -> fadc.setService(proyectoService);
                     default -> { }
                 }
                 return controller;
@@ -116,6 +126,27 @@ public class main extends Application {
         });
         return loader.load();
     }
+
+
+    public static FXMLLoader newInjectedLoader(String path) {
+    FXMLLoader loader = new FXMLLoader(main.class.getResource(path));
+    loader.setControllerFactory(type -> {
+        try {
+            Object controller = type.getDeclaredConstructor().newInstance();
+            switch (controller) {
+                case SigninController sc -> sc.setServices(signInService);
+                case RegisterController rc -> rc.setServices(registrationService);
+                case FormatoADocenteController fadc -> fadc.setService(proyectoService);
+                default -> { }
+            }
+            return controller;
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo crear el controlador: " + type, e);
+        }
+    });
+    return loader;
+}
+
 
     public static void main(String[] args) {
         launch(args);

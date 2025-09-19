@@ -19,9 +19,24 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# virtual machine crash logs
 hs_err_pid*
 replay_pid*
+
+# Build outputs
 /MVC/target/
-/degree_ptoject/target/
 /degree_project/target/
+
+# IDE configs
+.idea/
+*.iml
+.vscode/
+nbproject/private/
+
+# SQLite side files (volátiles)
+*.db-journal
+*.sqlite-journal
+*.db-shm
+*.db-wal
+*.sqlite-shm
+*.sqlite-wal

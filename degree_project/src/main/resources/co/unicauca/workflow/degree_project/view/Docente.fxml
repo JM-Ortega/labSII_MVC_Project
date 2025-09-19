@@ -47,6 +47,18 @@
                   </ImageView>
                </graphic>
             </Button>
+            <Button fx:id="btnEstadisticas" alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#showEstadisticas" prefHeight="70.0" prefWidth="250.0" styleClass="#4670A4" stylesheets="@../styles/Docente.css" text="Estadísticas" textAlignment="CENTER" textFill="WHITE">
+               <font>
+                  <Font name="Roboto Regular" size="20.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/estadisticas.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
             <Button fx:id="btnSalir" alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#switchToLogin" prefHeight="70.0" prefWidth="250.0" styleClass="#4670A4" stylesheets="@../styles/Docente.css" text="Salir" textAlignment="CENTER" textFill="WHITE">
                <font>
                   <Font name="Roboto Regular" size="20.0" />
@@ -75,14 +87,14 @@
             <Label layoutX="91.0" layoutY="333.0" text=" Tendrá  acceso a las funciones disponibles en el menú para facilitar su labor." />
             <Pane fx:id="pnUser" layoutX="762.0" layoutY="14.0" prefHeight="84.0" prefWidth="174.0">
                <children>
-                  <Label layoutX="61.0" layoutY="42.0" text="Docente">
+                  <Label layoutX="61.0" layoutY="39.0" text="Docente">
                      <font>
                         <Font name="Roboto Regular" size="12.0" />
                      </font>
                   </Label>
-                  <Label fx:id="nombreDocente" layoutX="61.0" layoutY="18.0" text="Nombre Docente">
+                  <Label fx:id="nombreDocente" layoutX="61.0" layoutY="22.0" text="Nombre Docente">
                      <font>
-                        <Font name="Roboto Black" size="12.0" />
+                        <Font name="Roboto Regular" size="13.0" />
                      </font>
                   </Label>
                   <ImageView fitHeight="44.0" fitWidth="44.0" layoutX="8.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true">

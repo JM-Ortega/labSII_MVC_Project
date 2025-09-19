@@ -25,6 +25,7 @@ public class DocenteController implements Initializable {
     @FXML private Button btnPrincipal;
     @FXML private Button btnFormatoA;
     @FXML private Button btnSalir;
+    @FXML private Button btnEstadisticas;
     @FXML private Label nombreDocente;
     @FXML private BorderPane bp;
     @FXML private AnchorPane ap;
@@ -35,9 +36,8 @@ public class DocenteController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        btnPrincipal.getStyleClass().add("btn-pressed");
-        btnFormatoA.getStyleClass().add("btn-default");
-        btnSalir.getStyleClass().add("btn-default");
+        activarBoton(btnPrincipal, btnFormatoA, btnSalir, btnEstadisticas);
+        cargarDatos();
     }
 
     @FXML
@@ -53,18 +53,20 @@ public class DocenteController implements Initializable {
 
     @FXML
     private void showInfoPrincipal(ActionEvent event) {
-        btnPrincipal.getStyleClass().add("btn-pressed");
-        btnFormatoA.getStyleClass().remove("btn-pressed");
-        btnFormatoA.getStyleClass().add("btn-default");
+        activarBoton(btnPrincipal, btnFormatoA, btnSalir, btnEstadisticas);
         bp.setCenter(ap);
     }
 
     @FXML
     private void showInfoFormatoA(ActionEvent event) {
-        btnFormatoA.getStyleClass().add("btn-pressed");
-        btnPrincipal.getStyleClass().remove("btn-pressed");
-        btnPrincipal.getStyleClass().add("btn-default");
+        activarBoton(btnFormatoA, btnPrincipal, btnSalir, btnEstadisticas);
         loadModule("/co/unicauca/workflow/degree_project/view/FormatoADocente");
+    }
+    
+    @FXML
+    private void showEstadisticas(ActionEvent event) {
+        activarBoton(btnEstadisticas, btnPrincipal, btnSalir, btnFormatoA);
+        loadModule("/co/unicauca/workflow/degree_project/view/EstadisticasDocente");
     }
     
     private void loadModule(String modulo) {
@@ -99,6 +101,20 @@ public class DocenteController implements Initializable {
             nombreDocente.setText(nombre);
             } else {
             System.err.println("Service o email no seteados");
+        }
+    }
+    
+    private void activarBoton(Button botonActivo, Button... otros) {
+        botonActivo.getStyleClass().remove("btn-default");
+        if (!botonActivo.getStyleClass().contains("btn-pressed")) {
+            botonActivo.getStyleClass().add("btn-pressed");
+        }
+
+        for (Button b : otros) {
+            b.getStyleClass().remove("btn-pressed");
+            if (!b.getStyleClass().contains("btn-default")) {
+                b.getStyleClass().add("btn-default");
+            }
         }
     }
 }

@@ -1,10 +1,8 @@
 package co.unicauca.workflow.degree_project.presentation;
 
+import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 import co.unicauca.workflow.degree_project.domain.services.IUserService;
 import co.unicauca.workflow.degree_project.main;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,24 +13,24 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 
-/**
- * FXML Controller class
- *
- * @author Maryuri
- */
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+
 public class DocenteController implements Initializable {
 
     @FXML private Button btnPrincipal;
     @FXML private Button btnFormatoA;
     @FXML private Button btnSalir;
-    @FXML private Label nombreDocente;
+    @FXML
+    private Label nombreDocente;
     @FXML private BorderPane bp;
     @FXML private AnchorPane ap;
-    
-    private IUserService service;
-    private String email;
-    
-    
+
+    // Servicios/datos inyectados
+    private IUserService userService;
+    private AuthResult auth;        // <- sesión del usuario logueado
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         btnPrincipal.getStyleClass().add("btn-pressed");
@@ -66,16 +64,16 @@ public class DocenteController implements Initializable {
         btnPrincipal.getStyleClass().add("btn-default");
         loadModule("/co/unicauca/workflow/degree_project/view/FormatoADocente");
     }
-    
+
     private void loadModule(String modulo) {
         try {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(modulo + ".fxml"));
+            String path = modulo + ".fxml";
+            FXMLLoader loader = main.newInjectedLoader(path);
         Parent moduleRoot = loader.load();
 
         Object controller = loader.getController();
         if (controller instanceof FormatoADocenteController fa) {
-            fa.setService(service);
-            fa.setEmail(email);
+            fa.setAuth(auth);
             fa.cargarDatos();
         }
 
@@ -85,21 +83,23 @@ public class DocenteController implements Initializable {
         }
     }
 
-    void setService(IUserService service) {
-        this.service = service;
+
+    // ====== Setters para inyección desde SigninController ======
+    public void setUserService(IUserService userService) {
+        this.userService = userService;
     }
 
-    void setEmail(String email) {
-        this.email = email;
+    public void setAuth(AuthResult auth) {
+        this.auth = auth;
     }
 
-    void cargarDatos() {
-        if (service != null && email != null) {
-            String nombre = service.getName(email);
-            nombreDocente.setText(nombre);
-            } else {
-            System.err.println("Service o email no seteados");
+    // ====== Cargar datos del encabezado del panel Docente ======
+    public void cargarDatos() {
+        if (auth != null) {
+            // Si tu AuthResult tiene nombre completo:
+            nombreDocente.setText(auth.nombre()); // o auth.nombreCompleto()
+        } else {
+            System.err.println("Auth (sesión) no seteado");
         }
     }
 }
-

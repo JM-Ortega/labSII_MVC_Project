@@ -21,5 +21,8 @@ public interface IProyectoRepository {
     void actualizarEstadoProyecto(long proyectoId, EstadoProyecto nuevoEstado);
 
     boolean existeEstudiante(String estudianteId);
-
+    
+    //Coordinador
+    Proyecto proyectoPorId(long proyectoId);
+    String nombreDocente(String docenteId);
 }

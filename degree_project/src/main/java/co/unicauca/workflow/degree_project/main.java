@@ -56,7 +56,7 @@ public class main extends Application {
         primaryStage = stage;
 
         // 3) Carga vista inicial
-        Parent root = loadFXML("/co/unicauca/workflow/degree_project/view/Coordinador.fxml");
+        Parent root = loadFXML("/co/unicauca/workflow/degree_project/view/signin.fxml");
 
         // 4) Configura escena/ventana
         scene = new Scene(root);
@@ -163,6 +163,6 @@ public class main extends Application {
 
         emailService.sendEmail(message);
         
-        //launch(args);
+        launch(args);
     }
 }

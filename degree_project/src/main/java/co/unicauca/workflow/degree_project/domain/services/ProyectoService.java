@@ -15,6 +15,7 @@ public class ProyectoService implements IProyectoService {
     private final IArchivoRepository archivoRepo;
     private final Connection conn;
 
+    
     public ProyectoService(IProyectoRepository proyectoRepo,
                            IArchivoRepository archivoRepo,
                            Connection conn) {
@@ -250,5 +251,19 @@ public class ProyectoService implements IProyectoService {
         return EstadoProyecto.EN_TRAMITE;
     }
 
-
+    //Coordinador
+    @Override
+    public List<Archivo> listarTodosArchivos() {
+        return archivoRepo.listarArchivos();
+    }
+    
+    @Override
+    public Proyecto buscarProyectoPorId(long proyectoId){
+        return proyectoRepo.proyectoPorId(proyectoId);
+    }
+    
+    @Override
+    public String obtenerNombreDocente(String docenteId){
+        return proyectoRepo.nombreDocente(docenteId);
+    }
 }

@@ -38,5 +38,11 @@ public interface IProyectoService {
 
     public EstadoProyecto enforceAutoCancelIfNeeded(long proyectoId);
 
+    //Coordinador
+    
+    List<Archivo> listarTodosArchivos();
+    Proyecto buscarProyectoPorId(long proyectoId);
+    String obtenerNombreDocente(String docenteId);
+    
 
 }

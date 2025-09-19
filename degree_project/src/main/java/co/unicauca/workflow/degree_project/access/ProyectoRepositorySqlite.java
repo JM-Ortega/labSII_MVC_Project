@@ -172,5 +172,56 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
         }
     }
 
+    //Coordinador
+    @Override
+    public Proyecto proyectoPorId(long proyectoId){
+        Proyecto proyecto = null;
 
+        String sql = "SELECT id, tipo, estado, titulo, estudiante_id, docente_id, fecha_creacion " +
+                     "FROM Proyecto WHERE id = ?";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setLong(1, proyectoId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    proyecto = new Proyecto();
+                    proyecto.setId(rs.getLong("id"));
+                    proyecto.setTipo(rs.getString("tipo"));
+                    proyecto.setEstado(EstadoProyecto.valueOf(rs.getString("estado")));
+                    proyecto.setTitulo(rs.getString("titulo"));
+                    proyecto.setEstudianteId(rs.getString("estudiante_id"));
+                    proyecto.setDocenteId(rs.getString("docente_id"));
+                    proyecto.setFechaCreacion(rs.getString("fecha_creacion"));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return proyecto;
+    }
+    
+    @Override
+    public String nombreDocente(String docenteId){
+        String nombreDocente = null;
+
+        String sql = "SELECT nombre, apellido FROM Usuario WHERE id = ? AND rol = " +
+                     "(SELECT idRol FROM Rol WHERE tipo = 'Docente')";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, docenteId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    // Nombre completo
+                    nombreDocente = rs.getString("nombre") + " " + rs.getString("apellido");
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return nombreDocente;
+    }
 }

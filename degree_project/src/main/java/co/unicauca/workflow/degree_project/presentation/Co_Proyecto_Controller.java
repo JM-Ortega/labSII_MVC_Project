@@ -1,11 +1,16 @@
 package co.unicauca.workflow.degree_project.presentation;
 
+import co.unicauca.workflow.degree_project.domain.models.Archivo;
 import co.unicauca.workflow.degree_project.domain.models.Proyecto;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import co.unicauca.workflow.degree_project.domain.services.IProyectoService;
+import co.unicauca.workflow.degree_project.presentation.FormatoADocenteController.RowVM;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
-import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -19,48 +24,107 @@ import javafx.scene.image.ImageView;
 
 public class Co_Proyecto_Controller implements Initializable{
     @FXML
-    private TableView<Proyecto> tabla;
+    private TableView<RowVM> tabla;
+    @FXML
+    private TableColumn<RowVM, String> colNombreProyecto;
+    @FXML
+    private TableColumn<RowVM, String> colNombreProfesor;
+    @FXML
+    private TableColumn<RowVM, String> colTipo;
+    @FXML
+    private TableColumn<RowVM, String> colFecha;
+    @FXML
+    private TableColumn<RowVM, String> colEstado;
 
-    @FXML
-    private TableColumn<Proyecto, String> colNombreProyecto;
-    @FXML
-    private TableColumn<Proyecto, String> colNombreProfesor;
-    @FXML
-    private TableColumn<Proyecto, String> colTipo;
-    @FXML
-    private TableColumn<Proyecto, String> colFecha;
-    @FXML
-    private TableColumn<Proyecto, String> colEstado;
-    @FXML
-    private TableColumn<Proyecto, Proyecto> colDescargar;
-
-    private CoordinadorController parent; // referencia al controlador padre para loadUI
+    private CoordinadorController parent;  
+    private IProyectoService proyectoService; // referencia al controlador padre para loadUI
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Columnas normales
-        colNombreProyecto.setCellValueFactory(new PropertyValueFactory<>("nombreProyecto"));
-        colNombreProfesor.setCellValueFactory(new PropertyValueFactory<>("nombreProfesor"));
-        colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
-        colFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
-
-        // Columna Estado
-        colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
-        configurarColumnaEstado();
-
+        configurarTabla();
+        cargarTabla();
+ 
         /*
         // Columna Descargar
-        configurarColumnaDescargar();
-
-        // Cargar datos de prueba
-        cargarDatosPrueba();
-        */
+        configurarColumnaDescargar();*/
     }
     
+    public void setService(IProyectoService proyectoService) {
+        this.proyectoService = proyectoService;
+    }
+    
+    private void configurarTabla() {
+        colNombreProyecto.setCellValueFactory(d -> d.getValue().nombreProyectoProperty());
+        colNombreProfesor.setCellValueFactory(d -> d.getValue().nombreDocenteProperty());
+        colTipo.setCellValueFactory(d -> d.getValue().tipoProperty());
+        colFecha.setCellValueFactory(d -> d.getValue().fechaProperty());
+        colEstado.setCellValueFactory(d -> d.getValue().estadoProperty());
+        //configurarColumnaEstado();
+    }
+    
+    private void cargarTabla() {
+        if (proyectoService == null) {
+            System.err.println("⚠️ Error: proyectoService no fue inicializado.");
+            return;
+        }
+        
+        try {
+            // Aquí deberías tener un método que devuelva TODOS los archivos
+            List<Archivo> archivos = proyectoService.listarTodosArchivos();
+
+            ObservableList<RowVM> rows = FXCollections.observableArrayList();
+
+            for (Archivo a : archivos) {
+                Proyecto p = proyectoService.buscarProyectoPorId(a.getProyectoId());
+
+                // Aquí asumo que puedes resolver el nombre del docente con su id
+                String nombreDocente = proyectoService.obtenerNombreDocente(p.getDocenteId());
+
+                rows.add(new RowVM(
+                    p.getTitulo(),
+                    nombreDocente,
+                    a.getTipo().name(),
+                    a.getFechaSubida(),
+                    a.getEstado().name()
+                ));
+            }
+
+            tabla.setItems(rows);
+            tabla.refresh();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            // opcional: mostrar error en un label
+        }
+    }
+    
+    public static class RowVM {
+    private final StringProperty nombreProyecto = new SimpleStringProperty();
+    private final StringProperty nombreDocente = new SimpleStringProperty();
+    private final StringProperty tipo = new SimpleStringProperty();
+    private final StringProperty fecha = new SimpleStringProperty();
+    private final StringProperty estado = new SimpleStringProperty();
+
+    public RowVM(String nombreProyecto, String nombreDocente, String tipo, String fecha, String estado) {
+        this.nombreProyecto.set(nombreProyecto);
+        this.nombreDocente.set(nombreDocente);
+        this.tipo.set(tipo);
+        this.fecha.set(fecha);
+        this.estado.set(estado);
+    }
+
+    public StringProperty nombreProyectoProperty() { return nombreProyecto; }
+    public StringProperty nombreDocenteProperty() { return nombreDocente; }
+    public StringProperty tipoProperty() { return tipo; }
+    public StringProperty fechaProperty() { return fecha; }
+    public StringProperty estadoProperty() { return estado; }
+}
+
     public void setParentController(CoordinadorController parent) {
         this.parent = parent;
     }
     
+/*
     private void configurarColumnaEstado() {
         colEstado.setCellFactory(column -> new TableCell<Proyecto, String>() {
             private final Button estadoBtn = new Button();
@@ -118,7 +182,7 @@ public class Co_Proyecto_Controller implements Initializable{
             }
         });
     }
-    /*
+    
     private void configurarColumnaDescargar() {
         // El valor de la celda será el objeto Proyecto completo
         colDescargar.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));

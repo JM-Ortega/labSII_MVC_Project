@@ -1,8 +1,16 @@
 package co.unicauca.workflow.degree_project.presentation;
 
+import co.unicauca.workflow.degree_project.access.ArchivoRepositorySqlite;
+import co.unicauca.workflow.degree_project.access.IArchivoRepository;
+import co.unicauca.workflow.degree_project.access.IProyectoRepository;
+import co.unicauca.workflow.degree_project.access.ProyectoRepositorySqlite;
+import co.unicauca.workflow.degree_project.access.SqliteRepository;
+import co.unicauca.workflow.degree_project.domain.services.IProyectoService;
+import co.unicauca.workflow.degree_project.domain.services.ProyectoService;
 import co.unicauca.workflow.degree_project.main;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -23,7 +31,19 @@ public class CoordinadorController implements Initializable{
     private Button btnSalir;
 
     private Button selectedButton = null; // botón actualmente seleccionado
+    private IProyectoService proyectoService;
 
+    public CoordinadorController() {
+        // 👇 Aquí inicializas conexión y repositorios
+        Connection conn = SqliteRepository.getConnection(); // tu clase de conexión
+
+        IProyectoRepository proyectoRepo = new ProyectoRepositorySqlite(conn);
+        IArchivoRepository archivoRepo = new ArchivoRepositorySqlite(conn);
+
+        // 👇 Aquí inicializas el servicio
+        this.proyectoService = new ProyectoService(proyectoRepo, archivoRepo, conn);
+    }
+    
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         btnProyectos.setOnMouseEntered(e -> btnProyectos.getStyleClass().add("hoverable"));
@@ -52,6 +72,7 @@ public class CoordinadorController implements Initializable{
         selectedButton = button;
     }
     
+    
      public void loadUI(String fxml) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
@@ -63,6 +84,7 @@ public class CoordinadorController implements Initializable{
 
             if (controller instanceof Co_Proyecto_Controller cpc) {
                 cpc.setParentController(this);
+                cpc.setService(this.proyectoService);
             } else if (controller instanceof Co_Observaciones_Controller coc) {
                 coc.setParentController(this);
             }

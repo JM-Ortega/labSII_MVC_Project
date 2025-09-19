@@ -499,7 +499,7 @@
     </routine>
     <schema id="191" parent="1" name="main">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2025-09-18.17:31:57</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-09-19.04:38:19</LastIntrospectionLocalTimestamp>
     </schema>
     <argument id="192" parent="16">
       <ArgumentDirection>R</ArgumentDirection>
@@ -1602,7 +1602,7 @@
       <System>1</System>
     </table>
     <check id="562" parent="555">
-      <Predicate>estado IN (&apos;ACEPTADO&apos;,&apos;RECHAZADO&apos;,&apos;A EVALUAR&apos;)</Predicate>
+      <Predicate>estado IN (&apos;PENDIENTE&apos;,&apos;APROBADO&apos;,&apos;RECHAZADO&apos;,&apos;OBSERVADO&apos;)</Predicate>
     </check>
     <check id="563" parent="555">
       <Predicate>lower(nombre_archivo) LIKE &apos;%.pdf&apos;</Predicate>
@@ -1611,7 +1611,7 @@
       <Predicate>nro_version &gt;= 1</Predicate>
     </check>
     <check id="565" parent="555">
-      <Predicate>tipo IN (&apos;FORMATO A&apos;,&apos;ANTEPROYECTO&apos;,&apos;FINAL&apos;,&apos;OTRO&apos;)</Predicate>
+      <Predicate>tipo IN (&apos;FORMATO_A&apos;,&apos;ANTEPROYECTO&apos;,&apos;FINAL&apos;,&apos;CARTA_ACEPTACION&apos;,&apos;OTRO&apos;)</Predicate>
     </check>
     <column id="566" parent="555" name="id">
       <AutoIncrement>1</AutoIncrement>
@@ -1628,31 +1628,32 @@
       <Position>3</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="569" parent="555" name="estado">
+    <column id="569" parent="555" name="nro_version">
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StoredType>TEXT|0s</StoredType>
-    </column>
-    <column id="570" parent="555" name="nro_version">
-      <NotNull>1</NotNull>
-      <Position>5</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="571" parent="555" name="nombre_archivo">
+    <column id="570" parent="555" name="nombre_archivo">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="571" parent="555" name="fecha_subida">
+      <DefaultExpression>(datetime(&apos;now&apos;))</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="572" parent="555" name="fecha_subida">
-      <DefaultExpression>(datetime(&apos;now&apos;))</DefaultExpression>
+    <column id="572" parent="555" name="blob">
       <NotNull>1</NotNull>
       <Position>7</Position>
-      <StoredType>TEXT|0s</StoredType>
+      <StoredType>BLOB|0s</StoredType>
     </column>
-    <column id="573" parent="555" name="blob">
+    <column id="573" parent="555" name="estado">
+      <DefaultExpression>&apos;PENDIENTE&apos;</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>8</Position>
-      <StoredType>BLOB|0s</StoredType>
+      <StoredType>TEXT|0s</StoredType>
     </column>
     <foreign-key id="574" parent="555">
       <ColNames>proyecto_id</ColNames>

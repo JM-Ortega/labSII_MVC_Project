@@ -20,5 +20,8 @@ public interface IArchivoRepository {
     int countFormatoAByEstado(long proyectoId, EstadoArchivo estado);
 
     Archivo getUltimoFormatoA(long proyectoId);
-
+    
+    //Coordinador
+    List<Archivo> listarArchivos();
+    
 }

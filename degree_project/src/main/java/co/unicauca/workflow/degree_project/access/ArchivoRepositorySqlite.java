@@ -153,50 +153,80 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
         }
     }
     @Override
-public int countFormatoAByEstado(long proyectoId, EstadoArchivo estado) {
-    final String sql = """
-        SELECT COUNT(*) AS c
-        FROM Archivo
-        WHERE proyecto_id = ? AND tipo = 'FORMATO_A' AND estado = ?
-    """;
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setLong(1, proyectoId);
-        ps.setString(2, estado.name());
-        try (ResultSet rs = ps.executeQuery()) {
-            return rs.next() ? rs.getInt("c") : 0;
+    public int countFormatoAByEstado(long proyectoId, EstadoArchivo estado) {
+        final String sql = """
+            SELECT COUNT(*) AS c
+            FROM Archivo
+            WHERE proyecto_id = ? AND tipo = 'FORMATO_A' AND estado = ?
+        """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, proyectoId);
+            ps.setString(2, estado.name());
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt("c") : 0;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-    } catch (SQLException e) {
-        throw new RuntimeException(e);
     }
-}
 
-@Override
-public Archivo getUltimoFormatoA(long proyectoId) {
-    final String sql = """
-        SELECT id, proyecto_id, tipo, nro_version, nombre_archivo, fecha_subida, blob, estado
-        FROM Archivo
-        WHERE proyecto_id = ? AND tipo = 'FORMATO_A'
-        ORDER BY nro_version DESC
-        LIMIT 1
-    """;
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
-        ps.setLong(1, proyectoId);
-        try (ResultSet rs = ps.executeQuery()) {
-            if (!rs.next()) return null;
-            Archivo a = new Archivo();
-            a.setId(rs.getLong("id"));
-            a.setProyectoId(rs.getLong("proyecto_id"));
-            a.setTipo(TipoArchivo.valueOf(rs.getString("tipo")));
-            a.setNroVersion(rs.getInt("nro_version"));
-            a.setNombreArchivo(rs.getString("nombre_archivo"));
-            a.setFechaSubida(rs.getString("fecha_subida"));
-            a.setBlob(rs.getBytes("blob"));
-            a.setEstado(EstadoArchivo.valueOf(rs.getString("estado")));
-            return a;
+    @Override
+    public Archivo getUltimoFormatoA(long proyectoId) {
+        final String sql = """
+            SELECT id, proyecto_id, tipo, nro_version, nombre_archivo, fecha_subida, blob, estado
+            FROM Archivo
+            WHERE proyecto_id = ? AND tipo = 'FORMATO_A'
+            ORDER BY nro_version DESC
+            LIMIT 1
+        """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, proyectoId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return null;
+                Archivo a = new Archivo();
+                a.setId(rs.getLong("id"));
+                a.setProyectoId(rs.getLong("proyecto_id"));
+                a.setTipo(TipoArchivo.valueOf(rs.getString("tipo")));
+                a.setNroVersion(rs.getInt("nro_version"));
+                a.setNombreArchivo(rs.getString("nombre_archivo"));
+                a.setFechaSubida(rs.getString("fecha_subida"));
+                a.setBlob(rs.getBytes("blob"));
+                a.setEstado(EstadoArchivo.valueOf(rs.getString("estado")));
+                return a;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-    } catch (SQLException e) {
-        throw new RuntimeException(e);
     }
-}
 
+    @Override
+    public List<Archivo> listarArchivos(){
+        List<Archivo> archivos = new ArrayList<>();
+
+        String sql = "SELECT id, proyecto_id, tipo, nro_version, nombre_archivo, fecha_subida, blob, estado FROM Archivo";
+
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Archivo archivo = new Archivo();
+                archivo.setId(rs.getLong("id"));
+                archivo.setProyectoId(rs.getLong("proyecto_id"));
+
+                // Conversión String → Enum
+                archivo.setTipo(TipoArchivo.valueOf(rs.getString("tipo")));
+                archivo.setNroVersion(rs.getInt("nro_version"));
+                archivo.setNombreArchivo(rs.getString("nombre_archivo"));
+                archivo.setFechaSubida(rs.getString("fecha_subida"));
+                archivo.setBlob(rs.getBytes("blob"));
+                archivo.setEstado(EstadoArchivo.valueOf(rs.getString("estado")));
+
+                archivos.add(archivo);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return archivos;
+    }
 }

@@ -1,7 +1,6 @@
 package co.unicauca.workflow.degree_project.presentation;
 
 import co.unicauca.workflow.degree_project.domain.services.ISignInService;
-import co.unicauca.workflow.degree_project.domain.services.IUserService;
 import co.unicauca.workflow.degree_project.main;
 import java.io.IOException;
 import javafx.fxml.FXML;
@@ -65,13 +64,7 @@ public class SigninController {
                     alerta.showAndWait();
 
                   try {
-                        Object controller = main.navigateWithController("Estudiante", "Panel Estudiante");
-
-                        if (controller instanceof EstudianteController dc) {
-                            dc.setService((IUserService) authService);
-                            dc.setEmail(usuario);
-                            dc.cargarDatos();
-                        }
+                        main.navigateWithController("Estudiante", "Panel Estudiante");
                     } catch (IOException e) {
                         new Alert(Alert.AlertType.ERROR, "Error al abrir la vista de estudiante.").showAndWait();
                         e.printStackTrace();
@@ -85,13 +78,7 @@ public class SigninController {
                     alerta.showAndWait();
                     
                     try {
-                        Object controller = main.navigateWithController("Docente", "Panel Docente");
-
-                        if (controller instanceof DocenteController dc) {
-                            dc.setService((IUserService) authService);
-                            dc.setEmail(usuario);
-                            dc.cargarDatos();
-                        }
+                        main.navigateWithController("Docente", "Panel Docente");
                     } catch (IOException e) {
                         new Alert(Alert.AlertType.ERROR, "Error al abrir la vista de docente.").showAndWait();
                         e.printStackTrace();

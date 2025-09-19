@@ -1,7 +1,9 @@
 package co.unicauca.workflow.degree_project.access;
 
+import co.unicauca.workflow.degree_project.domain.models.Project;
 import co.unicauca.workflow.degree_project.domain.models.User;
 import co.unicauca.workflow.degree_project.domain.services.AuthResult;
+import java.util.List;
 
 
 
@@ -19,5 +21,7 @@ public interface IUserRepository {
     String getName(String email);
     
     public AuthResult authenticate(String email, char[] passwordIngresada);
+    
+    List<Project> findFormatosAByEstudianteId(String estudianteId);
 
 }

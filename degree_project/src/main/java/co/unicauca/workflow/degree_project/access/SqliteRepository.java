@@ -6,6 +6,7 @@ import co.unicauca.workflow.degree_project.domain.services.UserService;
 import co.unicauca.workflow.degree_project.infra.security.Argon2PasswordHasher;
 
 import java.sql.*;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,8 +14,8 @@ public class SqliteRepository implements IUserRepository {
 
     private static Connection conn;
 
-    public SqliteRepository() {
-        connect();
+    public SqliteRepository(Connection conn) {
+        this.conn = conn;
         initDatabase();
     }
 
@@ -74,18 +75,20 @@ public class SqliteRepository implements IUserRepository {
         """;
 
         String sqlArchivo = """
-        CREATE TABLE IF NOT EXISTS Archivo (
-          id             INTEGER PRIMARY KEY AUTOINCREMENT,
-          proyecto_id    INTEGER NOT NULL,
-          tipo           TEXT NOT NULL CHECK (tipo IN ('FORMATO_A','ANTEPROYECTO','FINAL','OTRO')),
-          nro_version    INTEGER NOT NULL CHECK (nro_version >= 1),
-          nombre_archivo TEXT NOT NULL CHECK (lower(nombre_archivo) LIKE '%.pdf'),
-          fecha_subida   TEXT NOT NULL DEFAULT (datetime('now')),
-          blob           BLOB NOT NULL,
-          FOREIGN KEY (proyecto_id) REFERENCES Proyecto(id) ON UPDATE CASCADE ON DELETE CASCADE,
-          UNIQUE (proyecto_id, tipo, nro_version)
-        );
-        """;
+                CREATE TABLE IF NOT EXISTS Archivo (
+                  id             INTEGER PRIMARY KEY AUTOINCREMENT,
+                  proyecto_id    INTEGER NOT NULL,
+                  tipo           TEXT NOT NULL CHECK (tipo IN ('FORMATO_A','ANTEPROYECTO','FINAL','CARTA_ACEPTACION','OTRO')),
+                  nro_version    INTEGER NOT NULL CHECK (nro_version >= 1),
+                  nombre_archivo TEXT NOT NULL CHECK (lower(nombre_archivo) LIKE '%.pdf'),
+                  fecha_subida   TEXT NOT NULL DEFAULT (datetime('now')),
+                  blob           BLOB NOT NULL,
+                  estado         TEXT NOT NULL CHECK (estado IN ('PENDIENTE','APROBADO','RECHAZADO','OBSERVADO')) DEFAULT 'PENDIENTE',
+                  FOREIGN KEY (proyecto_id) REFERENCES Proyecto(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                  UNIQUE (proyecto_id, tipo, nro_version)
+                );
+                """;
+
 
         String idxArchivoProyecto = "CREATE INDEX IF NOT EXISTS idx_archivos_proyecto ON Archivo(proyecto_id);";
         String idxArchivoTipo = "CREATE INDEX IF NOT EXISTS idx_archivos_tipo ON Archivo(proyecto_id, tipo, nro_version);";
@@ -251,19 +254,19 @@ public class SqliteRepository implements IUserRepository {
     }
 
     @Override
-    public AuthResult authenticate(String email, char[] passwordIngresada) {
+    public Optional<AuthResult> authenticate(String email, char[] passwordIngresada) {
         String sql = """
-            SELECT u.id, u.contrasena, r.tipo AS rol, u.nombre, u.apellido
-            FROM Usuario u
-            JOIN Rol r ON r.idRol = u.rol
-            WHERE u.correo = ?
-        """;
+                    SELECT u.id, u.contrasena, r.tipo AS rol, u.nombre, u.apellido
+                    FROM Usuario u
+                    JOIN Rol r ON r.idRol = u.rol
+                    WHERE u.correo = ?
+                """;
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (!rs.next()) {
-                    return null;
+                    return Optional.empty();
                 }
 
                 String hash = rs.getString("contrasena");
@@ -273,18 +276,19 @@ public class SqliteRepository implements IUserRepository {
                 java.util.Arrays.fill(passwordIngresada, '\0');
 
                 if (!ok) {
-                    return null;
+                    return Optional.empty();
                 }
 
                 String userId = rs.getString("id");
                 String rol = rs.getString("rol");
                 String nombreCompleto = rs.getString("nombre") + " " + rs.getString("apellido");
-                return new AuthResult(userId, rol, nombreCompleto);
+                return Optional.of(new AuthResult(userId, rol, nombreCompleto));
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+            return Optional.empty();
         }
     }
+
 
 }

@@ -4,7 +4,6 @@ import co.unicauca.workflow.degree_project.domain.models.User;
 import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 import co.unicauca.workflow.degree_project.domain.services.UserService;
 import co.unicauca.workflow.degree_project.infra.security.Argon2PasswordHasher;
-import co.unicauca.workflow.degree_project.infra.security.Sesion;
 
 import java.sql.*;
 import java.util.Optional;

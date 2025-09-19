@@ -134,9 +134,9 @@ public class FormatoAEstudianteController implements Initializable {
                 Image img = null;
                 String e = estado.trim().toUpperCase();
                 switch (e) {
-                    case "ACEPTADO" -> img = loadImage("/co/unicauca/workflow/degree_project/images/aceptado.png");
-                    case "RECHAZADO" -> img = loadImage("/co/unicauca/workflow/degree_project/images/rechazado.png");
-                    case "A_EVALUAR" -> img = loadImage("/co/unicauca/workflow/degree_project/images/a_evaluar.png");
+                    case "APROBADO" -> img = loadImage("/co/unicauca/workflow/degree_project/images/aprobado.png");
+                    case "OBSERVADO" -> img = loadImage("/co/unicauca/workflow/degree_project/images/observado.png");
+                    case "PENDIENTE" -> img = loadImage("/co/unicauca/workflow/degree_project/images/pendiente.png");
                     default -> img = null;
                 }
 

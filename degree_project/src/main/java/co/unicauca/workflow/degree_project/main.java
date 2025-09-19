@@ -5,6 +5,7 @@ import co.unicauca.workflow.degree_project.access.IProyectoRepository;
 import co.unicauca.workflow.degree_project.access.IUserRepository;
 import co.unicauca.workflow.degree_project.domain.services.*;
 import co.unicauca.workflow.degree_project.infra.security.Argon2PasswordHasher;
+import co.unicauca.workflow.degree_project.presentation.EstadisticasDocenteController;
 import co.unicauca.workflow.degree_project.presentation.FormatoADocenteController;
 import co.unicauca.workflow.degree_project.presentation.RegisterController;
 import co.unicauca.workflow.degree_project.presentation.SigninController;
@@ -114,6 +115,7 @@ public class main extends Application {
                     case SigninController sc -> sc.setServices(signInService);
                     case RegisterController rc -> rc.setServices(registrationService);
                     case FormatoADocenteController fadc -> fadc.setService(proyectoService);
+                    case EstadisticasDocenteController edc -> edc.setService(proyectoService);
                     default -> { }
                 }
                 return controller;
@@ -135,6 +137,7 @@ public class main extends Application {
                 case SigninController sc -> sc.setServices(signInService);
                 case RegisterController rc -> rc.setServices(registrationService);
                 case FormatoADocenteController fadc -> fadc.setService(proyectoService);
+                case EstadisticasDocenteController edc -> edc.setService(proyectoService);
                 default -> { }
             }
             return controller;

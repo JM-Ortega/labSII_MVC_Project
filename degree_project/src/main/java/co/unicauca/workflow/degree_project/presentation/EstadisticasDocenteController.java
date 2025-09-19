@@ -13,11 +13,6 @@ import javafx.scene.control.Label;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.BarChart;
 
-/**
- * FXML Controller class
- *
- * @author Maryuri
- */
 public class EstadisticasDocenteController implements Initializable {
     
     @FXML private Label nombreDocente; 
@@ -48,9 +43,9 @@ public class EstadisticasDocenteController implements Initializable {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Formato A");
 
-        series.getData().add(new XYChart.Data<>("ACEPTADOS", obtenerCantidad("ACEPTADO")));
-        series.getData().add(new XYChart.Data<>("RECHAZADOS", obtenerCantidad("RECHAZADO")));
-        series.getData().add(new XYChart.Data<>("A EVALUAR", obtenerCantidad("A_EVALUAR")));
+        series.getData().add(new XYChart.Data<>("APROBADOS", obtenerCantidad("APROBADO")));
+        series.getData().add(new XYChart.Data<>("OBSERVADOS", obtenerCantidad("OBSERVADO")));
+        series.getData().add(new XYChart.Data<>("PENDIENTES", obtenerCantidad("PENDIENTE")));
 
         BarChartEstadisticas.getData().clear();
         BarChartEstadisticas.getData().add(series);

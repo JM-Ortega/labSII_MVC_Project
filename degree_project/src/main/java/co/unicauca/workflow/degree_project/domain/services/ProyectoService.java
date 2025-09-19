@@ -2,15 +2,12 @@ package co.unicauca.workflow.degree_project.domain.services;
 
 import co.unicauca.workflow.degree_project.access.IArchivoRepository;
 import co.unicauca.workflow.degree_project.access.IProyectoRepository;
-import co.unicauca.workflow.degree_project.domain.models.Archivo;
-import co.unicauca.workflow.degree_project.domain.models.EstadoArchivo;
-import co.unicauca.workflow.degree_project.domain.models.EstadoProyecto;
-import co.unicauca.workflow.degree_project.domain.models.Proyecto;
-import co.unicauca.workflow.degree_project.domain.models.TipoArchivo;
+import co.unicauca.workflow.degree_project.domain.models.*;
+import co.unicauca.workflow.degree_project.infra.operation.PdfValidator;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import co.unicauca.workflow.degree_project.infra.operation.PdfValidator;
 
 public class ProyectoService implements IProyectoService {
 
@@ -60,7 +57,7 @@ public class ProyectoService implements IProyectoService {
             archivo.setProyectoId(proyectoId);
             archivo.setTipo(TipoArchivo.FORMATO_A);
             archivo.setNroVersion(1);
-            archivo.setEstado(EstadoArchivo.A_EVALUAR);
+            archivo.setEstado(EstadoArchivo.PENDIENTE);
             archivoRepo.insertarFormatoA(archivo);
 
             conn.commit();
@@ -105,7 +102,7 @@ public class ProyectoService implements IProyectoService {
             for (Archivo a : archivos) {
                 PdfValidator.assertPdf(a.getNombreArchivo(), a.getBlob());
                 a.setProyectoId(proyectoId);
-                a.setEstado(a.getEstado() == null ? EstadoArchivo.A_EVALUAR : a.getEstado());
+                a.setEstado(a.getEstado() == null ? EstadoArchivo.PENDIENTE : a.getEstado());
 
                 if (a.getTipo() == TipoArchivo.FORMATO_A) {
                     int next = Math.max(1, archivoRepo.getMaxVersionFormatoA(proyectoId) + 1);
@@ -155,7 +152,7 @@ public class ProyectoService implements IProyectoService {
         archivo.setProyectoId(proyectoId);
         archivo.setTipo(TipoArchivo.FORMATO_A);
         archivo.setNroVersion(max + 1);
-        archivo.setEstado(EstadoArchivo.A_EVALUAR);
+        archivo.setEstado(EstadoArchivo.PENDIENTE);
 
         archivoRepo.insertarFormatoA(archivo);
         return archivo;
@@ -175,7 +172,7 @@ public class ProyectoService implements IProyectoService {
         carta.setProyectoId(proyectoId);
         carta.setTipo(TipoArchivo.CARTA_ACEPTACION);
         carta.setNroVersion(1);
-        carta.setEstado(carta.getEstado() == null ? EstadoArchivo.A_EVALUAR : carta.getEstado());
+        carta.setEstado(carta.getEstado() == null ? EstadoArchivo.PENDIENTE : carta.getEstado());
 
         archivoRepo.insertarArchivo(carta);
     }

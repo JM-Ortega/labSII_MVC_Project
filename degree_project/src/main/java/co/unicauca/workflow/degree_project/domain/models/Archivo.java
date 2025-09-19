@@ -1,9 +1,5 @@
 package co.unicauca.workflow.degree_project.domain.models;
 
-/**
- *
- * @author Maryuri
- */
 public class Archivo {
 
     private long id;

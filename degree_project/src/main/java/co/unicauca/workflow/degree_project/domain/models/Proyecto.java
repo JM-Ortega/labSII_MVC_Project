@@ -1,13 +1,5 @@
 package co.unicauca.workflow.degree_project.domain.models;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-/**
- *
- * @author Maryuri
- */
 public class Proyecto {
 
     private long id;

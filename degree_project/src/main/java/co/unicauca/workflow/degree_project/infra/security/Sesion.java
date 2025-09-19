@@ -2,32 +2,18 @@ package co.unicauca.workflow.degree_project.infra.security;
 
 import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 
-/**
- *
- * @author Maryuri
- */
 public class Sesion {
     private static Sesion instancia;
-    private static AuthResult usuarioActual;
-    
-    private Sesion(){}
-    
+    private AuthResult usuarioActual;
+
+    private Sesion() {}
+
     public static Sesion getInstancia() {
-        if (instancia == null) {
-            instancia = new Sesion();
-        }
+        if (instancia == null) instancia = new Sesion();
         return instancia;
     }
-    
-    public static void setUsuarioActual(AuthResult usuario){
-        usuarioActual = usuario;
-    }
-    
-    public static AuthResult getUsuarioActual(){
-        return usuarioActual;
-    }
-    
-    public static void limpiarSesion() {
-        usuarioActual = null;
-    }
+
+    public AuthResult getUsuarioActual() { return usuarioActual; }
+    public void setUsuarioActual(AuthResult usuario) { this.usuarioActual = usuario; }
+    public void limpiar() { this.usuarioActual = null; }
 }

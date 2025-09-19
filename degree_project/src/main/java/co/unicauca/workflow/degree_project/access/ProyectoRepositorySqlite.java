@@ -172,19 +172,4 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
         }
     }
 
-    @Override
-    public int obtenerIdProyecto(String estudianteId) {
-        final String sql = "SELECT id FROM Proyecto WHERE estudiante_id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, estudianteId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("id");
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return -1;    
-    }
 }

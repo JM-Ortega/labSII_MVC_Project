@@ -3,10 +3,8 @@ package co.unicauca.workflow.degree_project.access;
 import co.unicauca.workflow.degree_project.domain.models.Archivo;
 import co.unicauca.workflow.degree_project.domain.models.EstadoArchivo;
 import co.unicauca.workflow.degree_project.domain.models.TipoArchivo;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +44,7 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
             ps.setInt(2, archivo.getNroVersion());
             ps.setString(3, archivo.getNombreArchivo());
             ps.setBytes(4, archivo.getBlob());
-            ps.setString(5, archivo.getEstado() == null ? EstadoArchivo.A_EVALUAR.name() : archivo.getEstado().name());
+            ps.setString(5, archivo.getEstado() == null ? EstadoArchivo.PENDIENTE.name() : archivo.getEstado().name());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -72,7 +70,7 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
                 ps.setInt(3, archivo.getNroVersion());
                 ps.setString(4, archivo.getNombreArchivo());
                 ps.setBytes(5, archivo.getBlob());
-                ps.setString(6, archivo.getEstado() == null ? EstadoArchivo.A_EVALUAR.name() : archivo.getEstado().name());
+                ps.setString(6, archivo.getEstado() == null ? EstadoArchivo.PENDIENTE.name() : archivo.getEstado().name());
                 ps.executeUpdate();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -88,7 +86,7 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
                 ps.setInt(3, archivo.getNroVersion());
                 ps.setString(4, archivo.getNombreArchivo());
                 ps.setBytes(5, archivo.getBlob());
-                ps.setString(6, archivo.getEstado() == null ? EstadoArchivo.A_EVALUAR.name() : archivo.getEstado().name());
+                ps.setString(6, archivo.getEstado() == null ? EstadoArchivo.PENDIENTE.name() : archivo.getEstado().name());
                 ps.executeUpdate();
             } catch (SQLException e) {
                 throw new RuntimeException(e);

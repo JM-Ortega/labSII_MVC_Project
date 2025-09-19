@@ -1,10 +1,10 @@
 package co.unicauca.workflow.degree_project.domain.services;
 
 import co.unicauca.workflow.degree_project.domain.models.Archivo;
-import co.unicauca.workflow.degree_project.domain.models.EstadoArchivo;
 import co.unicauca.workflow.degree_project.domain.models.EstadoProyecto;
 import co.unicauca.workflow.degree_project.domain.models.Proyecto;
 import co.unicauca.workflow.degree_project.domain.models.TipoArchivo;
+
 import java.util.List;
 
 public interface IProyectoService {

@@ -76,19 +76,20 @@ public class SqliteRepository implements IUserRepository {
         """;
 
         String sqlArchivo = """
-        CREATE TABLE IF NOT EXISTS Archivo (
-            id             INTEGER PRIMARY KEY AUTOINCREMENT,
-            proyecto_id    INTEGER NOT NULL,
-            tipo           TEXT NOT NULL CHECK (tipo IN ('FORMATO_A','ANTEPROYECTO','FINAL','CARTA_ACEPTACION','OTRO')),
-            nro_version    INTEGER NOT NULL CHECK (nro_version >= 1),
-            nombre_archivo TEXT NOT NULL CHECK (lower(nombre_archivo) LIKE '%.pdf'),
-            fecha_subida   TEXT NOT NULL DEFAULT (datetime('now')),
-            blob           BLOB NOT NULL,
-            estado         TEXT NOT NULL CHECK (estado IN ('PENDIENTE','APROBADO','RECHAZADO','OBSERVADO')) DEFAULT 'PENDIENTE',
-            FOREIGN KEY (proyecto_id) REFERENCES Proyecto(id) ON UPDATE CASCADE ON DELETE CASCADE,
-            UNIQUE (proyecto_id, tipo, nro_version)
-          );
-          """;
+                CREATE TABLE IF NOT EXISTS Archivo (
+                  id             INTEGER PRIMARY KEY AUTOINCREMENT,
+                  proyecto_id    INTEGER NOT NULL,
+                  tipo           TEXT NOT NULL CHECK (tipo IN ('FORMATO_A','ANTEPROYECTO','FINAL','CARTA_ACEPTACION','OTRO')),
+                  nro_version    INTEGER NOT NULL CHECK (nro_version >= 1),
+                  nombre_archivo TEXT NOT NULL CHECK (lower(nombre_archivo) LIKE '%.pdf'),
+                  fecha_subida   TEXT NOT NULL DEFAULT (datetime('now')),
+                  blob           BLOB NOT NULL,
+                  estado         TEXT NOT NULL CHECK (estado IN ('PENDIENTE','APROBADO','RECHAZADO','OBSERVADO')) DEFAULT 'PENDIENTE',
+                  FOREIGN KEY (proyecto_id) REFERENCES Proyecto(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                  UNIQUE (proyecto_id, tipo, nro_version)
+                );
+                """;
+
 
         String idxArchivoProyecto = "CREATE INDEX IF NOT EXISTS idx_archivos_proyecto ON Archivo(proyecto_id);";
         String idxArchivoTipo = "CREATE INDEX IF NOT EXISTS idx_archivos_tipo ON Archivo(proyecto_id, tipo, nro_version);";
@@ -161,10 +162,10 @@ public class SqliteRepository implements IUserRepository {
                 p.setString(1, newUser.getId());
                 p.setString(2, newUser.getEmail());
                 p.setString(3, newUser.getPasswordHash());
-                p.setInt(4, newUser.getRol().ordinal() + 1);        // mapea a Rol.idRol seed
+                p.setInt(4, newUser.getRol().ordinal() + 1);
                 p.setString(5, newUser.getNombres());
                 p.setString(6, newUser.getApellidos());
-                p.setInt(7, newUser.getPrograma().ordinal() + 1);   // mapea a Programa.idPrograma seed
+                p.setInt(7, newUser.getPrograma().ordinal() + 1);
                 p.setString(8, newUser.getCelular());
                 p.executeUpdate();
             }
@@ -254,19 +255,19 @@ public class SqliteRepository implements IUserRepository {
     }
 
     @Override
-    public AuthResult authenticate(String email, char[] passwordIngresada) {
+    public Optional<AuthResult> authenticate(String email, char[] passwordIngresada) {
         String sql = """
-            SELECT u.id, u.contrasena, r.tipo AS rol, u.nombre, u.apellido
-            FROM Usuario u
-            JOIN Rol r ON r.idRol = u.rol
-            WHERE u.correo = ?
-        """;
+                    SELECT u.id, u.contrasena, r.tipo AS rol, u.nombre, u.apellido
+                    FROM Usuario u
+                    JOIN Rol r ON r.idRol = u.rol
+                    WHERE u.correo = ?
+                """;
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (!rs.next()) {
-                    return null;
+                    return Optional.empty();
                 }
 
                 String hash = rs.getString("contrasena");
@@ -276,19 +277,19 @@ public class SqliteRepository implements IUserRepository {
                 java.util.Arrays.fill(passwordIngresada, '\0');
 
                 if (!ok) {
-                    return null;
+                    return Optional.empty();
                 }
 
                 String userId = rs.getString("id");
                 String rol = rs.getString("rol");
                 String nombreCompleto = rs.getString("nombre") + " " + rs.getString("apellido");
-                AuthResult authResult = new AuthResult(userId, rol, nombreCompleto);
-                Sesion.getInstancia().setUsuarioActual(authResult);
-                return authResult;
+                return Optional.of(new AuthResult(userId, rol, nombreCompleto));
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
+            return Optional.empty();
         }
     }
+
+
 }

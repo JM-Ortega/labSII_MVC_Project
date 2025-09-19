@@ -1,11 +1,9 @@
 package co.unicauca.workflow.degree_project.presentation;
 
 import co.unicauca.workflow.degree_project.domain.services.AuthResult;
+import co.unicauca.workflow.degree_project.domain.services.IUserService;
 import co.unicauca.workflow.degree_project.infra.security.Sesion;
 import co.unicauca.workflow.degree_project.main;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,11 +14,10 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 
-/**
- * FXML Controller class
- *
- * @author Maryuri
- */
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+
 public class DocenteController implements Initializable {
 
     @FXML private Button btnPrincipal;
@@ -30,7 +27,9 @@ public class DocenteController implements Initializable {
     @FXML private Label nombreDocente;
     @FXML private BorderPane bp;
     @FXML private AnchorPane ap;
-    
+
+    private IUserService userService;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         activarBoton(btnPrincipal, btnFormatoA, btnSalir, btnEstadisticas);
@@ -40,7 +39,7 @@ public class DocenteController implements Initializable {
     @FXML
     void switchToLogin(ActionEvent event) {
         try {
-            Sesion.limpiarSesion();
+            Sesion.getInstancia().limpiar();
             btnSalir.getStyleClass().add("btn-pressed");
             main.navigate("signin", "Login");
         } catch (IOException e) {
@@ -110,4 +109,3 @@ public class DocenteController implements Initializable {
         }
     }
 }
-

@@ -56,7 +56,7 @@ public class main extends Application {
         primaryStage = stage;
 
         // 3) Carga vista inicial
-        Parent root = loadFXML("/co/unicauca/workflow/degree_project/view/Coordinador.fxml");
+        Parent root = loadFXML("/co/unicauca/workflow/degree_project/view/signin.fxml");
 
         // 4) Configura escena/ventana
         scene = new Scene(root);
@@ -152,17 +152,18 @@ public class main extends Application {
 
 
     public static void main(String[] args) {
-        
-        IEmailService emailService = new LoggingEmailService();
+        /*
+            IEmailService emailService = new LoggingEmailService();
 
-        EmailMessage message = new EmailMessage(
-            "destinatario@ejemplo.com",
-            "Prueba de correo",
-            "Hola! Este es un correo simulado."
-        );
+            EmailMessage message = new EmailMessage(
+                "destinatario@ejemplo.com",
+                "Prueba de correo",
+                "Hola! Este es un correo simulado."
+            );
 
-        emailService.sendEmail(message);
+            emailService.sendEmail(message);
+        */
         
-        //launch(args);
+        launch(args);
     }
 }

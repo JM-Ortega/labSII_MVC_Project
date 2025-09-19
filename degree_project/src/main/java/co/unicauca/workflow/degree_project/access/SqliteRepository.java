@@ -161,10 +161,10 @@ public class SqliteRepository implements IUserRepository {
                 p.setString(1, newUser.getId());
                 p.setString(2, newUser.getEmail());
                 p.setString(3, newUser.getPasswordHash());
-                p.setInt(4, newUser.getRol().ordinal() + 1);        // mapea a Rol.idRol seed
+                p.setInt(4, newUser.getRol().ordinal() + 1);
                 p.setString(5, newUser.getNombres());
                 p.setString(6, newUser.getApellidos());
-                p.setInt(7, newUser.getPrograma().ordinal() + 1);   // mapea a Programa.idPrograma seed
+                p.setInt(7, newUser.getPrograma().ordinal() + 1);
                 p.setString(8, newUser.getCelular());
                 p.executeUpdate();
             }

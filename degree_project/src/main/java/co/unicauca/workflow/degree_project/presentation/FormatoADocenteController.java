@@ -355,14 +355,21 @@ public class FormatoADocenteController implements Initializable {
 
         ObservableList<RowVM> rows = FXCollections.observableArrayList();
         for (Proyecto p : proyectos) {
-            EstadoProyecto estadoFinal = proyectoService.enforceAutoCancelIfNeeded(p.getId());
-            int version = proyectoService.maxVersionFormatoA(p.getId());
-            String est = p.getEstudianteId();
-            rows.add(new RowVM(p.getId(), p.getTitulo(), est, version, estadoFinal.name()));
+            long id = p.getId();
+            String titulo = p.getTitulo();
+
+            EstadoProyecto estadoFinal = proyectoService.enforceAutoCancelIfNeeded(id);
+
+            int version = proyectoService.maxVersionFormatoA(id);
+            String estudianteId = p.getEstudianteId();
+
+            rows.add(new RowVM(id, titulo, estudianteId, version, estadoFinal.name()));
         }
+
         tblProyectos.setItems(rows);
         tblProyectos.refresh();
     }
+
 
     private void subirNuevaVersion(RowVM row) {
         try {

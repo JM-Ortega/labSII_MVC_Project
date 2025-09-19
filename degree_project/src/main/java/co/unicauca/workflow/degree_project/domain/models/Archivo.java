@@ -13,7 +13,7 @@ public class Archivo {
     private String fechaPublicacion;
     private byte[] contenido;
     
-    private Project proyecto;
+    private Proyecto proyecto;
     
     public Archivo(){}
 
@@ -26,11 +26,11 @@ public class Archivo {
         this.fechaPublicacion = fechaPublicacion;
     }
     
-    public Project getProyecto() {
+    public Proyecto getProyecto() {
         return proyecto;
     }
 
-    public void setProyecto(Project proyecto) {
+    public void setProyecto(Proyecto proyecto) {
         this.proyecto = proyecto;
     }
 

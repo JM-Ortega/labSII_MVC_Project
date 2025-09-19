@@ -1,7 +1,7 @@
 package co.unicauca.workflow.degree_project.access;
 
 import co.unicauca.workflow.degree_project.domain.models.Archivo;
-import co.unicauca.workflow.degree_project.domain.models.Project;
+import co.unicauca.workflow.degree_project.domain.models.Proyecto;
 import co.unicauca.workflow.degree_project.domain.models.User;
 import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 import co.unicauca.workflow.degree_project.domain.services.UserService;
@@ -296,8 +296,8 @@ public class SqliteRepository implements IUserRepository {
     }
 
     @Override
-    public List<Project> findFormatosAByEstudianteId(String estudianteId) {
-        List<Project> documentos = new ArrayList<>();
+    public List<Proyecto> findFormatosAByEstudianteId(String estudianteId) {
+        List<Proyecto> documentos = new ArrayList<>();
         String sql = """
             SELECT Proyecto.tipo, Proyecto.titulo, 
                    Archivo.fecha_subida, Archivo.estado, Archivo.nro_version, Archivo.blob
@@ -311,7 +311,7 @@ public class SqliteRepository implements IUserRepository {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Project pro = new Project();
+                Proyecto pro = new Proyecto();
                 pro.setTipoProyecto(rs.getString("tipo"));
                 pro.setTitulo(rs.getString("titulo"));
                 

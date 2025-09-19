@@ -8,7 +8,7 @@ import java.util.List;
  *
  * @author Maryuri
  */
-public class Project {
+public class Proyecto {
     private int idEstudiante;
     private int idProfesor;
     private String estadoP;
@@ -17,9 +17,9 @@ public class Project {
     private Date fechaProyecto;
     private List<Archivo> archivos  = new ArrayList<>();
     
-    public Project(){}
+    public Proyecto(){}
 
-    public Project(int idEstudiante, int idProfesor, String estadoP, String tipoProyecto, String titulo, Date fechaProyecto) {
+    public Proyecto(int idEstudiante, int idProfesor, String estadoP, String tipoProyecto, String titulo, Date fechaProyecto) {
         this.idEstudiante = idEstudiante;
         this.idProfesor = idProfesor;
         this.estadoP = estadoP;

@@ -67,22 +67,17 @@ public class DocenteController implements Initializable {
         loadModule("/co/unicauca/workflow/degree_project/view/EstadisticasDocente");
     }
     
-    private void loadModule(String modulo) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(modulo + ".fxml"));
-            Parent moduleRoot = loader.load();
-            bp.setCenter(moduleRoot);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    void cargarDatos() {
-        AuthResult usuario = Sesion.getUsuarioActual();
-        if(usuario != null){
-            nombreDocente.setText(usuario.nombre());
-        }else{
-            System.err.println("No hay usuario en sesion");
+    public void cargarDatos() {
+        AuthResult auth = Sesion.getInstancia().getUsuarioActual();
+        if (auth != null) {
+            nombreDocente.setText(auth.nombre());
+        } else {
+            System.err.println("No hay sesión activa; redirigiendo a login.");
+            try {
+                main.navigate("signin", "Login");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
     
@@ -97,6 +92,21 @@ public class DocenteController implements Initializable {
             if (!b.getStyleClass().contains("btn-default")) {
                 b.getStyleClass().add("btn-default");
             }
+        }
+    }
+    
+    private void loadModule(String modulo){
+        try {
+            String path = modulo + ".fxml";
+            FXMLLoader loader = main.newInjectedLoader(path);
+            Parent moduleRoot = loader.load();
+            Object controller = loader.getController();
+            if (controller instanceof FormatoADocenteController fa) {
+                fa.cargarDatos();
+            }
+            bp.setCenter(moduleRoot);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

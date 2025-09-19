@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -28,5 +31,18 @@
             </ImageView>
          </children>
       </Pane>
+      <Label layoutX="27.0" layoutY="33.0" text="ESTADISTICAS DE ARCHIVOS">
+         <font>
+            <Font name="Roboto Bold" size="18.0" />
+         </font>
+      </Label>
+      <BarChart fx:id="BarChartEstadisticas" layoutX="55.0" layoutY="159.0" prefHeight="400.0" prefWidth="669.0">
+        <xAxis>
+          <CategoryAxis side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis side="LEFT" />
+        </yAxis>
+      </BarChart>
    </children>
 </AnchorPane>

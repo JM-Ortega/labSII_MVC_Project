@@ -5,49 +5,62 @@ package co.unicauca.workflow.degree_project.domain.models;
  * @author Maryuri
  */
 public class Archivo {
-    private int id;
-    private int version;
+
+    private long id;
+    private long proyectoId;
+    private TipoArchivo tipo;
+    private int nroVersion;
     private String nombreArchivo;
-    private String tipoArchivo;
-    private String estadoArchivo;
-    private String fechaPublicacion;
-    private byte[] contenido;
-    
-    private Project proyecto;
-    
-    public Archivo(){}
+    private String fechaSubida;
+    private byte[] blob;
+    private EstadoArchivo estado;
 
-    public Archivo(int id, int version, String nombreArchivo, String tipoArchivo, String estadoArchivo, String fechaPublicacion) {
+    public Archivo() {
+    }
+
+    public Archivo(long id, long proyectoId, TipoArchivo tipo, int nroVersion,
+                   String nombreArchivo, String fechaSubida, byte[] blob, EstadoArchivo estado) {
         this.id = id;
-        this.version = version;
+        this.proyectoId = proyectoId;
+        this.tipo = tipo;
+        this.nroVersion = nroVersion;
         this.nombreArchivo = nombreArchivo;
-        this.tipoArchivo = tipoArchivo;
-        this.estadoArchivo = estadoArchivo;
-        this.fechaPublicacion = fechaPublicacion;
-    }
-    
-    public Project getProyecto() {
-        return proyecto;
+        this.fechaSubida = fechaSubida;
+        this.blob = blob;
+        this.estado = estado;
     }
 
-    public void setProyecto(Project proyecto) {
-        this.proyecto = proyecto;
-    }
-
-    public int getId() {
+    // Getters y Setters
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public int getVersion() {
-        return version;
+    public long getProyectoId() {
+        return proyectoId;
     }
 
-    public void setVersion(int version) {
-        this.version = version;
+    public void setProyectoId(long proyectoId) {
+        this.proyectoId = proyectoId;
+    }
+
+    public TipoArchivo getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoArchivo tipo) {
+        this.tipo = tipo;
+    }
+
+    public int getNroVersion() {
+        return nroVersion;
+    }
+
+    public void setNroVersion(int nroVersion) {
+        this.nroVersion = nroVersion;
     }
 
     public String getNombreArchivo() {
@@ -58,36 +71,27 @@ public class Archivo {
         this.nombreArchivo = nombreArchivo;
     }
 
-    public String getTipoArchivo() {
-        return tipoArchivo;
+    public String getFechaSubida() {
+        return fechaSubida;
     }
 
-    public void setTipoArchivo(String tipoArchivo) {
-        this.tipoArchivo = tipoArchivo;
+    public void setFechaSubida(String fechaSubida) {
+        this.fechaSubida = fechaSubida;
     }
 
-    public String getEstadoArchivo() {
-        return estadoArchivo;
+    public byte[] getBlob() {
+        return blob;
     }
 
-    public void setEstadoArchivo(String estadoArchivo) {
-        this.estadoArchivo = estadoArchivo;
+    public void setBlob(byte[] blob) {
+        this.blob = blob;
     }
 
-    public String getFechaPublicacion() {
-        return fechaPublicacion;
+    public EstadoArchivo getEstado() {
+        return estado;
     }
 
-    public void setFechaPublicacion(String fechaPublicacion) {
-        this.fechaPublicacion = fechaPublicacion;
+    public void setEstado(EstadoArchivo estado) {
+        this.estado = estado;
     }
-
-    public byte[] getContenido() {
-        return contenido;
-    }
-
-    public void setContenido(byte[] contenido) {
-        this.contenido = contenido;
-    }
-    
 }

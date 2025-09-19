@@ -1,6 +1,7 @@
 package co.unicauca.workflow.degree_project.presentation;
 
 import co.unicauca.workflow.degree_project.domain.services.AuthResult;
+import co.unicauca.workflow.degree_project.domain.services.IProyectoService;
 import co.unicauca.workflow.degree_project.infra.security.Sesion;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,6 +18,8 @@ public class FormatoADocenteController implements Initializable {
     
     @FXML private Label nombreDocente; 
     
+
+    private IProyectoService proyectoService;
     /**
      * Initializes the controller class.
      */
@@ -32,6 +35,10 @@ public class FormatoADocenteController implements Initializable {
         }else{
             System.err.println("No hay usuario en sesion");
         }
+    }
+    
+    public void setService(IProyectoService proyectoService) {
+        this.proyectoService = proyectoService;
     }
     
 }

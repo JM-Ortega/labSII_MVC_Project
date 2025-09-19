@@ -1,17 +1,22 @@
 package co.unicauca.workflow.degree_project.domain.services;
 
 import co.unicauca.workflow.degree_project.access.IUserRepository;
+import co.unicauca.workflow.degree_project.domain.models.Archivo;
 import co.unicauca.workflow.degree_project.domain.models.Programa;
+import co.unicauca.workflow.degree_project.domain.models.Project;
 import co.unicauca.workflow.degree_project.domain.models.Rol;
 import co.unicauca.workflow.degree_project.domain.models.User;
 import static co.unicauca.workflow.degree_project.infra.operation.RegistrationValidator.validate;
 import co.unicauca.workflow.degree_project.infra.security.Sesion;
+import co.unicauca.workflow.degree_project.presentation.dto.ProjectArchivoDTO;
+import java.util.ArrayList;
 
 import java.util.Map;
 
 import java.util.Arrays;
+import java.util.List;
 
-public class UserService implements IRegistrationService, ISignInService {
+public class UserService implements IRegistrationService, ISignInService, IUserService {
 
     private final IUserRepository repo;
     private final IPasswordHasher hasher;
@@ -109,4 +114,25 @@ public class UserService implements IRegistrationService, ISignInService {
                 0;
         };
     }
+
+    @Override
+    public List<ProjectArchivoDTO> getDatosEstudiante(String estudianteId) {
+        List<Project> proyectos = repo.findFormatosAByEstudianteId(estudianteId);
+        List<ProjectArchivoDTO> dtos = new ArrayList<>();
+        for (Project pro : proyectos) {
+            for (Archivo arch : pro.getArchivos()) {
+                ProjectArchivoDTO dto = new ProjectArchivoDTO();
+                dto.setTipo(pro.getTipoProyecto());
+                dto.setTitulo(pro.getTitulo());
+                dto.setFechaEmision(arch.getFechaPublicacion());
+                dto.setEstado(arch.getEstadoArchivo());
+                dto.setVersion(arch.getVersion());
+                dto.setContenido(arch.getContenido());
+
+                dtos.add(dto);
+            }
+        }
+        return dtos;
+    }
+
 }

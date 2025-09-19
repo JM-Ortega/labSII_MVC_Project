@@ -5,9 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="31ba49c8-c9f5-495d-ae60-c1a94e495720" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/62af2942-46b0-4363-a47d-5e0a53d2397a.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/62af2942-46b0-4363-a47d-5e0a53d2397a.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/co/unicauca/workflow/degree_project/access/SqliteRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/unicauca/workflow/degree_project/access/SqliteRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/degree_project.db" beforeDir="false" afterPath="$PROJECT_DIR$/degree_project.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/co/unicauca/workflow/degree_project/main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/unicauca/workflow/degree_project/main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/co/unicauca/workflow/degree_project/presentation/SigninController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/unicauca/workflow/degree_project/presentation/SigninController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/co/unicauca/workflow/degree_project/view/Coordinador_Archivo_item.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/co/unicauca/workflow/degree_project/view/Coordinador_Archivo_item.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/co/unicauca/workflow/degree_project/view/Coordinador_Proyectos.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/co/unicauca/workflow/degree_project/view/Coordinador_Proyectos.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

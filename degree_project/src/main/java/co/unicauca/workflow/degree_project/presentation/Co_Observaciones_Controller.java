@@ -22,6 +22,7 @@ public class Co_Observaciones_Controller implements Initializable{
         this.parent = parent;
     }
 
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Acción al hacer clic en el Label volver

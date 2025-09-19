@@ -499,7 +499,7 @@
     </routine>
     <schema id="191" parent="1" name="main">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2025-09-18.12:17:17</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-09-18.17:31:57</LastIntrospectionLocalTimestamp>
     </schema>
     <argument id="192" parent="16">
       <ArgumentDirection>R</ArgumentDirection>
@@ -1602,16 +1602,16 @@
       <System>1</System>
     </table>
     <check id="562" parent="555">
-      <Predicate>lower(nombre_archivo) LIKE &apos;%.pdf&apos;</Predicate>
+      <Predicate>estado IN (&apos;ACEPTADO&apos;,&apos;RECHAZADO&apos;,&apos;A EVALUAR&apos;)</Predicate>
     </check>
     <check id="563" parent="555">
-      <Predicate>nro_version &gt;= 1</Predicate>
+      <Predicate>lower(nombre_archivo) LIKE &apos;%.pdf&apos;</Predicate>
     </check>
     <check id="564" parent="555">
-      <Predicate>tipo IN (&apos;ACEOTADO&apos;,&apos;RECHAZADO&apos;,&apos;A_EVALUAR&apos;)</Predicate>
+      <Predicate>nro_version &gt;= 1</Predicate>
     </check>
     <check id="565" parent="555">
-      <Predicate>tipo IN (&apos;FORMATO_A&apos;,&apos;ANTEPROYECTO&apos;,&apos;FINAL&apos;,&apos;OTRO&apos;)</Predicate>
+      <Predicate>tipo IN (&apos;FORMATO A&apos;,&apos;ANTEPROYECTO&apos;,&apos;FINAL&apos;,&apos;OTRO&apos;)</Predicate>
     </check>
     <column id="566" parent="555" name="id">
       <AutoIncrement>1</AutoIncrement>

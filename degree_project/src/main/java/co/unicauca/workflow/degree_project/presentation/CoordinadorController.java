@@ -59,10 +59,8 @@ public class CoordinadorController implements Initializable{
             ));
             Parent root = loader.load();
 
-            // obtener controlador hijo
             Object controller = loader.getController();
 
-            // Si el hijo necesita referencia al padre, la pasamos
             if (controller instanceof Co_Proyecto_Controller cpc) {
                 cpc.setParentController(this);
             } else if (controller instanceof Co_Observaciones_Controller coc) {

@@ -73,7 +73,7 @@ public class SigninController {
                             dc.cargarDatos();
                         }
                     } catch (IOException e) {
-                        new Alert(Alert.AlertType.ERROR, "Error al abrir la vista de estudiante.").showAndWait();
+                        new Alert(Alert.AlertType.ERROR, "Error al abrir la vista del estudiante.").showAndWait();
                         e.printStackTrace();
                     }
                 }
@@ -93,7 +93,27 @@ public class SigninController {
                             dc.cargarDatos();
                         }
                     } catch (IOException e) {
-                        new Alert(Alert.AlertType.ERROR, "Error al abrir la vista de docente.").showAndWait();
+                        new Alert(Alert.AlertType.ERROR, "Error al abrir la vista del docente.").showAndWait();
+                        e.printStackTrace();
+                    }
+                }
+                case 3 -> {
+                    Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+                    alerta.setTitle("Correcto");
+                    alerta.setHeaderText(null);
+                    alerta.setContentText("Inicio de sesión como coordinador exitoso.");
+                    alerta.showAndWait();
+                    
+                    try {
+                        Object controller = main.navigateWithController("Coordinador", "Panel Coordinador");
+
+                        if (controller instanceof DocenteController dc) {
+                            dc.setService((IUserService) authService);
+                            dc.setEmail(usuario);
+                            dc.cargarDatos();
+                        }
+                    } catch (IOException e) {
+                        new Alert(Alert.AlertType.ERROR, "Error al abrir la vista del coordinador.").showAndWait();
                         e.printStackTrace();
                     }
                 }

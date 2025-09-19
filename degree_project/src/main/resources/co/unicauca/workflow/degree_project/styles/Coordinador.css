@@ -46,9 +46,10 @@
     -fx-text-fill: white;
     -fx-background-radius: 20;
     -fx-font-weight: bold;
-    -fx-pref-height: 33px;
+    -fx-pref-height: 30px;
     -fx-pref-width: 111px;
     -fx-font-family: "Roboto";
+    -fx-cursor: hand;
 }
 
 .estado-verde {
@@ -56,23 +57,57 @@
     -fx-text-fill: white;
     -fx-background-radius: 20;
     -fx-font-weight: bold;
-    -fx-pref-height: 33px;
+    -fx-pref-height: 30px;
     -fx-pref-width: 111px;
     -fx-font-family: "Roboto";
+    -fx-cursor: hand;
 }
 
-/* Quita bordes y da un fondo blanco plano */
 .choice-box {
     -fx-background-color: white;
-    -fx-border-color: transparent;
+    -fx-border-color: black;
+    -fx-border-width: 1;
     -fx-background-radius: 10;
-    -fx-border-radius: 0;
-    -fx-padding: 4 8 4 8; /* un poco de aire alrededor del texto */
+    -fx-border-radius: 10;
+    -fx-padding: 4 8 4 8;
 }
 
-/* Texto dentro de la choice-box */
 .choice-box > .label {
-    -fx-text-fill: bold; /* color del texto */
+    -fx-text-fill: black;
     -fx-font-size: 12px;
+    -fx-font-family: "Roboto";
+    -fx-font-weight: bold;
+}
+
+/* Fondo general de la tabla */
+.table-view {
+    -fx-background-color: #f5f5f5;   /* gris claro */
+    -fx-table-cell-border-color: transparent; /* quita bordes internos */
+    -fx-border-color: transparent;   /* sin bordes externos */
+}
+
+/* Cada fila */
+.table-row-cell {
+    -fx-background-color: transparent;   /* fondo transparente (hereda gris) */
+    -fx-border-color: transparent transparent #d0d0d0 transparent; 
+    -fx-border-width: 0 0 1 0;   /* solo la línea de abajo */
+    -fx-pref-height: 40px;
+}
+
+/* Celdas dentro de la fila */
+.table-cell {
+    -fx-border-color: transparent; /* sin bordes entre celdas */
+    -fx-alignment: CENTER-LEFT;    /* centrado vertical, alineado a la izquierda */
+    -fx-padding: 0 0 0 10;         /* aire a la izquierda */
     -fx-font-family: "Roboto", sans-serif;
+    -fx-font-size: 12px;
+}
+
+/* Cabecera */
+.table-view .column-header, 
+.table-view .column-header .label {
+    -fx-background-color: #e0e0e0;  /* gris un poco más oscuro */
+    -fx-font-family: "Roboto", sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
 }

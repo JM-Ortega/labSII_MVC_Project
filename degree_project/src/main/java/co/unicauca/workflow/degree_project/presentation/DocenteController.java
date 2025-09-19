@@ -1,10 +1,9 @@
 package co.unicauca.workflow.degree_project.presentation;
 
+import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 import co.unicauca.workflow.degree_project.domain.services.IUserService;
+import co.unicauca.workflow.degree_project.infra.security.Sesion;
 import co.unicauca.workflow.degree_project.main;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,11 +14,10 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 
-/**
- * FXML Controller class
- *
- * @author Maryuri
- */
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+
 public class DocenteController implements Initializable {
 
     @FXML private Button btnPrincipal;
@@ -28,11 +26,9 @@ public class DocenteController implements Initializable {
     @FXML private Label nombreDocente;
     @FXML private BorderPane bp;
     @FXML private AnchorPane ap;
-    
-    private IUserService service;
-    private String email;
-    
-    
+
+    private IUserService userService;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         btnPrincipal.getStyleClass().add("btn-pressed");
@@ -43,6 +39,7 @@ public class DocenteController implements Initializable {
     @FXML
     void switchToLogin(ActionEvent event) {
         try {
+            Sesion.getInstancia().limpiar();
             btnSalir.getStyleClass().add("btn-pressed");
             main.navigate("signin", "Login");
         } catch (IOException e) {
@@ -66,40 +63,39 @@ public class DocenteController implements Initializable {
         btnPrincipal.getStyleClass().add("btn-default");
         loadModule("/co/unicauca/workflow/degree_project/view/FormatoADocente");
     }
-    
+
     private void loadModule(String modulo) {
         try {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(modulo + ".fxml"));
-        Parent moduleRoot = loader.load();
+            String path = modulo + ".fxml";
+            FXMLLoader loader = main.newInjectedLoader(path);
+            Parent moduleRoot = loader.load();
 
-        Object controller = loader.getController();
-        if (controller instanceof FormatoADocenteController fa) {
-            fa.setService(service);
-            fa.setEmail(email);
-            fa.cargarDatos();
-        }
+            Object controller = loader.getController();
+            if (controller instanceof FormatoADocenteController fa) {
+                fa.cargarDatos();
+            }
 
-        bp.setCenter(moduleRoot);
+            bp.setCenter(moduleRoot);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    void setService(IUserService service) {
-        this.service = service;
+    public void setUserService(IUserService userService) {
+        this.userService = userService;
     }
 
-    void setEmail(String email) {
-        this.email = email;
-    }
-
-    void cargarDatos() {
-        if (service != null && email != null) {
-            String nombre = service.getName(email);
-            nombreDocente.setText(nombre);
-            } else {
-            System.err.println("Service o email no seteados");
+    public void cargarDatos() {
+        AuthResult auth = Sesion.getInstancia().getUsuarioActual();
+        if (auth != null) {
+            nombreDocente.setText(auth.nombre());
+        } else {
+            System.err.println("No hay sesión activa; redirigiendo a login.");
+            try {
+                main.navigate("signin", "Login");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
-

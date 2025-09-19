@@ -48,12 +48,13 @@ public class Co_Proyecto_Controller implements Initializable{
         colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
         configurarColumnaEstado();
 
-
+        /*
         // Columna Descargar
         configurarColumnaDescargar();
 
         // Cargar datos de prueba
         cargarDatosPrueba();
+        */
     }
     
     public void setParentController(CoordinadorController parent) {
@@ -117,7 +118,7 @@ public class Co_Proyecto_Controller implements Initializable{
             }
         });
     }
-
+    /*
     private void configurarColumnaDescargar() {
         // El valor de la celda será el objeto Proyecto completo
         colDescargar.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
@@ -179,12 +180,11 @@ public class Co_Proyecto_Controller implements Initializable{
         });
     }
 
-
-
     private void cargarDatosPrueba() {
         tabla.getItems().addAll(
                 new Proyecto("Proyecto A", "Profesor 1", "Tesis", "2025-09-18", "A evaluar", null),
                 new Proyecto("Proyecto B", "Profesor 2", "Investigación", "2025-09-17", "Evaluado", null)
         );
     }
+*/
 }

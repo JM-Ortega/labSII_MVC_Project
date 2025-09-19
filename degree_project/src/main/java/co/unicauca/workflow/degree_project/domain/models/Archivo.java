@@ -1,72 +1,93 @@
 package co.unicauca.workflow.degree_project.domain.models;
 
-import java.sql.Blob;
-import java.util.Date;
-
 public class Archivo {
-    private int id;
-    private int idProyecto;
-    private int version;
-    private Blob pdf;
-    private String tipoArchivo;
-    private String estadoArchivo;
-    private Date fechaPulicacion;
 
-    public int getId() {
+    private long id;
+    private long proyectoId;
+    private TipoArchivo tipo;
+    private int nroVersion;
+    private String nombreArchivo;
+    private String fechaSubida;
+    private byte[] blob;
+    private EstadoArchivo estado;
+
+    public Archivo() {
+    }
+
+    public Archivo(long id, long proyectoId, TipoArchivo tipo, int nroVersion,
+                   String nombreArchivo, String fechaSubida, byte[] blob, EstadoArchivo estado) {
+        this.id = id;
+        this.proyectoId = proyectoId;
+        this.tipo = tipo;
+        this.nroVersion = nroVersion;
+        this.nombreArchivo = nombreArchivo;
+        this.fechaSubida = fechaSubida;
+        this.blob = blob;
+        this.estado = estado;
+    }
+
+    // Getters y Setters
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public int getIdProyecto() {
-        return idProyecto;
+    public long getProyectoId() {
+        return proyectoId;
     }
 
-    public void setIdProyecto(int idProyecto) {
-        this.idProyecto = idProyecto;
+    public void setProyectoId(long proyectoId) {
+        this.proyectoId = proyectoId;
     }
 
-    public int getVersion() {
-        return version;
+    public TipoArchivo getTipo() {
+        return tipo;
     }
 
-    public void setVersion(int version) {
-        this.version = version;
+    public void setTipo(TipoArchivo tipo) {
+        this.tipo = tipo;
     }
 
-    public Blob getPdf() {
-        return pdf;
+    public int getNroVersion() {
+        return nroVersion;
     }
 
-    public void setPdf(Blob pdf) {
-        this.pdf = pdf;
+    public void setNroVersion(int nroVersion) {
+        this.nroVersion = nroVersion;
     }
 
-    public String getTipoArchivo() {
-        return tipoArchivo;
+    public String getNombreArchivo() {
+        return nombreArchivo;
     }
 
-    public void setTipoArchivo(String tipoArchivo) {
-        this.tipoArchivo = tipoArchivo;
+    public void setNombreArchivo(String nombreArchivo) {
+        this.nombreArchivo = nombreArchivo;
     }
 
-    public String getEstadoArchivo() {
-        return estadoArchivo;
+    public String getFechaSubida() {
+        return fechaSubida;
     }
 
-    public void setEstadoArchivo(String estadoArchivo) {
-        this.estadoArchivo = estadoArchivo;
+    public void setFechaSubida(String fechaSubida) {
+        this.fechaSubida = fechaSubida;
     }
 
-    public Date getFechaPulicacion() {
-        return fechaPulicacion;
+    public byte[] getBlob() {
+        return blob;
     }
 
-    public void setFechaPulicacion(Date fechaPulicacion) {
-        this.fechaPulicacion = fechaPulicacion;
+    public void setBlob(byte[] blob) {
+        this.blob = blob;
     }
-    
-    
+
+    public EstadoArchivo getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoArchivo estado) {
+        this.estado = estado;
+    }
 }

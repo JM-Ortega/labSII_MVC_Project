@@ -1,0 +1,39 @@
+/* Fondo base */
+.root-white {
+    -fx-background-color: white;
+}
+
+/* Tipografía y títulos */
+.title {
+    -fx-fill: #1F2A44;
+    -fx-font-weight: bold;
+}
+
+.subtitle {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* Secciones reutilizables (padding + separación) */
+.section {
+    -fx-padding: 10;
+}
+
+/* Labels de estado */
+.label-strong {
+    -fx-font-weight: bold;
+}
+.label-muted {
+    -fx-text-fill: #666666;
+}
+.label-error {
+    -fx-text-fill: #D84315;
+}
+.label-success {
+    -fx-text-fill: #2E7D32;
+}
+
+/* Header (opcional para dar aire visual) */
+.header {
+    -fx-padding: 8 0 4 0;
+}

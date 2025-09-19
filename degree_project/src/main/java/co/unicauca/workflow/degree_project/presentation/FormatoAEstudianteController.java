@@ -53,7 +53,7 @@ public class FormatoAEstudianteController implements Initializable {
     } 
     
     public void cargarDatos() {
-        AuthResult usuario = Sesion.getInstancia().getUsuarioActual();
+        AuthResult usuario = Sesion.getUsuarioActual();
         if(usuario != null){ 
             nombreEstudiante.setText(usuario.nombre()); 
             IUserService service = new UserService( 
@@ -158,7 +158,6 @@ public class FormatoAEstudianteController implements Initializable {
         });
     }
 
-    // helper mínimo para cargar la imagen desde resources
     private Image loadImage(String resourcePath) {
         var is = getClass().getResourceAsStream(resourcePath);
         return (is == null) ? null : new Image(is);

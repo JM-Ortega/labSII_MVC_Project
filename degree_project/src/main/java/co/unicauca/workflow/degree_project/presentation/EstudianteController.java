@@ -32,9 +32,7 @@ public class EstudianteController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        btnPrincipal.getStyleClass().add("btn-pressed");
-        btnFormatoA.getStyleClass().add("btn-default");
-        btnSalir.getStyleClass().add("btn-default");
+        activarBoton(btnPrincipal, btnFormatoA, btnSalir);
         cargarDatos();
     }
 
@@ -52,17 +50,13 @@ public class EstudianteController implements Initializable {
 
     @FXML
     private void showInfoPrincipal(ActionEvent event) {
-        btnPrincipal.getStyleClass().add("btn-pressed");
-        btnFormatoA.getStyleClass().remove("btn-pressed");
-        btnFormatoA.getStyleClass().add("btn-default");
+        activarBoton(btnPrincipal, btnFormatoA, btnSalir);
         bp.setCenter(ap);
     }
 
     @FXML
     private void showInfoFormatoA(ActionEvent event) {
-        btnFormatoA.getStyleClass().add("btn-pressed");
-        btnPrincipal.getStyleClass().remove("btn-pressed");
-        btnPrincipal.getStyleClass().add("btn-default");
+        activarBoton(btnFormatoA, btnPrincipal, btnSalir);
         loadModule("/co/unicauca/workflow/degree_project/view/FormatoAEstudiante");
     }
 
@@ -84,4 +78,19 @@ public class EstudianteController implements Initializable {
             System.err.println("No hay usuario en sesion");
         }
     }
+    
+    private void activarBoton(Button botonActivo, Button... otros) {
+        botonActivo.getStyleClass().remove("btn-default");
+        if (!botonActivo.getStyleClass().contains("btn-pressed")) {
+            botonActivo.getStyleClass().add("btn-pressed");
+        }
+
+        for (Button b : otros) {
+            b.getStyleClass().remove("btn-pressed");
+            if (!b.getStyleClass().contains("btn-default")) {
+                b.getStyleClass().add("btn-default");
+            }
+        }
+    }
+
 }

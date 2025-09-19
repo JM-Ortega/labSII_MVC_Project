@@ -1,11 +1,16 @@
 package co.unicauca.workflow.degree_project.access;
 
+import co.unicauca.workflow.degree_project.domain.models.Archivo;
+import co.unicauca.workflow.degree_project.domain.models.Project;
 import co.unicauca.workflow.degree_project.domain.models.User;
 import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 import co.unicauca.workflow.degree_project.domain.services.UserService;
 import co.unicauca.workflow.degree_project.infra.security.Argon2PasswordHasher;
+import co.unicauca.workflow.degree_project.infra.security.Sesion;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -78,6 +83,7 @@ public class SqliteRepository implements IUserRepository {
           id             INTEGER PRIMARY KEY AUTOINCREMENT,
           proyecto_id    INTEGER NOT NULL,
           tipo           TEXT NOT NULL CHECK (tipo IN ('FORMATO_A','ANTEPROYECTO','FINAL','OTRO')),
+          estado         TEXT NOT NULL CHECK (estado IN ('ACEPTADO','RECHAZADO','A_EVALUAR')) DEFAULT 'A_EVALUAR',
           nro_version    INTEGER NOT NULL CHECK (nro_version >= 1),
           nombre_archivo TEXT NOT NULL CHECK (lower(nombre_archivo) LIKE '%.pdf'),
           fecha_subida   TEXT NOT NULL DEFAULT (datetime('now')),
@@ -279,12 +285,53 @@ public class SqliteRepository implements IUserRepository {
                 String userId = rs.getString("id");
                 String rol = rs.getString("rol");
                 String nombreCompleto = rs.getString("nombre") + " " + rs.getString("apellido");
-                return new AuthResult(userId, rol, nombreCompleto);
+                AuthResult authResult = new AuthResult(userId, rol, nombreCompleto);
+                Sesion.getInstancia().setUsuarioActual(authResult);
+                return authResult;
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
+    }
+
+    @Override
+    public List<Project> findFormatosAByEstudianteId(String estudianteId) {
+        List<Project> documentos = new ArrayList<>();
+        String sql = """
+            SELECT Proyecto.tipo, Proyecto.titulo, 
+                   Archivo.fecha_subida, Archivo.estado, Archivo.nro_version, Archivo.blob
+            FROM Proyecto 
+            INNER JOIN Archivo ON Proyecto.id = Archivo.proyecto_id
+            WHERE Proyecto.estudiante_id = ? AND Archivo.tipo = "FORMATO_A"
+        """;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, estudianteId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Project pro = new Project();
+                pro.setTipoProyecto(rs.getString("tipo"));
+                pro.setTitulo(rs.getString("titulo"));
+                
+                Archivo arch = new Archivo();
+                arch.setFechaPublicacion(rs.getString("fecha_subida"));
+                arch.setEstadoArchivo(rs.getString("estado"));
+                arch.setVersion(rs.getInt("nro_version"));
+                byte[] contenido = rs.getBytes("blob");
+                arch.setContenido(contenido);
+                System.out.println("DEBUG: blob null? " + (contenido == null) + " length=" + (contenido == null ? 0 : contenido.length));
+                
+                pro.agregarArchivo(arch);
+                
+                documentos.add(pro);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return documentos;
     }
 
 }

@@ -1,9 +1,7 @@
 package co.unicauca.workflow.degree_project.domain.services;
 
 import co.unicauca.workflow.degree_project.access.IUserRepository;
-import co.unicauca.workflow.degree_project.domain.models.Archivo;
 import co.unicauca.workflow.degree_project.domain.models.Programa;
-import co.unicauca.workflow.degree_project.domain.models.Proyecto;
 import co.unicauca.workflow.degree_project.domain.models.Rol;
 import co.unicauca.workflow.degree_project.domain.models.User;
 
@@ -13,7 +11,7 @@ import java.util.Optional;
 
 import static co.unicauca.workflow.degree_project.infra.operation.RegistrationValidator.validate;
 
-public class UserService implements IRegistrationService, ISignInService {
+public class UserService implements IRegistrationService, ISignInService, IUserService {
 
     private final IUserRepository repo;
     private final IPasswordHasher hasher;

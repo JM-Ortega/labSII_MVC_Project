@@ -1,6 +1,7 @@
 package co.unicauca.workflow.degree_project.presentation;
 
 import co.unicauca.workflow.degree_project.domain.services.AuthResult;
+import co.unicauca.workflow.degree_project.domain.services.IUserService;
 import co.unicauca.workflow.degree_project.infra.security.Sesion;
 import co.unicauca.workflow.degree_project.main;
 import java.io.IOException;
@@ -29,6 +30,8 @@ public class EstudianteController implements Initializable {
     @FXML private Label nombreEstudiante;
     @FXML private BorderPane bp;
     @FXML private AnchorPane ap;
+    
+    private IUserService userService;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -39,7 +42,7 @@ public class EstudianteController implements Initializable {
     @FXML
     private void switchToLogin(ActionEvent event) {
         try {
-            Sesion.limpiarSesion();
+            Sesion.getInstancia().limpiar();
             btnSalir.getStyleClass().add("btn-pressed");
             main.navigate("signin", "Login");
         } catch (IOException e) {
@@ -71,11 +74,16 @@ public class EstudianteController implements Initializable {
     }
     
     void cargarDatos() {
-        AuthResult usuario = Sesion.getUsuarioActual();
-        if(usuario != null){
-            nombreEstudiante.setText(usuario.nombre());
-        }else{
-            System.err.println("No hay usuario en sesion");
+        AuthResult auth = Sesion.getInstancia().getUsuarioActual();
+        if (auth != null) {
+            nombreEstudiante.setText(auth.nombre());
+        } else {
+            System.err.println("No hay sesión activa; redirigiendo a login.");
+            try {
+                main.navigate("signin", "Login");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
     
@@ -91,6 +99,10 @@ public class EstudianteController implements Initializable {
                 b.getStyleClass().add("btn-default");
             }
         }
+    }
+    
+    public void setUserService(IUserService userService) {
+        this.userService = userService;
     }
 
 }

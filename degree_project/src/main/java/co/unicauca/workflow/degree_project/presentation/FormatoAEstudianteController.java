@@ -1,20 +1,15 @@
 package co.unicauca.workflow.degree_project.presentation;
 
-import co.unicauca.workflow.degree_project.access.Factory;
 import co.unicauca.workflow.degree_project.domain.services.AuthResult;
-import co.unicauca.workflow.degree_project.domain.services.IUserService;
-import co.unicauca.workflow.degree_project.domain.services.UserService;
-import co.unicauca.workflow.degree_project.infra.security.Argon2PasswordHasher;
 import co.unicauca.workflow.degree_project.infra.security.Sesion;
+import co.unicauca.workflow.degree_project.main;
 import co.unicauca.workflow.degree_project.presentation.dto.ProjectArchivoDTO;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 import javafx.animation.PauseTransition;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -53,19 +48,18 @@ public class FormatoAEstudianteController implements Initializable {
     } 
     
     public void cargarDatos() {
-        AuthResult usuario = Sesion.getUsuarioActual();
-        if(usuario != null){ 
-            nombreEstudiante.setText(usuario.nombre()); 
-            IUserService service = new UserService( 
-                    Factory.getInstance().getRepository("default"),
-                    new Argon2PasswordHasher() ); 
-            
-            List<ProjectArchivoDTO> docs = service.getDatosEstudiante(usuario.userId()); 
-            tabla.setItems(FXCollections.observableArrayList(docs)); 
-        }else{ 
-            System.err.println("No hay usuario en sesion"); 
-        } 
-    } 
+        AuthResult auth = Sesion.getInstancia().getUsuarioActual();
+        if (auth != null) {
+            nombreEstudiante.setText(auth.nombre());
+        } else {
+            System.err.println("No hay sesión activa; redirigiendo a login.");
+            try {
+                main.navigate("signin", "Login");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     
     private void configurarColumnas() {
         colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo")); 

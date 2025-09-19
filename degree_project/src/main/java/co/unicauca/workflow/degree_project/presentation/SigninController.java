@@ -27,13 +27,8 @@ public class SigninController {
         this.authService = signInService;
     }
 
-    public void setServices(ISignInService signInService, IUserService userService) {
-        this.authService = signInService;
-        this.userService = userService;
-    }
-
     @FXML
-    private void ingresar() throws IOException {
+    private void ingresar() throws IOException{
         if (txtCorreo.getText().trim().isEmpty() || txtConrtaseña.getText().trim().isEmpty()) {
             alerta(Alert.AlertType.ERROR, "Error", "Campos incompletos", "Por favor, rellene todos los campos.");
             return;
@@ -42,12 +37,11 @@ public class SigninController {
             alerta(Alert.AlertType.ERROR, "Error", null, "El servicio de autenticación no está disponible.");
             return;
         }
-
         String usuario = txtCorreo.getText().trim().toLowerCase();
         char[] passwordIngresada = txtConrtaseña.getText().toCharArray();
 
         try {
-            Optional<AuthResult> maybeAuth = authService.validarSesion(usuario, passwordIngresada);
+          Optional<AuthResult> maybeAuth = authService.validarSesion(usuario, passwordIngresada);
 
             if (maybeAuth.isEmpty()) {
                 alerta(Alert.AlertType.WARNING, "Credenciales inválidas", null,
@@ -62,16 +56,19 @@ public class SigninController {
                 case "Estudiante" -> {
                     alerta(Alert.AlertType.INFORMATION, "Correcto", null,
                             "Inicio de sesión como estudiante exitoso.");
-                    try {
+                      try {
                         Object controller = main.navigateWithController("Estudiante", "Panel Estudiante");
-                        if (controller instanceof EstudianteController dc) {
-                            if (userService != null) dc.setService(userService);
-                            else if (authService instanceof IUserService us) dc.setService(us);
-                            dc.setEmail(usuario);
-                            dc.cargarDatos();
+                         if (controller instanceof EstudianteController ec) {
+                             // 1) Pasa los servicios que Docente va a usar
+                            if (userService != null) {
+                                ec.setUserService(userService);
+                            } else if (authService instanceof IUserService us) {
+                                ec.setUserService(us);
+                            }
+                            ec.cargarDatos();
                         }
                     } catch (IOException e) {
-                        alerta(Alert.AlertType.ERROR, "Error", null, "Error al abrir la vista de estudiante.");
+                        alerta(Alert.AlertType.ERROR, "Error", null, "Error al abrir la vista de docente.");
                         e.printStackTrace();
                     }
                 }
@@ -80,8 +77,8 @@ public class SigninController {
                             "Inicio de sesión como docente exitoso.");
                     try {
                         Object controller = main.navigateWithController("Docente", "Panel Docente");
-                        if (controller instanceof DocenteController dc) {
-                            // 1) Pasa los servicios que Docente va a usar
+                         if (controller instanceof DocenteController dc) {
+                             // 1) Pasa los servicios que Docente va a usar
                             if (userService != null) {
                                 dc.setUserService(userService);
                             } else if (authService instanceof IUserService us) {
@@ -94,6 +91,7 @@ public class SigninController {
                         e.printStackTrace();
                     }
                 }
+
                 case "Coordinador" -> {
                     alerta(Alert.AlertType.INFORMATION, "Correcto", null,
                             "Inicio de sesión como coordinador exitoso.");

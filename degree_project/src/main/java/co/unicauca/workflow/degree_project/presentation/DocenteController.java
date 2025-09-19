@@ -108,4 +108,8 @@ public class DocenteController implements Initializable {
             e.printStackTrace();
         }
     }
+    
+    public void setUserService(IUserService userService) {
+        this.userService = userService;
+    }
 }

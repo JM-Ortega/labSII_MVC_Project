@@ -1,14 +1,16 @@
 package co.unicauca.workflow.degree_project.presentation;
 
+import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 import co.unicauca.workflow.degree_project.domain.services.ISignInService;
 import co.unicauca.workflow.degree_project.domain.services.IUserService;
 import co.unicauca.workflow.degree_project.main;
-import java.io.IOException;
 import javafx.fxml.FXML;
-
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+
+import java.io.IOException;
+import java.util.Optional;
 
 public class SigninController {
 
@@ -18,28 +20,25 @@ public class SigninController {
     private PasswordField txtConrtaseña;
 
     private ISignInService authService;
+    private IUserService userService;
 
     public void setServices(ISignInService signInService) {
         this.authService = signInService;
     }
 
+    public void setServices(ISignInService signInService, IUserService userService) {
+        this.authService = signInService;
+        this.userService = userService;
+    }
+
     @FXML
     private void ingresar() throws IOException {
         if (txtCorreo.getText().trim().isEmpty() || txtConrtaseña.getText().trim().isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Campos incompletos");
-            alert.setContentText("Por favor, rellene todos los campos.");
-            alert.showAndWait();
+            alerta(Alert.AlertType.ERROR, "Error", "Campos incompletos", "Por favor, rellene todos los campos.");
             return;
         }
-
         if (authService == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText(null);
-            alert.setContentText("El servicio de autenticación no está disponible.");
-            alert.showAndWait();
+            alerta(Alert.AlertType.ERROR, "Error", null, "El servicio de autenticación no está disponible.");
             return;
         }
 
@@ -47,66 +46,64 @@ public class SigninController {
         char[] passwordIngresada = txtConrtaseña.getText().toCharArray();
 
         try {
-            int answer = authService.validacion(usuario, passwordIngresada);
+            Optional<AuthResult> maybeAuth = authService.validarSesion(usuario, passwordIngresada);
 
-            switch (answer) {
-                case 0 -> {
-                    Alert alerta = new Alert(Alert.AlertType.WARNING);
-                    alerta.setTitle("Credenciales inválidas");
-                    alerta.setHeaderText(null);
-                    alerta.setContentText("No fue posible ingresar, usuario o contraseña incorrectos.");
-                    alerta.showAndWait();
-                }
-                case 1 -> {
-                    Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-                    alerta.setTitle("Correcto");
-                    alerta.setHeaderText(null);
-                    alerta.setContentText("Inicio de sesión como estudiante exitoso.");
-                    alerta.showAndWait();
+            if (maybeAuth.isEmpty()) {
+                alerta(Alert.AlertType.WARNING, "Credenciales inválidas", null,
+                        "No fue posible ingresar, usuario o contraseña incorrectos.");
+                return;
+            }
 
-                  try {
+            AuthResult auth = maybeAuth.get(); // éxito
+
+            switch (auth.rol()) {
+                case "Estudiante" -> {
+                    alerta(Alert.AlertType.INFORMATION, "Correcto", null,
+                            "Inicio de sesión como estudiante exitoso.");
+                    try {
                         Object controller = main.navigateWithController("Estudiante", "Panel Estudiante");
-
                         if (controller instanceof EstudianteController dc) {
-                            dc.setService((IUserService) authService);
+                            if (userService != null) dc.setService(userService);
+                            else if (authService instanceof IUserService us) dc.setService(us);
                             dc.setEmail(usuario);
                             dc.cargarDatos();
                         }
                     } catch (IOException e) {
-                        new Alert(Alert.AlertType.ERROR, "Error al abrir la vista de estudiante.").showAndWait();
+                        alerta(Alert.AlertType.ERROR, "Error", null, "Error al abrir la vista de estudiante.");
                         e.printStackTrace();
                     }
                 }
-                case 2 -> {
-                    Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-                    alerta.setTitle("Correcto");
-                    alerta.setHeaderText(null);
-                    alerta.setContentText("Inicio de sesión como docente exitoso.");
-                    alerta.showAndWait();
-                    
+                case "Docente" -> {
+                    alerta(Alert.AlertType.INFORMATION, "Correcto", null,
+                            "Inicio de sesión como docente exitoso.");
                     try {
                         Object controller = main.navigateWithController("Docente", "Panel Docente");
-
                         if (controller instanceof DocenteController dc) {
-                            dc.setService((IUserService) authService);
-                            dc.setEmail(usuario);
+                            // 1) Pasa los servicios que Docente va a usar
+                            if (userService != null) {
+                                dc.setUserService(userService);
+                            } else if (authService instanceof IUserService us) {
+                                dc.setUserService(us); // si tu UserService implementa IUserService
+                            }
+                            dc.setAuth(auth);
                             dc.cargarDatos();
                         }
                     } catch (IOException e) {
-                        new Alert(Alert.AlertType.ERROR, "Error al abrir la vista de docente.").showAndWait();
+                        alerta(Alert.AlertType.ERROR, "Error", null, "Error al abrir la vista de docente.");
                         e.printStackTrace();
                     }
                 }
+
+                case "Coordinador" -> {
+                    alerta(Alert.AlertType.INFORMATION, "Correcto", null,
+                            "Inicio de sesión como coordinador exitoso.");
+                }
                 default -> {
-                    Alert alerta = new Alert(Alert.AlertType.ERROR);
-                    alerta.setTitle("Error");
-                    alerta.setHeaderText(null);
-                    alerta.setContentText("El usuario no tiene un rol asociado.");
-                    alerta.showAndWait();
+                    alerta(Alert.AlertType.ERROR, "Error", null, "El usuario no tiene un rol asociado.");
                 }
             }
         } finally {
-            java.util.Arrays.fill(passwordIngresada, '\0');
+            java.util.Arrays.fill(passwordIngresada, '\0'); // higiene de memoria
         }
     }
 
@@ -115,7 +112,15 @@ public class SigninController {
         try {
             main.navigate("register", "Registro");
         } catch (IOException e) {
-            /* mostrar alerta */ }
+            alerta(Alert.AlertType.ERROR, "Error", null, "No se pudo abrir la vista de registro.");
+        }
     }
 
+    private void alerta(Alert.AlertType type, String title, String header, String content) {
+        Alert a = new Alert(type);
+        a.setTitle(title);
+        a.setHeaderText(header);
+        a.setContentText(content);
+        a.showAndWait();
+    }
 }

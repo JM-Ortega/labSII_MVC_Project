@@ -94,6 +94,26 @@ public class SigninController {
                         e.printStackTrace();
                     }
                 }
+                case 3 -> {
+                    Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+                    alerta.setTitle("Correcto");
+                    alerta.setHeaderText(null);
+                    alerta.setContentText("Inicio de sesión como coordinador exitoso.");
+                    alerta.showAndWait();
+                    
+                    try {
+                        Object controller = main.navigateWithController("Coordinador", "Panel Coordinador");
+
+                        if (controller instanceof DocenteController dc) {
+                            dc.setService((IUserService) authService);
+                            dc.setEmail(usuario);
+                            dc.cargarDatos();
+                        }
+                    } catch (IOException e) {
+                        alerta(Alert.AlertType.ERROR, "Error", null, "Error al abrir la vista del coordinador.");
+                        e.printStackTrace();
+                    }
+                }
 
                 case "Coordinador" -> {
                     alerta(Alert.AlertType.INFORMATION, "Correcto", null,

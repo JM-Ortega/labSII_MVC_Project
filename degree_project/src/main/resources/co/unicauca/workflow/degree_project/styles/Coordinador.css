@@ -1,0 +1,110 @@
+.fondo{
+    -fx-background-color: #ffffff;
+}
+
+.fondo2{
+    -fx-background-color: #F0F0F0;
+}
+
+.fondoPanel{
+    -fx-background-color:#4670A4
+}
+
+.button{
+    -fx-background-color: #4670A4;
+}
+
+.btnGris {
+    -fx-background-color: #b0b0b0;
+    -fx-text-fill: black;
+    -fx-font-size: 14px;
+    -fx-font-family: "Roboto";
+    -fx-background-radius: 0;
+    -fx-padding: 8 16 8 16;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+
+.btnGris:hover {
+    -fx-background-color: #9e9e9e;
+}
+
+.btnGris:pressed {
+    -fx-background-color: #7d7d7d;
+}
+
+.hoverable {
+    -fx-background-color: #6798D4;
+}
+
+.button.selected {
+    -fx-background-color: #6798D4;
+}
+
+.estado-rojo {
+    -fx-background-color: #EA2F2F;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-font-weight: bold;
+    -fx-pref-height: 30px;
+    -fx-pref-width: 111px;
+    -fx-font-family: "Roboto";
+    -fx-cursor: hand;
+}
+
+.estado-verde {
+    -fx-background-color: green;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-font-weight: bold;
+    -fx-pref-height: 30px;
+    -fx-pref-width: 111px;
+    -fx-font-family: "Roboto";
+    -fx-cursor: hand;
+}
+
+.choice-box {
+    -fx-background-color: white;
+    -fx-border-color: black;
+    -fx-border-width: 1;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-padding: 4 8 4 8;
+}
+
+.choice-box > .label {
+    -fx-text-fill: black;
+    -fx-font-size: 12px;
+    -fx-font-family: "Roboto";
+    -fx-font-weight: bold;
+}
+
+.table-view {
+    -fx-background-color: #f5f5f5;
+    -fx-table-cell-border-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.table-row-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #d0d0d0 transparent; 
+    -fx-border-width: 0 0 1 0;
+    -fx-pref-height: 40px;
+}
+
+.table-cell {
+    -fx-border-color: transparent;
+    -fx-alignment: CENTER-LEFT;
+    -fx-padding: 0 0 0 10;
+    -fx-font-family: "Roboto", sans-serif;
+    -fx-font-size: 12px;
+}
+
+/* Cabecera */
+.table-view .column-header, 
+.table-view .column-header .label {
+    -fx-background-color: #e0e0e0;
+    -fx-font-family: "Roboto", sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}

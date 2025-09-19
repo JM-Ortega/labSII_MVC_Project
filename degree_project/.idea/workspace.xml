@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="31ba49c8-c9f5-495d-ae60-c1a94e495720" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/62af2942-46b0-4363-a47d-5e0a53d2397a.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/62af2942-46b0-4363-a47d-5e0a53d2397a.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/data_source_mapping.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/data_source_mapping.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/degree_project.db" beforeDir="false" afterPath="$PROJECT_DIR$/degree_project.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/co/unicauca/workflow/degree_project/main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/unicauca/workflow/degree_project/main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/co/unicauca/workflow/degree_project/presentation/SigninController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/co/unicauca/workflow/degree_project/presentation/SigninController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/co/unicauca/workflow/degree_project/view/Coordinador_Archivo_item.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/co/unicauca/workflow/degree_project/view/Coordinador_Archivo_item.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/co/unicauca/workflow/degree_project/view/Coordinador_Proyectos.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/co/unicauca/workflow/degree_project/view/Coordinador_Proyectos.fxml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="32rHY9vzerB7iFAZPd9I4wfGO5H" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/Coordinador&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/laure/Desktop/Universidad/Proyecto sw/labSII_MVC_Project/degree_project&quot;
+  }
+}</component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="31ba49c8-c9f5-495d-ae60-c1a94e495720" name="Changes" comment="" />
+      <created>1758171817547</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1758171817547</updated>
+    </task>
+    <servers />
+  </component>
+</project>

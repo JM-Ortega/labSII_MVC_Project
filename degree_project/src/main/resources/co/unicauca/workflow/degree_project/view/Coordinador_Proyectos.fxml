@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="566.0" prefWidth="919.0" styleClass="fondo" stylesheets="@../styles/Coordinador.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.unicauca.workflow.degree_project.presentation.Co_Proyecto_Controller">
+   <children>
+      <TableView fx:id="tabla" focusTraversable="false" layoutX="12.0" prefHeight="564.0" prefWidth="895.0" scaleShape="false">
+        <columns>
+          <TableColumn fx:id="colNombreProyecto" editable="false" prefWidth="245.0" resizable="false" text="Nombre del proyecto" />
+          <TableColumn fx:id="colNombreProfesor" editable="false" minWidth="0.0" prefWidth="198.0" resizable="false" text="Nombre del profesor" />
+            <TableColumn fx:id="colTipo" editable="false" minWidth="0.0" prefWidth="121.0" resizable="false" text="Tipo" />
+            <TableColumn fx:id="colFecha" editable="false" prefWidth="127.0" resizable="false" text="Fecha" />
+            <TableColumn fx:id="colEstado" editable="false" prefWidth="118.0" resizable="false" text="Estado" />
+            <TableColumn fx:id="colDescargar" editable="false" prefWidth="84.0" resizable="false" text="Descargar" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>

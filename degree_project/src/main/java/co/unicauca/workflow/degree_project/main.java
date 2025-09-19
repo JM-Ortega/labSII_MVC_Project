@@ -8,6 +8,9 @@ import co.unicauca.workflow.degree_project.access.IArchivoRepository;
 import co.unicauca.workflow.degree_project.access.IProyectoRepository;
 import co.unicauca.workflow.degree_project.access.IUserRepository;
 import co.unicauca.workflow.degree_project.domain.services.*;
+import co.unicauca.workflow.degree_project.infra.communication.EmailMessage;
+import co.unicauca.workflow.degree_project.infra.communication.IEmailService;
+import co.unicauca.workflow.degree_project.infra.communication.LoggingEmailService;
 import co.unicauca.workflow.degree_project.infra.security.Argon2PasswordHasher;
 import co.unicauca.workflow.degree_project.presentation.FormatoADocenteController;
 import co.unicauca.workflow.degree_project.presentation.RegisterController;
@@ -53,7 +56,7 @@ public class main extends Application {
         primaryStage = stage;
 
         // 3) Carga vista inicial
-        Parent root = loadFXML("/co/unicauca/workflow/degree_project/view/signin.fxml");
+        Parent root = loadFXML("/co/unicauca/workflow/degree_project/view/Coordinador.fxml");
 
         // 4) Configura escena/ventana
         scene = new Scene(root);
@@ -149,6 +152,17 @@ public class main extends Application {
 
 
     public static void main(String[] args) {
-        launch(args);
+        
+        IEmailService emailService = new LoggingEmailService();
+
+        EmailMessage message = new EmailMessage(
+            "destinatario@ejemplo.com",
+            "Prueba de correo",
+            "Hola! Este es un correo simulado."
+        );
+
+        emailService.sendEmail(message);
+        
+        //launch(args);
     }
 }

@@ -61,10 +61,8 @@ public class FormatoAEstudianteController implements Initializable {
         if (auth != null) {
             nombreEstudiante.setText(auth.nombre());
             
-            // 🔹 Obtener archivos del estudiante
             List<Archivo> archivos = proyectoService.listarFormatosAPorEstudiante(auth.userId());
             
-            // 🔹 Cargar proyectos relacionados en cache
             for (Archivo archivo : archivos) {
                 if (!proyectosCache.containsKey(archivo.getProyectoId())) {
                     Proyecto proyecto = proyectoService.buscarProyectoPorId(archivo.getProyectoId());
@@ -87,28 +85,23 @@ public class FormatoAEstudianteController implements Initializable {
     }
     
     private void configurarColumnas() {
-        // 🔹 Tipo de archivo (enum → String)
         colTipo.setCellValueFactory(cellData -> 
             new SimpleStringProperty(cellData.getValue().getTipo().toString())
         );
 
-        // 🔹 Proyecto.titulo (usando cache)
         colTitulo.setCellValueFactory(cellData -> {
             Proyecto proyecto = proyectosCache.get(cellData.getValue().getProyectoId());
             return new SimpleStringProperty(proyecto != null ? proyecto.getTitulo() : "N/A");
         });
 
-        // 🔹 Archivo.fechaSubida
         colFechaEmision.setCellValueFactory(cellData -> 
             new SimpleStringProperty(cellData.getValue().getFechaSubida())
         );
 
-        // 🔹 EstadoArchivo (enum → String)
         colEstado.setCellValueFactory(cellData -> 
             new SimpleStringProperty(cellData.getValue().getEstado().toString())
         );
 
-        // 🔹 nroVersion
         colVersion.setCellValueFactory(cellData -> 
             new SimpleIntegerProperty(cellData.getValue().getNroVersion()).asObject()
         );
@@ -150,7 +143,7 @@ public class FormatoAEstudianteController implements Initializable {
 
             if (file != null) {
                 try (FileOutputStream fos = new FileOutputStream(file)) {
-                    fos.write(archivo.getBlob()); // 🔹 Guardamos el contenido del archivo
+                    fos.write(archivo.getBlob());
                 }
                 LabelInfo.setText("Archivo descargado en: " + file.getAbsolutePath());
                 LabelInfo.setVisible(true);

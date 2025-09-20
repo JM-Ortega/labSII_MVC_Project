@@ -24,7 +24,6 @@ public class Proyecto {
         this.fechaCreacion = fechaCreacion;
     }
 
-    // Getters y Setters
     public long getId() {
         return id;
     }

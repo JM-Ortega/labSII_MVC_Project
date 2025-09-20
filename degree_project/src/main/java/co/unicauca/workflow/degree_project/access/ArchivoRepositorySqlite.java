@@ -274,7 +274,7 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
                     return p;
                 }
             }
-            return null; // no encontrado
+            return null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

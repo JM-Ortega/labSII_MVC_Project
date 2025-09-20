@@ -41,7 +41,7 @@ public interface IProyectoService {
     
     int countArchivosByEstadoYTipo(String tipo, String estado);
     
-    List<Archivo> listarFormatosAPorEstudiante(String estudianteId);
+    public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
     
     Proyecto buscarProyectoPorId(long ProyectoId);
 }

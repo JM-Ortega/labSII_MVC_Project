@@ -23,7 +23,7 @@ public interface IArchivoRepository {
     
     public int countArchivosByEstadoYTipo(TipoArchivo tipo, EstadoArchivo estado);
     
-    List<Archivo> listarFormatosAPorEstudiante(String estudianteId);
+    public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
     
     Proyecto buscarProyectoPorId(long ProyectoId);
 }

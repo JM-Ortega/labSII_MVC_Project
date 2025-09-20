@@ -9,12 +9,13 @@ public class Proyecto {
     private String estudianteId;
     private String docenteId;
     private String fechaCreacion;
+    private Archivo archivo;
 
     public Proyecto() {
     }
 
     public Proyecto(long id, String tipo, EstadoProyecto estado, String titulo,
-                    String estudianteId, String docenteId, String fechaCreacion) {
+                    String estudianteId, String docenteId, String fechaCreacion, Archivo archivo) {
         this.id = id;
         this.tipo = tipo;
         this.estado = estado;
@@ -22,6 +23,7 @@ public class Proyecto {
         this.estudianteId = estudianteId;
         this.docenteId = docenteId;
         this.fechaCreacion = fechaCreacion;
+        this.archivo = archivo;
     }
 
     public long getId() {
@@ -78,5 +80,13 @@ public class Proyecto {
 
     public void setFechaCreacion(String fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public Archivo getArchivo() {
+        return archivo;
+    }
+
+    public void setArchivo(Archivo archivo) {
+        this.archivo = archivo;
     }
 }

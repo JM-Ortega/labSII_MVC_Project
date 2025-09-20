@@ -221,9 +221,9 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
     }
 
     @Override
-    public List<Archivo> listarFormatosAPorEstudiante(String estudianteId) {
+    public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId) {
         final String sql = """
-            SELECT a.id, a.proyecto_id, a.tipo, a.nro_version, a.nombre_archivo, 
+            SELECT p.id, p.tipo, a.nro_version, a.nombre_archivo, 
                    a.fecha_subida, a.blob, a.estado
             FROM Archivo a
             INNER JOIN Proyecto p ON a.proyecto_id = p.id
@@ -231,19 +231,20 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
         """;
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, estudianteId);
-            List<Archivo> out = new ArrayList<>();
+            List<Proyecto> out = new ArrayList<>();
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
+                    Proyecto p = new Proyecto();
                     Archivo a = new Archivo();
-                    a.setId(rs.getLong("id"));
-                    a.setProyectoId(rs.getLong("proyecto_id"));
-                    a.setTipo(TipoArchivo.valueOf(rs.getString("tipo")));
-                    a.setNroVersion(rs.getInt("nro_version"));
-                    a.setNombreArchivo(rs.getString("nombre_archivo"));
-                    a.setFechaSubida(rs.getString("fecha_subida"));
-                    a.setBlob(rs.getBytes("blob"));
-                    a.setEstado(EstadoArchivo.valueOf(rs.getString("estado")));
-                    out.add(a);
+                    p.setArchivo(a);
+                    p.setId(rs.getLong("id"));
+                    p.setTipo(rs.getString("tipo"));
+                    p.getArchivo().setNroVersion(rs.getInt("nro_version"));
+                    p.getArchivo().setNombreArchivo(rs.getString("nombre_archivo"));
+                    p.getArchivo().setFechaSubida(rs.getString("fecha_subida"));
+                    p.getArchivo().setBlob(rs.getBytes("blob"));
+                    p.getArchivo().setEstado(EstadoArchivo.valueOf(rs.getString("estado")));
+                    out.add(p);
                 }
             }
             return out;

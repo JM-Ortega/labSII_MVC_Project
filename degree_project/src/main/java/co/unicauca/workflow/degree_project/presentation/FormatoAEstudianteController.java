@@ -1,6 +1,5 @@
 package co.unicauca.workflow.degree_project.presentation;
 
-import co.unicauca.workflow.degree_project.domain.models.Archivo;
 import co.unicauca.workflow.degree_project.domain.models.Proyecto;
 import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 import co.unicauca.workflow.degree_project.domain.services.IProyectoService;
@@ -33,13 +32,13 @@ import javafx.scene.image.Image;
 public class FormatoAEstudianteController implements Initializable {  
 
     @FXML private Label nombreEstudiante; 
-    @FXML private TableView<Archivo> tabla;
-    @FXML private TableColumn<Archivo, String> colTipo;
-    @FXML private TableColumn<Archivo, String> colTitulo;
-    @FXML private TableColumn<Archivo, String> colFechaEmision;
-    @FXML private TableColumn<Archivo, String> colEstado;
-    @FXML private TableColumn<Archivo, Integer> colVersion;
-    @FXML private TableColumn<Archivo, Void> colAcciones;
+    @FXML private TableView<Proyecto> tabla;
+    @FXML private TableColumn<Proyecto, String> colTipo;
+    @FXML private TableColumn<Proyecto, String> colTitulo;
+    @FXML private TableColumn<Proyecto, String> colFechaEmision;
+    @FXML private TableColumn<Proyecto, String> colEstado;
+    @FXML private TableColumn<Proyecto, Integer> colVersion;
+    @FXML private TableColumn<Proyecto, Void> colAcciones;
     @FXML private Label LabelInfo;
     
     private IProyectoService proyectoService;
@@ -61,18 +60,19 @@ public class FormatoAEstudianteController implements Initializable {
         if (auth != null) {
             nombreEstudiante.setText(auth.nombre());
             
-            List<Archivo> archivos = proyectoService.listarFormatosAPorEstudiante(auth.userId());
+            List<Proyecto> proyectos = proyectoService.listarFormatosAPorEstudiante(auth.userId());
             
-            for (Archivo archivo : archivos) {
-                if (!proyectosCache.containsKey(archivo.getProyectoId())) {
-                    Proyecto proyecto = proyectoService.buscarProyectoPorId(archivo.getProyectoId());
-                    if (proyecto != null) {
-                        proyectosCache.put(archivo.getProyectoId(), proyecto);
+            for (Proyecto proyecto : proyectos) {
+                if (!proyectosCache.containsKey(proyecto.getId())) {
+                    Proyecto encontrado = proyectoService.buscarProyectoPorId(proyecto.getId());
+                    if (encontrado != null) {
+                        proyectosCache.put(encontrado.getId(), encontrado);
                     }
                 }
             }
 
-            tabla.setItems(FXCollections.observableArrayList(archivos));
+            tabla.setItems(FXCollections.observableArrayList(proyectos));
+
 
         } else {
             System.err.println("No hay sesión activa; redirigiendo a login.");
@@ -90,20 +90,20 @@ public class FormatoAEstudianteController implements Initializable {
         );
 
         colTitulo.setCellValueFactory(cellData -> {
-            Proyecto proyecto = proyectosCache.get(cellData.getValue().getProyectoId());
+            Proyecto proyecto = proyectosCache.get(cellData.getValue().getId());
             return new SimpleStringProperty(proyecto != null ? proyecto.getTitulo() : "N/A");
         });
 
         colFechaEmision.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getFechaSubida())
+            new SimpleStringProperty(cellData.getValue().getArchivo().getFechaSubida())
         );
 
         colEstado.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getEstado().toString())
+            new SimpleStringProperty(cellData.getValue().getArchivo().getEstado().toString())
         );
 
         colVersion.setCellValueFactory(cellData -> 
-            new SimpleIntegerProperty(cellData.getValue().getNroVersion()).asObject()
+            new SimpleIntegerProperty(cellData.getValue().getArchivo().getNroVersion()).asObject()
         );
 
         configurarColumnaAcciones();
@@ -115,7 +115,7 @@ public class FormatoAEstudianteController implements Initializable {
 
             {
                 btnDescargar.setOnAction(event -> {
-                    Archivo archivo = getTableView().getItems().get(getIndex());
+                    Proyecto archivo = getTableView().getItems().get(getIndex());
                     if (archivo != null) {
                         manejarDescarga(archivo);
                     }
@@ -134,16 +134,16 @@ public class FormatoAEstudianteController implements Initializable {
         });
     }
 
-    private void manejarDescarga(Archivo archivo) {
+    private void manejarDescarga(Proyecto proyecto) {
         try {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setInitialFileName(archivo.getNombreArchivo() 
-                                           + "_v" + archivo.getNroVersion() + ".pdf");
+            fileChooser.setInitialFileName(proyecto.getArchivo().getNombreArchivo() 
+                                           + "_v" + proyecto.getArchivo().getNroVersion() + ".pdf");
             File file = fileChooser.showSaveDialog(tabla.getScene().getWindow());
 
             if (file != null) {
                 try (FileOutputStream fos = new FileOutputStream(file)) {
-                    fos.write(archivo.getBlob());
+                    fos.write(proyecto.getArchivo().getBlob());
                 }
                 LabelInfo.setText("Archivo descargado en: " + file.getAbsolutePath());
                 LabelInfo.setVisible(true);
@@ -158,7 +158,7 @@ public class FormatoAEstudianteController implements Initializable {
     }
     
     private void configurarColumnaEstado() {
-        colEstado.setCellFactory(col -> new TableCell<Archivo, String>() {
+        colEstado.setCellFactory(col -> new TableCell<Proyecto, String>() {
             private final ImageView imageView = new ImageView();
 
             @Override

@@ -2,6 +2,8 @@ package co.unicauca.workflow.degree_project.access;
 
 import co.unicauca.workflow.degree_project.domain.models.Archivo;
 import co.unicauca.workflow.degree_project.domain.models.EstadoArchivo;
+import co.unicauca.workflow.degree_project.domain.models.EstadoProyecto;
+import co.unicauca.workflow.degree_project.domain.models.Proyecto;
 import co.unicauca.workflow.degree_project.domain.models.TipoArchivo;
 
 import java.sql.*;
@@ -218,5 +220,65 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
         }
     }
 
+    @Override
+    public List<Archivo> listarFormatosAPorEstudiante(String estudianteId) {
+        final String sql = """
+            SELECT a.id, a.proyecto_id, a.tipo, a.nro_version, a.nombre_archivo, 
+                   a.fecha_subida, a.blob, a.estado
+            FROM Archivo a
+            INNER JOIN Proyecto p ON a.proyecto_id = p.id
+            WHERE p.estudiante_id = ?
+        """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, estudianteId);
+            List<Archivo> out = new ArrayList<>();
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Archivo a = new Archivo();
+                    a.setId(rs.getLong("id"));
+                    a.setProyectoId(rs.getLong("proyecto_id"));
+                    a.setTipo(TipoArchivo.valueOf(rs.getString("tipo")));
+                    a.setNroVersion(rs.getInt("nro_version"));
+                    a.setNombreArchivo(rs.getString("nombre_archivo"));
+                    a.setFechaSubida(rs.getString("fecha_subida"));
+                    a.setBlob(rs.getBytes("blob"));
+                    a.setEstado(EstadoArchivo.valueOf(rs.getString("estado")));
+                    out.add(a);
+                }
+            }
+            return out;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    @Override
+    public Proyecto buscarProyectoPorId(long proyectoId) {
+        final String sql = """
+            SELECT id, tipo, estado, titulo, estudiante_id, docente_id, fecha_creacion
+            FROM Proyecto
+            WHERE id = ?
+        """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, proyectoId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Proyecto p = new Proyecto();
+                    p.setId(rs.getLong("id"));
+                    p.setTipo(rs.getString("tipo"));
+                    p.setEstado(EstadoProyecto.valueOf(rs.getString("estado")));
+                    p.setTitulo(rs.getString("titulo"));
+                    p.setEstudianteId(rs.getString("estudiante_id"));
+                    p.setDocenteId(rs.getString("docente_id"));
+                    p.setFechaCreacion(rs.getString("fecha_creacion"));
+                    return p;
+                }
+            }
+            return null; // no encontrado
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    
 }

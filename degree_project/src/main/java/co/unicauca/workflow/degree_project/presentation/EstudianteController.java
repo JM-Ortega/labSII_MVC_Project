@@ -63,10 +63,15 @@ public class EstudianteController implements Initializable {
         loadModule("/co/unicauca/workflow/degree_project/view/FormatoAEstudiante");
     }
 
-    private void loadModule(String modulo) {
+    private void loadModule(String modulo){
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(modulo + ".fxml"));
+            String path = modulo + ".fxml";
+            FXMLLoader loader = main.newInjectedLoader(path);
             Parent moduleRoot = loader.load();
+            Object controller = loader.getController();
+            if (controller instanceof FormatoAEstudianteController fa) {
+                fa.cargarDatos();
+            }
             bp.setCenter(moduleRoot);
         } catch (IOException e) {
             e.printStackTrace();

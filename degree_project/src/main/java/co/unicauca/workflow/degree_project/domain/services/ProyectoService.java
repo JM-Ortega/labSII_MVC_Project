@@ -261,5 +261,15 @@ public class ProyectoService implements IProyectoService {
         }
     }
 
+    @Override
+    public List<Archivo> listarFormatosAPorEstudiante(String estudianteId) {
+        return archivoRepo.listarFormatosAPorEstudiante(estudianteId);
+    }
+    
+    
+    @Override
+    public Proyecto buscarProyectoPorId(long ProyectoId){
+        return archivoRepo.buscarProyectoPorId(ProyectoId);
+    }
 
 }

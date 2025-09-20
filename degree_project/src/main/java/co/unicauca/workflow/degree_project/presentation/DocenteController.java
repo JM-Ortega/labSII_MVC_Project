@@ -17,13 +17,14 @@ import javafx.scene.layout.BorderPane;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 public class DocenteController implements Initializable {
 
     @FXML private Button btnPrincipal;
     @FXML private Button btnFormatoA;
     @FXML private Button btnSalir;
-    @FXML private Button btnEstadisticas;
     @FXML private Label nombreDocente;
     @FXML private BorderPane bp;
     @FXML private AnchorPane ap;
@@ -32,7 +33,7 @@ public class DocenteController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        activarBoton(btnPrincipal, btnFormatoA, btnSalir, btnEstadisticas);
+        activarBoton(btnPrincipal, btnFormatoA, btnSalir);
         cargarDatos();
     }
 
@@ -50,20 +51,37 @@ public class DocenteController implements Initializable {
 
     @FXML
     private void showInfoPrincipal(ActionEvent event) {
-        activarBoton(btnPrincipal, btnFormatoA, btnSalir, btnEstadisticas);
+        activarBoton(btnPrincipal, btnFormatoA, btnSalir);
         bp.setCenter(ap);
-    }
-
-    @FXML
-    private void showInfoFormatoA(ActionEvent event) {
-        activarBoton(btnFormatoA, btnPrincipal, btnSalir, btnEstadisticas);
-        loadModule("/co/unicauca/workflow/degree_project/view/FormatoADocente");
     }
     
     @FXML
-    private void showEstadisticas(ActionEvent event) {
-        activarBoton(btnEstadisticas, btnPrincipal, btnSalir, btnFormatoA);
-        loadModule("/co/unicauca/workflow/degree_project/view/EstadisticasDocente");
+    private void showInfoFormatoA(ActionEvent event) {
+        activarBoton(btnFormatoA, btnPrincipal, btnSalir);
+
+        try {
+            FXMLLoader loaderFormatoA = main.newInjectedLoader(
+                "/co/unicauca/workflow/degree_project/view/FormatoADocente.fxml"
+            );
+            Parent formatoAView = loaderFormatoA.load();
+            FormatoADocenteController formatoAController = loaderFormatoA.getController();
+            formatoAController.cargarDatos(); 
+
+            bp.setCenter(formatoAView);
+
+            FXMLLoader loaderEstadisticas = main.newInjectedLoader(
+                "/co/unicauca/workflow/degree_project/view/EstadisticasDocente.fxml"
+            );
+            Parent estadisticasView = loaderEstadisticas.load();
+
+            Stage estadisticasStage = new Stage();
+            estadisticasStage.setTitle("Estadísticas - Docente");
+            estadisticasStage.setScene(new Scene(estadisticasView));
+            estadisticasStage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
     public void cargarDatos() {

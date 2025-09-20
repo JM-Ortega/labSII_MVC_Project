@@ -1,43 +1,29 @@
 package co.unicauca.workflow.degree_project.presentation;
 
-import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 import co.unicauca.workflow.degree_project.domain.services.IProyectoService;
-import co.unicauca.workflow.degree_project.infra.security.Sesion;
-import co.unicauca.workflow.degree_project.main;
-import java.io.IOException;
+import co.unicauca.workflow.degree_project.domain.services.Observer;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.BarChart;
 
-public class EstadisticasDocenteController implements Initializable {
+public class EstadisticasDocenteController implements Initializable, Observer{
     
-    @FXML private Label nombreDocente; 
     @FXML private BarChart<String, Number> BarChartEstadisticas;
     private IProyectoService proyectoService;
     
+    public EstadisticasDocenteController(IProyectoService proyectoService) {
+        this.proyectoService = proyectoService;
+        this.proyectoService.addObserver(this);
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        cargarDatos();
         cargarEstadisticasFormatoA();
+        
     }    
-    
-    public void cargarDatos() {
-        AuthResult auth = Sesion.getInstancia().getUsuarioActual();
-        if (auth != null) {
-            nombreDocente.setText(auth.nombre());
-        } else {
-            System.err.println("No hay sesión activa; redirigiendo a login.");
-            try {
-                main.navigate("signin", "Login");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
     
     private void cargarEstadisticasFormatoA() {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
@@ -57,6 +43,11 @@ public class EstadisticasDocenteController implements Initializable {
     
     public void setService(IProyectoService proyectoService) {
         this.proyectoService = proyectoService;
+    }
+
+    @Override
+    public void update() {
+        cargarEstadisticasFormatoA();
     }
 
 }

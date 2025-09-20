@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="bp" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21.0.3" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.unicauca.workflow.degree_project.presentation.DocenteController">
+<BorderPane fx:id="bp" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.unicauca.workflow.degree_project.presentation.DocenteController">
    <left>
       <VBox fx:id="Menu" prefHeight="700.0" prefWidth="250.0" style="-fx-background-color: #4670A4;" BorderPane.alignment="CENTER">
          <children>
@@ -43,18 +43,6 @@
                   <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../images/hoja.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-            <Button fx:id="btnEstadisticas" alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#showEstadisticas" prefHeight="70.0" prefWidth="250.0" styleClass="#4670A4" stylesheets="@../styles/Docente.css" text="Estadísticas" textAlignment="CENTER" textFill="WHITE">
-               <font>
-                  <Font name="Roboto Regular" size="20.0" />
-               </font>
-               <graphic>
-                  <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../images/estadisticas.png" />
                      </image>
                   </ImageView>
                </graphic>

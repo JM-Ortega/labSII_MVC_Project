@@ -7,10 +7,11 @@ import co.unicauca.workflow.degree_project.infra.operation.PdfValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
-public class ProyectoService implements IProyectoService {
-
+public class ProyectoService implements IProyectoService{
+    private final List<Observer> observers = new ArrayList<>();
     private final IProyectoRepository proyectoRepo;
     private final IArchivoRepository archivoRepo;
     private final Connection conn;
@@ -64,6 +65,7 @@ public class ProyectoService implements IProyectoService {
             conn.setAutoCommit(prevAutoCommit);
 
             proyecto.setId(proyectoId);
+            notifyObservers();
             return proyecto;
 
         } catch (Exception ex) {
@@ -119,6 +121,7 @@ public class ProyectoService implements IProyectoService {
 
             conn.commit();
             conn.setAutoCommit(prevAutoCommit);
+            notifyObservers();
             return proyectoId;
 
         } catch (Exception ex) {
@@ -155,6 +158,7 @@ public class ProyectoService implements IProyectoService {
         archivo.setEstado(EstadoArchivo.PENDIENTE);
 
         archivoRepo.insertarFormatoA(archivo);
+        notifyObservers();
         return archivo;
     }
 
@@ -239,7 +243,6 @@ public class ProyectoService implements IProyectoService {
         return null;
     }
 
-
     @Override
     public EstadoProyecto enforceAutoCancelIfNeeded(long proyectoId) {
         int observados = archivoRepo.countFormatoAByEstado(proyectoId, EstadoArchivo.OBSERVADO);
@@ -266,10 +269,26 @@ public class ProyectoService implements IProyectoService {
         return archivoRepo.listarFormatosAPorEstudiante(estudianteId);
     }
     
-    
     @Override
     public Proyecto buscarProyectoPorId(long ProyectoId){
         return archivoRepo.buscarProyectoPorId(ProyectoId);
+    }
+
+    @Override
+    public void addObserver(Observer o) {
+        observers.add(o);
+    }
+
+    @Override
+    public void removeObserver(Observer o) {
+        observers.remove(o);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer o : observers) {
+            o.update();
+        }
     }
 
 }

@@ -172,5 +172,4 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
         }
     }
 
-
 }

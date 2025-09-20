@@ -2,7 +2,6 @@ package co.unicauca.workflow.degree_project.access;
 
 import co.unicauca.workflow.degree_project.domain.models.EstadoProyecto;
 import co.unicauca.workflow.degree_project.domain.models.Proyecto;
-
 import java.util.List;
 
 public interface IProyectoRepository {
@@ -21,5 +20,4 @@ public interface IProyectoRepository {
     void actualizarEstadoProyecto(long proyectoId, EstadoProyecto nuevoEstado);
 
     boolean existeEstudiante(String estudianteId);
-
 }

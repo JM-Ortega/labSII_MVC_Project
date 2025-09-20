@@ -17,6 +17,8 @@ import javafx.scene.layout.BorderPane;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 public class DocenteController implements Initializable {
 
@@ -31,9 +33,8 @@ public class DocenteController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        btnPrincipal.getStyleClass().add("btn-pressed");
-        btnFormatoA.getStyleClass().add("btn-default");
-        btnSalir.getStyleClass().add("btn-default");
+        activarBoton(btnPrincipal, btnFormatoA, btnSalir);
+        cargarDatos();
     }
 
     @FXML
@@ -50,41 +51,39 @@ public class DocenteController implements Initializable {
 
     @FXML
     private void showInfoPrincipal(ActionEvent event) {
-        btnPrincipal.getStyleClass().add("btn-pressed");
-        btnFormatoA.getStyleClass().remove("btn-pressed");
-        btnFormatoA.getStyleClass().add("btn-default");
+        activarBoton(btnPrincipal, btnFormatoA, btnSalir);
         bp.setCenter(ap);
     }
-
+    
     @FXML
     private void showInfoFormatoA(ActionEvent event) {
-        btnFormatoA.getStyleClass().add("btn-pressed");
-        btnPrincipal.getStyleClass().remove("btn-pressed");
-        btnPrincipal.getStyleClass().add("btn-default");
-        loadModule("/co/unicauca/workflow/degree_project/view/FormatoADocente");
-    }
+        activarBoton(btnFormatoA, btnPrincipal, btnSalir);
 
-    private void loadModule(String modulo) {
         try {
-            String path = modulo + ".fxml";
-            FXMLLoader loader = main.newInjectedLoader(path);
-            Parent moduleRoot = loader.load();
+            FXMLLoader loaderFormatoA = main.newInjectedLoader(
+                "/co/unicauca/workflow/degree_project/view/FormatoADocente.fxml"
+            );
+            Parent formatoAView = loaderFormatoA.load();
+            FormatoADocenteController formatoAController = loaderFormatoA.getController();
+            formatoAController.cargarDatos(); 
 
-            Object controller = loader.getController();
-            if (controller instanceof FormatoADocenteController fa) {
-                fa.cargarDatos();
-            }
+            bp.setCenter(formatoAView);
 
-            bp.setCenter(moduleRoot);
+            FXMLLoader loaderEstadisticas = main.newInjectedLoader(
+                "/co/unicauca/workflow/degree_project/view/EstadisticasDocente.fxml"
+            );
+            Parent estadisticasView = loaderEstadisticas.load();
+
+            Stage estadisticasStage = new Stage();
+            estadisticasStage.setTitle("Estadísticas - Docente");
+            estadisticasStage.setScene(new Scene(estadisticasView));
+            estadisticasStage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    public void setUserService(IUserService userService) {
-        this.userService = userService;
-    }
-
+    
     public void cargarDatos() {
         AuthResult auth = Sesion.getInstancia().getUsuarioActual();
         if (auth != null) {
@@ -97,5 +96,38 @@ public class DocenteController implements Initializable {
                 e.printStackTrace();
             }
         }
+    }
+    
+    private void activarBoton(Button botonActivo, Button... otros) {
+        botonActivo.getStyleClass().remove("btn-default");
+        if (!botonActivo.getStyleClass().contains("btn-pressed")) {
+            botonActivo.getStyleClass().add("btn-pressed");
+        }
+
+        for (Button b : otros) {
+            b.getStyleClass().remove("btn-pressed");
+            if (!b.getStyleClass().contains("btn-default")) {
+                b.getStyleClass().add("btn-default");
+            }
+        }
+    }
+    
+    private void loadModule(String modulo){
+        try {
+            String path = modulo + ".fxml";
+            FXMLLoader loader = main.newInjectedLoader(path);
+            Parent moduleRoot = loader.load();
+            Object controller = loader.getController();
+            if (controller instanceof FormatoADocenteController fa) {
+                fa.cargarDatos();
+            }
+            bp.setCenter(moduleRoot);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void setUserService(IUserService userService) {
+        this.userService = userService;
     }
 }

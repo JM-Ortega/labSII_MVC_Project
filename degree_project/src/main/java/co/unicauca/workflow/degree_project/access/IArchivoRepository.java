@@ -2,8 +2,8 @@ package co.unicauca.workflow.degree_project.access;
 
 import co.unicauca.workflow.degree_project.domain.models.Archivo;
 import co.unicauca.workflow.degree_project.domain.models.EstadoArchivo;
+import co.unicauca.workflow.degree_project.domain.models.Proyecto;
 import co.unicauca.workflow.degree_project.domain.models.TipoArchivo;
-
 import java.util.List;
 
 public interface IArchivoRepository {
@@ -20,5 +20,10 @@ public interface IArchivoRepository {
     int countFormatoAByEstado(long proyectoId, EstadoArchivo estado);
 
     Archivo getUltimoFormatoA(long proyectoId);
-
+    
+    public int countArchivosByEstadoYTipo(TipoArchivo tipo, EstadoArchivo estado);
+    
+    public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
+    
+    Proyecto buscarProyectoPorId(long ProyectoId);
 }

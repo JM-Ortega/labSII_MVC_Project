@@ -72,16 +72,16 @@
             </Label>
             <Label layoutX="105.0" layoutY="214.0" prefHeight="94.0" prefWidth="538.0" text="Esta herramienta te permitirá llevar un control detallado de los formatos, y el anteproyecto presentados, así como subir documentos para su respectiva evaluación y realizar un seguimiento continuo hasta la culminación del proyecto de grado." wrapText="true" />
             <Label layoutX="105.0" layoutY="318.0" text=" Tendrá  acceso a las funciones disponibles en el menú para facilitar su labor." />
-            <Pane fx:id="pnUser" layoutX="762.0" layoutY="14.0" prefHeight="84.0" prefWidth="174.0">
+            <Pane fx:id="pnUser" layoutX="722.0" layoutY="17.0" prefHeight="84.0" prefWidth="196.0">
                <children>
-                  <Label layoutX="61.0" layoutY="42.0" text="Estudiante">
+                  <Label layoutX="61.0" layoutY="35.0" text="Estudiante">
                      <font>
                         <Font name="Roboto Regular" size="12.0" />
                      </font>
                   </Label>
                   <Label fx:id="nombreEstudiante" layoutX="61.0" layoutY="18.0" text="Nombre estudiante">
                      <font>
-                        <Font name="Roboto Black" size="12.0" />
+                        <Font name="Roboto Regular" size="14.0" />
                      </font>
                   </Label>
                   <ImageView fitHeight="44.0" fitWidth="44.0" layoutX="8.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true">

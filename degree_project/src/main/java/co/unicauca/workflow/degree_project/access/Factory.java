@@ -7,7 +7,6 @@ import java.sql.SQLException;
 public class Factory {
     private static Factory instance;
     private static Connection conn;
-
     private Factory() {
     }
 
@@ -17,7 +16,6 @@ public class Factory {
         }
         return instance;
     }
-
     private Connection connection() {
         if (conn != null) return conn;
         try {
@@ -30,7 +28,6 @@ public class Factory {
             throw new RuntimeException(e);
         }
     }
-
     public IUserRepository getRepository(String type) {
         return switch (type) {
             case "default" -> new SqliteRepository(connection());

@@ -121,7 +121,7 @@
 
     <build>
         <plugins>
-            <!-- JavaFX Maven Plugin -->
+            <!-- 
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
@@ -143,6 +143,20 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
+            
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>co.unicauca.workflow.degree_project.main</mainClass>
+                    <jvmArgs>
+                        <jvmArg>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmArg>
+                    </jvmArgs>
+                </configuration>
+            </plugin>
+            
 
             <!-- JUnit 5 -->
             <plugin>

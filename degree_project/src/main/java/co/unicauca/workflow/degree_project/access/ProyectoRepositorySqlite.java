@@ -203,25 +203,36 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
     
     @Override
     public String nombreDocente(String docenteId){
+        System.out.println("Se ingreso a la funcion nombreDocente");
+        System.out.println("docenteId recibido: " + docenteId);
+
         String nombreDocente = null;
 
-        String sql = "SELECT nombre, apellido FROM Usuario WHERE id = ? AND rol = " +
-                     "(SELECT idRol FROM Rol WHERE tipo = 'Docente')";
-
+        String sql = """
+                    SELECT u.nombre, u.apellido
+                    FROM Usuario u
+                    JOIN Rol r ON u.rol = r.idRol
+                    WHERE u.id = ? AND r.tipo = 'Docente'
+                     """;
+        
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, docenteId);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    // Nombre completo
                     nombreDocente = rs.getString("nombre") + " " + rs.getString("apellido");
+                    System.out.println("Nombre docente BD: "+nombreDocente);
                 }
+            }catch (SQLException e) {
+                System.out.println("En el try hijo: "+e.getMessage());
+                throw new RuntimeException(e);
             }
-
         } catch (SQLException e) {
+            System.out.println("En el try padre: "+e.getMessage());
             throw new RuntimeException(e);
         }
 
+        System.out.println("Nombre: "+nombreDocente);
         return nombreDocente;
     }
 }

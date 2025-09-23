@@ -12,6 +12,7 @@ import co.unicauca.workflow.degree_project.infra.communication.EmailMessage;
 import co.unicauca.workflow.degree_project.infra.communication.IEmailService;
 import co.unicauca.workflow.degree_project.infra.communication.LoggingEmailService;
 import co.unicauca.workflow.degree_project.infra.security.Argon2PasswordHasher;
+import co.unicauca.workflow.degree_project.presentation.Co_Proyecto_Controller;
 import co.unicauca.workflow.degree_project.presentation.FormatoADocenteController;
 import co.unicauca.workflow.degree_project.presentation.RegisterController;
 import co.unicauca.workflow.degree_project.presentation.SigninController;
@@ -119,6 +120,7 @@ public class main extends Application {
                     case SigninController sc -> sc.setServices(signInService);
                     case RegisterController rc -> rc.setServices(registrationService);
                     case FormatoADocenteController fadc -> fadc.setService(proyectoService);
+                    case Co_Proyecto_Controller cop -> cop.setService(proyectoService);
                     default -> { }
                 }
                 return controller;
@@ -130,7 +132,6 @@ public class main extends Application {
         return loader.load();
     }
 
-
     public static FXMLLoader newInjectedLoader(String path) {
     FXMLLoader loader = new FXMLLoader(main.class.getResource(path));
     loader.setControllerFactory(type -> {
@@ -140,6 +141,7 @@ public class main extends Application {
                 case SigninController sc -> sc.setServices(signInService);
                 case RegisterController rc -> rc.setServices(registrationService);
                 case FormatoADocenteController fadc -> fadc.setService(proyectoService);
+                case Co_Proyecto_Controller cop -> cop.setService(proyectoService);
                 default -> { }
             }
             return controller;

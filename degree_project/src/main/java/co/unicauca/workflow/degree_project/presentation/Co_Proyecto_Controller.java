@@ -43,6 +43,7 @@ public class Co_Proyecto_Controller implements Initializable{
     public void initialize(URL location, ResourceBundle resources) {
         configurarTabla();
         cargarTabla();
+        configurarColumnaEstado();
  
         /*
         // Columna Descargar
@@ -77,9 +78,8 @@ public class Co_Proyecto_Controller implements Initializable{
             for (Archivo a : archivos) {
                 Proyecto p = proyectoService.buscarProyectoPorId(a.getProyectoId());
 
-                // Aquí asumo que puedes resolver el nombre del docente con su id
                 String nombreDocente = proyectoService.obtenerNombreDocente(p.getDocenteId());
-
+                
                 rows.add(new RowVM(
                     p.getTitulo(),
                     nombreDocente,
@@ -87,6 +87,11 @@ public class Co_Proyecto_Controller implements Initializable{
                     a.getFechaSubida(),
                     a.getEstado().name()
                 ));
+                System.out.println(p.getTitulo());
+                System.out.println(nombreDocente);
+                System.out.println(a.getTipo().name());
+                System.out.println(a.getFechaSubida());
+                System.out.println(a.getEstado().name());
             }
 
             tabla.setItems(rows);
@@ -123,18 +128,16 @@ public class Co_Proyecto_Controller implements Initializable{
     public void setParentController(CoordinadorController parent) {
         this.parent = parent;
     }
-    
-/*
+ 
     private void configurarColumnaEstado() {
-        colEstado.setCellFactory(column -> new TableCell<Proyecto, String>() {
+        colEstado.setCellFactory(column -> new TableCell<RowVM, String>() {
             private final Button estadoBtn = new Button();
 
             {
-                // Evento al hacer clic en el botón
                 estadoBtn.setOnAction(e -> {
                     String estadoActual = estadoBtn.getText();
 
-                    if ("A evaluar".equalsIgnoreCase(estadoActual)) {
+                    if ("PENDIENTE".equalsIgnoreCase(estadoActual)) {
                         if (parent != null) {
                             parent.loadUI("Coordinador_Observaciones");
                         }
@@ -158,11 +161,11 @@ public class Co_Proyecto_Controller implements Initializable{
                     estadoBtn.getStyleClass().removeAll("estado-rojo", "estado-verde");
 
                     Image icon = null;
-                    if ("A evaluar".equalsIgnoreCase(estado)) {
+                    if ("PENDIENTE".equalsIgnoreCase(estado)) {
                         estadoBtn.getStyleClass().add("estado-rojo");
                         icon = new Image(getClass().getResourceAsStream(
                                 "/co/unicauca/workflow/degree_project/images/ojo_abierto.png"));
-                    } else if ("Evaluado".equalsIgnoreCase(estado)) {
+                    } else if ("OBSERVADO".equalsIgnoreCase(estado)) {
                         estadoBtn.getStyleClass().add("estado-verde");
                         icon = new Image(getClass().getResourceAsStream(
                                 "/co/unicauca/workflow/degree_project/images/ojo_cerrado.png"));
@@ -182,7 +185,8 @@ public class Co_Proyecto_Controller implements Initializable{
             }
         });
     }
-    
+
+/*
     private void configurarColumnaDescargar() {
         // El valor de la celda será el objeto Proyecto completo
         colDescargar.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));

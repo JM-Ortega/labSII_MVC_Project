@@ -31,18 +31,6 @@ public class CoordinadorController implements Initializable{
     private Button btnSalir;
 
     private Button selectedButton = null; // botón actualmente seleccionado
-    private IProyectoService proyectoService;
-
-    public CoordinadorController() {
-        // 👇 Aquí inicializas conexión y repositorios
-        Connection conn = SqliteRepository.getConnection(); // tu clase de conexión
-
-        IProyectoRepository proyectoRepo = new ProyectoRepositorySqlite(conn);
-        IArchivoRepository archivoRepo = new ArchivoRepositorySqlite(conn);
-
-        // 👇 Aquí inicializas el servicio
-        this.proyectoService = new ProyectoService(proyectoRepo, archivoRepo, conn);
-    }
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -55,7 +43,7 @@ public class CoordinadorController implements Initializable{
         
         // Configurar eventos para cada botón
         btnProyectos.setOnAction(e -> {
-            loadUI("Coordinador_Proyectos");
+            loadUI("/co/unicauca/workflow/degree_project/view/Coordinador_Proyectos");
             selectButton(btnProyectos);
         });
     }
@@ -75,16 +63,14 @@ public class CoordinadorController implements Initializable{
     
      public void loadUI(String fxml) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                "/co/unicauca/workflow/degree_project/view/" + fxml + ".fxml"
-            ));
+            String path = fxml+".fxml";
+            FXMLLoader loader = main.newInjectedLoader(path);
             Parent root = loader.load();
 
             Object controller = loader.getController();
 
             if (controller instanceof Co_Proyecto_Controller cpc) {
                 cpc.setParentController(this);
-                cpc.setService(this.proyectoService);
             } else if (controller instanceof Co_Observaciones_Controller coc) {
                 coc.setParentController(this);
             }

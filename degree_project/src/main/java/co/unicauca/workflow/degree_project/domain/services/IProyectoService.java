@@ -7,7 +7,7 @@ import co.unicauca.workflow.degree_project.domain.models.TipoArchivo;
 
 import java.util.List;
 
-public interface IProyectoService {
+public interface IProyectoService extends ObservableService{
     Proyecto crearProyectoConFormatoA(Proyecto proyecto, Archivo archivo);
 
     long crearProyectoConArchivos(Proyecto proyecto, List<Archivo> archivos);
@@ -45,4 +45,10 @@ public interface IProyectoService {
     String obtenerNombreDocente(String docenteId);
     
 
+    
+    int countArchivosByEstadoYTipo(String tipo, String estado);
+    
+    public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
+    
+    Proyecto buscarProyectoPorId(long ProyectoId);
 }

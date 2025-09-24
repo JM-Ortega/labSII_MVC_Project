@@ -1,7 +1,9 @@
 package co.unicauca.workflow.degree_project.access;
 
+import co.unicauca.workflow.degree_project.domain.models.Proyecto;
 import co.unicauca.workflow.degree_project.domain.models.User;
 import co.unicauca.workflow.degree_project.domain.services.AuthResult;
+import java.util.List;
 
 import java.util.Optional;
 

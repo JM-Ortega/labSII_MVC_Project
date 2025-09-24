@@ -26,7 +26,6 @@ public class Archivo {
         this.estado = estado;
     }
 
-    // Getters y Setters
     public long getId() {
         return id;
     }

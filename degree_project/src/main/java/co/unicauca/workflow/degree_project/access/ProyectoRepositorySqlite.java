@@ -235,4 +235,21 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
         System.out.println("Nombre: "+nombreDocente);
         return nombreDocente;
     }
+    
+    @Override
+    public void update(Proyecto proyecto){
+        String sql = "UPDATE Proyecto SET tipo=?, estado=?, titulo=?, estudiante_id=?, docente_id=?, fecha_creacion=? WHERE id=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, proyecto.getTipo());
+            ps.setString(2, proyecto.getEstado().name()); // si es enum
+            ps.setString(3, proyecto.getTitulo());
+            ps.setString(4, proyecto.getEstudianteId());
+            ps.setString(5, proyecto.getDocenteId());
+            ps.setString(6, proyecto.getFechaCreacion());
+            ps.setLong(7, proyecto.getId());
+            ps.executeUpdate();
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

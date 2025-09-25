@@ -256,7 +256,7 @@ public class SqliteRepository implements IUserRepository {
     @Override
     public Optional<AuthResult> authenticate(String email, char[] passwordIngresada) {
         String sql = """
-                    SELECT u.id, u.contrasena, r.tipo AS rol, u.nombre, u.apellido
+                    SELECT u.id, u.contrasena, r.tipo AS rol, u.nombre, u.apellido, u.programa
                     FROM Usuario u
                     JOIN Rol r ON r.idRol = u.rol
                     WHERE u.correo = ?
@@ -281,8 +281,17 @@ public class SqliteRepository implements IUserRepository {
 
                 String userId = rs.getString("id");
                 String rol = rs.getString("rol");
-                String nombreCompleto = rs.getString("nombre") + " " + rs.getString("apellido");
-                return Optional.of(new AuthResult(userId, rol, nombreCompleto));
+                String nombreCompleto = rs.getString("nombre") + " " + rs.getString("apellido");      
+                String programa= rs.getString("programa");
+                programa = switch (programa) {
+                    case "1" -> "Ingenieria de Sistemas";
+                    case "2" -> "Ingenieria Electronica y Telecomunicaciones";
+                    case "3" -> "Automatica Industrial";
+                    case "4" -> "Tecnologia en Telematica";
+                    default -> "";
+                };               
+                
+                return Optional.of(new AuthResult(userId, rol, nombreCompleto, programa));
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, null, ex);

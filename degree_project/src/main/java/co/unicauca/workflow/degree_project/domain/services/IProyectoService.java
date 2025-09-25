@@ -43,12 +43,12 @@ public interface IProyectoService extends ObservableService{
     List<Archivo> listarTodosArchivos();
     Proyecto buscarProyectoPorId(long proyectoId);
     String obtenerNombreDocente(String docenteId);
+    Archivo obtenerFormatoA(long proyectoId);
+    public int subirObservacion (long proyectoId, Archivo archivo);
     
 
     
     int countArchivosByEstadoYTipo(String tipo, String estado);
     
     public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
-    
-    Proyecto buscarProyectoPorId(long ProyectoId);
 }

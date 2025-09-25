@@ -24,4 +24,5 @@ public interface IProyectoRepository {
     //Coordinador
     Proyecto proyectoPorId(long proyectoId);
     String nombreDocente(String docenteId);
+    void update(Proyecto proyecto);
 }

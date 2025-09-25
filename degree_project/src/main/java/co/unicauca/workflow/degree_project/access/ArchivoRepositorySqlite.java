@@ -37,6 +37,7 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
 
     @Override
     public void insertarFormatoA(Archivo archivo) {
+        System.out.println("Insertando archivo para proyectoId=" + archivo.getProyectoId());
         final String sql = """
             INSERT INTO Archivo (proyecto_id, tipo, nro_version, nombre_archivo, blob, estado)
             VALUES (?, 'FORMATO_A', ?, ?, ?, ?)
@@ -311,4 +312,79 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
             throw new RuntimeException(e);
         }
     }
+    
+    @Override
+    public Archivo getFormatoA(long archivoId) {
+        final String sql = """
+            SELECT id, proyecto_id, tipo, nro_version, nombre_archivo, fecha_subida, blob, estado
+            FROM Archivo
+            WHERE id = ? AND tipo = 'FORMATO_A'
+            ORDER BY nro_version DESC
+            LIMIT 1
+        """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, archivoId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return null;
+                Archivo a = new Archivo();
+                a.setId(rs.getLong("id"));
+                a.setProyectoId(rs.getLong("proyecto_id"));
+                a.setTipo(TipoArchivo.valueOf(rs.getString("tipo")));
+                a.setNroVersion(rs.getInt("nro_version"));
+                a.setNombreArchivo(rs.getString("nombre_archivo"));
+                a.setFechaSubida(rs.getString("fecha_subida"));
+                a.setBlob(rs.getBytes("blob"));
+                a.setEstado(EstadoArchivo.valueOf(rs.getString("estado")));
+                return a;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    @Override
+    public int obtenerUltimaVersionFormatoA(long proyectoId) {
+        String sql = "SELECT MAX(nro_version) FROM Archivo WHERE proyecto_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, proyectoId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int ultima = rs.getInt(1);
+                    // Si no hay registros aún, rs.getInt devuelve 0 y wasNull dirá true
+                    if (rs.wasNull()) {
+                        return 0; // no hay versiones
+                    }
+                    return ultima;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al obtener la ultima version de FormatoA", e);
+        }
+        return 0;
+    }
+    
+    @Override
+    public void actualizarFormatoA(Archivo archivo) {
+        String sql = """
+            UPDATE Archivo
+            SET nombre_archivo = ?,
+                blob = ?,
+                estado = ?,
+                fecha_subida = datetime('now')
+            WHERE proyecto_id = ? AND tipo = ? AND nro_version = ?
+        """;
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, archivo.getNombreArchivo()); // nombre_archivo
+            ps.setBytes(2, archivo.getBlob());           // blob
+            ps.setString(3, archivo.getEstado().name()); // estado
+            ps.setLong(4, archivo.getProyectoId());      // proyecto_id
+            ps.setString(5, archivo.getTipo().toString());          // tipo
+            ps.setInt(6, archivo.getNroVersion());       // nro_version
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al actualizar archivo", e);
+        }
+    }
+
 }

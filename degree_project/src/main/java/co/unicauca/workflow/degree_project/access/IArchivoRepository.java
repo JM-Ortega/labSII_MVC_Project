@@ -29,4 +29,10 @@ public interface IArchivoRepository {
     public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
     
     Proyecto buscarProyectoPorId(long ProyectoId);
+    
+    public Archivo getFormatoA(long archivoId);
+    
+    public int obtenerUltimaVersionFormatoA(long proyectoId);
+    
+    public void actualizarFormatoA(Archivo archivo);
 }

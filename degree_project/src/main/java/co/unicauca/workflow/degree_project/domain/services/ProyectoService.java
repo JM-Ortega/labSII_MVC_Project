@@ -270,6 +270,12 @@ public class ProyectoService implements IProyectoService{
         return proyectoRepo.nombreDocente(docenteId);
     }
 
+    @Override
+    public Archivo obtenerFormatoA(long archivoId) {
+        Archivo ultimo = archivoRepo.getFormatoA(archivoId);
+        if (ultimo != null) return ultimo;
+        return null;
+    }
 
     
     @Override
@@ -286,11 +292,6 @@ public class ProyectoService implements IProyectoService{
     @Override
     public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId) {
         return archivoRepo.listarFormatosAPorEstudiante(estudianteId);
-    }
-    
-    @Override
-    public Proyecto buscarProyectoPorId(long ProyectoId){
-        return archivoRepo.buscarProyectoPorId(ProyectoId);
     }
 
     @Override
@@ -310,4 +311,43 @@ public class ProyectoService implements IProyectoService{
         }
     }
 
+    @Override
+    public int subirObservacion (long proyectoId, Archivo archivo) {
+        if (!proyectoRepo.existeProyecto(proyectoId))
+            throw new IllegalArgumentException("Proyecto no existe");
+
+        String estado = proyectoRepo.getEstadoProyecto(proyectoId);
+        if (!"EN_TRAMITE".equalsIgnoreCase(estado))
+            throw new IllegalStateException("El proyecto no está en curso");
+
+        int max = archivoRepo.getMaxVersionFormatoA(proyectoId);
+        if (max > 3)
+            throw new IllegalStateException("Se alcanzó el maximo de 3 versiones del Formato A");
+        
+        
+        if (archivo.getEstado().toString().equals("APROBADO")) {
+            archivo.setNroVersion(max);
+            Proyecto proyecto = buscarProyectoPorId(proyectoId);
+            proyecto.setEstado(EstadoProyecto.TERMINADO);
+            proyecto.setArchivo(archivo);
+            
+            archivo.setEstado(EstadoArchivo.OBSERVADO);
+            
+            archivoRepo.actualizarFormatoA(archivo);
+            notifyObservers();
+            
+            return 1;
+        } else if (archivo.getEstado().toString().equals("OBSERVADO")) {
+            archivo.setNroVersion(max);
+
+            Proyecto proyecto = buscarProyectoPorId(proyectoId);
+            proyecto.setArchivo(archivo);
+            
+            archivoRepo.actualizarFormatoA(archivo);
+            notifyObservers();
+
+            return 2;
+        }
+        return 3;
+    }
 }

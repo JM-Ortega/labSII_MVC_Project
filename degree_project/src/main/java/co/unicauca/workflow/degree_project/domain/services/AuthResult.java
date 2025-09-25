@@ -8,6 +8,6 @@ package co.unicauca.workflow.degree_project.domain.services;
  *
  * @author Ortega
  */
-public record AuthResult(String userId, String rol, String nombre) {
+public record AuthResult(String userId, String rol, String nombre, String programa) {
 
 }

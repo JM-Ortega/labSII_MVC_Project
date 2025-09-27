@@ -64,7 +64,7 @@ public class SqliteRepository implements IUserRepository {
         CREATE TABLE IF NOT EXISTS Proyecto (
           id             INTEGER PRIMARY KEY AUTOINCREMENT,
           tipo           TEXT NOT NULL CHECK (tipo IN ('TESIS','PRACTICA_PROFESIONAL')),
-          estado         TEXT NOT NULL CHECK (estado IN ('EN_TRAMITE','CANCELADO','TERMINADO')) DEFAULT 'EN_TRAMITE',
+          estado         TEXT NOT NULL CHECK (estado IN ('EN_TRAMITE','RECHAZADO','TERMINADO')) DEFAULT 'EN_TRAMITE',
           titulo         TEXT NOT NULL,
           estudiante_id  TEXT NOT NULL,
           docente_id     TEXT NOT NULL,

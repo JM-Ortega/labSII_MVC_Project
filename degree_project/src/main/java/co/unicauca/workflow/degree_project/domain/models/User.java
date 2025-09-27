@@ -73,7 +73,7 @@ public class User {
         this.rol = rol;
     }
 
-    public String getEmail() {
+    public  String getEmail() {
         return email;
     }
 

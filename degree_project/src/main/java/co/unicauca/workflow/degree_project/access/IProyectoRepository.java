@@ -21,10 +21,19 @@ public interface IProyectoRepository {
 
     boolean existeEstudiante(String estudianteId);
     
-    public int countProyectosByEstadoYTipo(String tipo, EstadoProyecto estado, String idDocente);
-    //Coordinador
+    int countProyectosByEstadoYTipo(String tipo, EstadoProyecto estado, String idDocente);
+
     Proyecto proyectoPorId(long proyectoId);
+
     String nombreDocente(String docenteId);
+
     String correoDocente(String docenteId);
+
     void update(Proyecto proyecto);
+
+    boolean existeEstudiantePorCorreo(String correo);
+
+    String getEstudianteIdPorCorreo(String correo);
+
+    boolean estudianteTieneProyectoEnTramitePorCorreo(String correo);
 }

@@ -103,11 +103,6 @@ public class FormatoADocenteController implements Initializable {
     
     private IProyectoService proyectoService;
 
-    // Inyección por constructor
-    public FormatoADocenteController(IProyectoService proyectoService) {
-        this.proyectoService = proyectoService;
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         configurarTabla();

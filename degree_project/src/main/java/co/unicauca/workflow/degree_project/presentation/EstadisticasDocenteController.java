@@ -16,11 +16,6 @@ public class EstadisticasDocenteController implements Initializable, Observer{
     @FXML private BarChart<String, Number> BarChartEstadisticas;
     private IProyectoService proyectoService;
     
-    public EstadisticasDocenteController(IProyectoService proyectoService) {
-        this.proyectoService = proyectoService;
-        this.proyectoService.addObserver(this);
-    }
-    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         cargarEstadisticasFormatoA();
@@ -46,6 +41,7 @@ public class EstadisticasDocenteController implements Initializable, Observer{
     
     public void setService(IProyectoService proyectoService) {
         this.proyectoService = proyectoService;
+        this.proyectoService.addObserver(this);
     }
 
     @Override

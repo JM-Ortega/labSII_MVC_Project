@@ -129,42 +129,16 @@ public class main extends Application {
     }
 
 
-//    public static FXMLLoader newInjectedLoader(String path) {
-//        FXMLLoader loader = new FXMLLoader(main.class.getResource(path));
-//        loader.setControllerFactory(type -> {
-//            try {
-//                Object controller = type.getDeclaredConstructor().newInstance();
-//                switch (controller) {
-//                    case SigninController sc -> sc.setServices(signInService);
-//                    case RegisterController rc -> rc.setServices(registrationService);
-//                    case FormatoADocenteController fadc -> fadc.setService(proyectoService);
-//                    case EstadisticasDocenteController edc -> edc.setService(proyectoService);
-//                    case FormatoAEstudianteController faec -> faec.setService(proyectoService);
-//                    default -> { }
-//                }
-//                return controller;
-//            } catch (Exception e) {
-//                throw new RuntimeException("No se pudo crear el controlador: " + type, e);
-//            }
-//        });
-//        return loader;
-//    }
-    
     public static FXMLLoader newInjectedLoader(String path) {
         FXMLLoader loader = new FXMLLoader(main.class.getResource(path));
         loader.setControllerFactory(type -> {
             try {
-                if (type == EstadisticasDocenteController.class) {
-                    return new EstadisticasDocenteController(proyectoService);
-                }
-                if (type == FormatoADocenteController.class) {
-                    return new FormatoADocenteController(proyectoService);
-                }
-
                 Object controller = type.getDeclaredConstructor().newInstance();
                 switch (controller) {
                     case SigninController sc -> sc.setServices(signInService);
                     case RegisterController rc -> rc.setServices(registrationService);
+                    case FormatoADocenteController fadc -> fadc.setService(proyectoService);
+                    case EstadisticasDocenteController edc -> edc.setService(proyectoService);
                     case FormatoAEstudianteController faec -> faec.setService(proyectoService);
                     default -> { }
                 }
@@ -175,9 +149,7 @@ public class main extends Application {
         });
         return loader;
     }
-
-
-
+    
     public static void main(String[] args) {
         /*
             IEmailService emailService = new LoggingEmailService();

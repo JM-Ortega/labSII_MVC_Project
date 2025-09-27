@@ -105,10 +105,12 @@ public class FormatoADocenteController implements Initializable {
 
     private static boolean isEmailLike(String s) {
         if (s == null) return false;
-        String v = s.trim();
+        String v = s.trim().toLowerCase();
         int at = v.indexOf('@');
-        return at > 0 && at < v.length() - 1 && v.indexOf('.', at) > at;
+        if (at <= 0 || at == v.length() - 1) return false;
+        return v.matches("^[A-Za-z0-9._%+-]+@unicauca\\.edu\\.co$");
     }
+
 
     public void setService(IProyectoService proyectoService) {
         this.proyectoService = proyectoService;

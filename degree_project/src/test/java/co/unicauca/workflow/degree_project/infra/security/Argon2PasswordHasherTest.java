@@ -9,8 +9,6 @@ import co.unicauca.workflow.degree_project.domain.services.IPasswordHasher;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class Argon2PasswordHasherTest {
 
     private final IPasswordHasher hasher = new Argon2PasswordHasher();

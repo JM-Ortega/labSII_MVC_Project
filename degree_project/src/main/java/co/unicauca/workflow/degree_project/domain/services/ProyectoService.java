@@ -254,11 +254,11 @@ public class ProyectoService implements IProyectoService{
     }
 
     @Override
-    public int countArchivosByEstadoYTipo(String tipo, String estado) {
+    public int countArchivosByEstadoYTipo(String tipo, String estado, String idDocente) {
         try {
             TipoArchivo tipoEnum = TipoArchivo.valueOf(tipo.toUpperCase());
             EstadoArchivo estadoEnum = EstadoArchivo.valueOf(estado.toUpperCase());
-            return archivoRepo.countArchivosByEstadoYTipo(tipoEnum, estadoEnum);
+            return archivoRepo.countArchivosByEstadoYTipo(tipoEnum, estadoEnum, idDocente);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Tipo o estado inválido: " + tipo + ", " + estado, e);
         }

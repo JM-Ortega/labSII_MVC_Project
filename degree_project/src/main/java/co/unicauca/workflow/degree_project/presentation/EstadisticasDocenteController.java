@@ -1,7 +1,9 @@
 package co.unicauca.workflow.degree_project.presentation;
 
+import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 import co.unicauca.workflow.degree_project.domain.services.IProyectoService;
 import co.unicauca.workflow.degree_project.domain.services.Observer;
+import co.unicauca.workflow.degree_project.infra.security.Sesion;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -38,7 +40,8 @@ public class EstadisticasDocenteController implements Initializable, Observer{
     }
     
     private int obtenerCantidad(String estado){
-        return proyectoService.countArchivosByEstadoYTipo("FORMATO_A", estado);
+        AuthResult auth = Sesion.getInstancia().getUsuarioActual();
+        return proyectoService.countArchivosByEstadoYTipo("FORMATO_A", estado, auth.userId());
     }
     
     public void setService(IProyectoService proyectoService) {

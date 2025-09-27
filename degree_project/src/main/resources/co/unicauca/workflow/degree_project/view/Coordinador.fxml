@@ -50,19 +50,22 @@
       </VBox>
       <Pane layoutX="281.0" prefHeight="66.0" prefWidth="919.0">
          <children>
-            <ImageView fitHeight="62.0" fitWidth="51.0" layoutX="847.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="62.0" fitWidth="51.0" layoutX="23.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../images/avatar.png" />
                </image>
             </ImageView>
-            <Label layoutX="724.0" layoutY="16.0" text="Nombre coordinador">
+            <Label fx:id="nombreCoor" layoutX="84.0" layoutY="33.0" text="Nombre coordinador">
                <font>
                   <Font name="Roboto Bold" size="12.0" />
                </font>
             </Label>
-            <Label layoutX="724.0" layoutY="35.0" text="Programa" />
+            <Label fx:id="programaCoor" alignment="TOP_LEFT" layoutX="84.0" layoutY="14.0" prefHeight="15.0" prefWidth="427.0" text="Programa" wrapText="true">
+               <font>
+                  <Font name="Roboto Regular" size="14.0" />
+               </font></Label>
          </children>
       </Pane>
-      <AnchorPane fx:id="contentArea" layoutX="281.0" layoutY="107.0" prefHeight="593.0" prefWidth="919.0" />
+      <AnchorPane fx:id="contentArea" layoutX="281.0" layoutY="74.0" prefHeight="626.0" prefWidth="919.0" />
    </children>
 </AnchorPane>

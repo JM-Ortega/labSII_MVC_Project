@@ -93,8 +93,22 @@ public class SigninController {
                 }
 
                 case "Coordinador" -> {
-                    alerta(Alert.AlertType.INFORMATION, "Correcto", null,
-                            "Inicio de sesión como coordinador exitoso.");
+                    alerta(Alert.AlertType.INFORMATION, "Correcto", null, "Inicio de sesión como coordinador exitoso.");
+                    try {
+                        Object controller = main.navigateWithController("Coordinador", "Panel Coordinador");
+                        if (controller instanceof DocenteController dc) {
+                            // 1) Pasa los servicios que Docente va a usar
+                            if (userService != null) {
+                                dc.setUserService(userService);
+                            } else if (authService instanceof IUserService us) {
+                                dc.setUserService(us);
+                            }
+                            dc.cargarDatos();
+                        }
+                    } catch (IOException e) {
+                        alerta(Alert.AlertType.ERROR, "Error", null, "Error al abrir la vista del coordinador.");
+                        e.printStackTrace();
+                    }
                 }
                 default -> {
                     alerta(Alert.AlertType.ERROR, "Error", null, "El usuario no tiene un rol asociado.");

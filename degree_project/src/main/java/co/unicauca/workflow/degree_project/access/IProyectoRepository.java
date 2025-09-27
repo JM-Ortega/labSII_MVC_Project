@@ -20,6 +20,16 @@ public interface IProyectoRepository {
     void actualizarEstadoProyecto(long proyectoId, EstadoProyecto nuevoEstado);
 
     boolean existeEstudiante(String estudianteId);
+    
+    int countProyectosByEstadoYTipo(String tipo, EstadoProyecto estado, String idDocente);
+
+    Proyecto buscarProyectoPorId(long proyectoId);
+
+    String nombreDocente(String docenteId);
+
+    String correoDocente(String docenteId);
+
+    void update(Proyecto proyecto);
 
     boolean existeEstudiantePorCorreo(String correo);
 

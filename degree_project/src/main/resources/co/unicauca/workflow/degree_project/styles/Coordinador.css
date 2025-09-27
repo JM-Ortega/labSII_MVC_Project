@@ -19,7 +19,8 @@
     -fx-text-fill: black;
     -fx-font-size: 14px;
     -fx-font-family: "Roboto";
-    -fx-background-radius: 0;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
     -fx-padding: 8 16 8 16;
     -fx-cursor: hand;
     -fx-border-color: transparent;
@@ -45,6 +46,7 @@
     -fx-background-color: #EA2F2F;
     -fx-text-fill: white;
     -fx-background-radius: 20;
+    -fx-font-size: 9px;
     -fx-font-weight: bold;
     -fx-pref-height: 30px;
     -fx-pref-width: 111px;
@@ -56,11 +58,37 @@
     -fx-background-color: green;
     -fx-text-fill: white;
     -fx-background-radius: 20;
+    -fx-font-size: 9px;
     -fx-font-weight: bold;
     -fx-pref-height: 30px;
     -fx-pref-width: 111px;
     -fx-font-family: "Roboto";
     -fx-cursor: hand;
+}
+
+.list-cell.aceptado {
+    -fx-text-fill: green;
+    -fx-font-weight: bold;
+}
+
+.list-cell.rechazado {
+    -fx-text-fill: red;
+    -fx-font-weight: bold;
+}
+
+.combo-box {
+    -fx-background-color: white;        /* Fondo blanco */
+    -fx-border-color: black;           /* Bordes negros */
+    -fx-border-width: 1;               /* Grosor delgado */
+    -fx-border-radius: 2;              /* Bordes ligeramente redondeados */
+    -fx-background-radius: 2;          /* Que el fondo también respete el redondeo */
+}
+.combo-box .list-cell {
+    -fx-background-color: white;      /* Fondo blanco en la lista */
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #e6e6e6;    /* Gris claro al pasar el mouse */
 }
 
 .choice-box {
@@ -69,12 +97,12 @@
     -fx-border-width: 1;
     -fx-background-radius: 10;
     -fx-border-radius: 10;
-    -fx-padding: 4 8 4 8;
+    -fx-padding: 3 8 3 8;
 }
 
 .choice-box > .label {
     -fx-text-fill: black;
-    -fx-font-size: 12px;
+    -fx-font-size: 14px;
     -fx-font-family: "Roboto";
     -fx-font-weight: bold;
 }
@@ -107,4 +135,14 @@
     -fx-font-family: "Roboto", sans-serif;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #c5cae9; /* Azul claro */
+    -fx-text-fill: black;
+}
+
+.descargas {
+    -fx-background-color: transparent; 
+    -fx-cursor: hand;
 }

@@ -7,8 +7,10 @@ public class EmailMessage {
     public List<String> to = new ArrayList<>();
     public String subject;
     public String body;
+    public String sender;
 
-    public EmailMessage(String to, String subject, String body) {
+    public EmailMessage(String from, String to, String subject, String body) {
+        this.sender = from;
         this.to.add(to);
         this.subject = subject;
         this.body = body;

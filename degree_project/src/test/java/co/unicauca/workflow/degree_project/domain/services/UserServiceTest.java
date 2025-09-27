@@ -151,7 +151,7 @@ class UserServiceTest {
 
     @Test
     void signIn_delega_en_repo() {
-        AuthResult expected = new AuthResult("u1", "Estudiante", "Ana Pérez");
+        AuthResult expected = new AuthResult("u1", "Estudiante", "Ana Pérez", "Automática Industrial", "Ana@unicauca.edu.co");
         when(repo.authenticate(eq("ana@unicauca.edu.co"), any())).thenReturn(Optional.of(expected));
 
         Optional<AuthResult> res = service.validarSesion("ana@unicauca.edu.co", "Clave1@".toCharArray());

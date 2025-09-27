@@ -3,7 +3,11 @@ package co.unicauca.workflow.degree_project.domain.services;
 import co.unicauca.workflow.degree_project.access.IArchivoRepository;
 import co.unicauca.workflow.degree_project.access.IProyectoRepository;
 import co.unicauca.workflow.degree_project.domain.models.*;
+import co.unicauca.workflow.degree_project.infra.communication.EmailMessage;
+import co.unicauca.workflow.degree_project.infra.communication.IEmailService;
+import co.unicauca.workflow.degree_project.infra.communication.LoggingEmailService;
 import co.unicauca.workflow.degree_project.infra.operation.PdfValidator;
+import co.unicauca.workflow.degree_project.infra.security.Sesion;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,6 +16,7 @@ import java.util.List;
 
 public class ProyectoService implements IProyectoService {
     private final List<Observer> observers = new ArrayList<>();
+    private List<ObserverCoordinador> observersCoordinador = new ArrayList<>();
     private final IProyectoRepository proyectoRepo;
     private final IArchivoRepository archivoRepo;
     private final Connection conn;
@@ -271,25 +276,61 @@ public class ProyectoService implements IProyectoService {
         return id;
     }
 
+    //Coordinador
     @Override
-    public int countArchivosByEstadoYTipo(String tipo, String estado) {
+    public List<Archivo> listarTodosArchivos() {
+        return archivoRepo.listarArchivos();
+    }
+    
+    @Override
+    public Proyecto buscarProyectoPorId(long proyectoId){
+        return proyectoRepo.buscarProyectoPorId(proyectoId);
+    }
+    
+    @Override
+    public void actualizarEstadoProyecto(long proyectoId, EstadoProyecto nuevoEstado){
+        proyectoRepo.actualizarEstadoProyecto(proyectoId, nuevoEstado);
+    }
+    
+    @Override
+    public String obtenerNombreDocente(String docenteId){
+        return proyectoRepo.nombreDocente(docenteId);
+    }
+
+    @Override
+    public String obtenerCorreoDocente(String docenteId){
+        return proyectoRepo.correoDocente(docenteId);
+    }
+    
+    @Override
+    public Archivo obtenerFormatoA(long archivoId) {
+        Archivo ultimo = archivoRepo.getFormatoA(archivoId);
+        if (ultimo != null) return ultimo;
+        return null;
+    }
+    
+    @Override
+    public int countProyectosByEstadoYTipo(String tipo, String estado, String idDocente){
         try {
-            TipoArchivo tipoEnum = TipoArchivo.valueOf(tipo.toUpperCase());
-            EstadoArchivo estadoEnum = EstadoArchivo.valueOf(estado.toUpperCase());
-            return archivoRepo.countArchivosByEstadoYTipo(tipoEnum, estadoEnum);
+            EstadoProyecto estadoEnum = EstadoProyecto.valueOf(estado.toUpperCase());
+            return proyectoRepo.countProyectosByEstadoYTipo(tipo, estadoEnum, idDocente);
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Tipo o estado inválido: " + tipo + ", " + estado, e);
+            throw new RuntimeException("Estado inválido: " + estado, e);
+        }
+    }
+    
+    @Override
+    public int countArchivosByProyectoYEstado(String tipoProyecto, String estadoArchivo){
+        try {
+            return archivoRepo.countArchivosFormatoAByProyectoYEstado(tipoProyecto, estadoArchivo);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Alguno de los estados es invalido");
         }
     }
 
     @Override
     public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId) {
         return archivoRepo.listarFormatosAPorEstudiante(estudianteId);
-    }
-
-    @Override
-    public Proyecto buscarProyectoPorId(long ProyectoId) {
-        return archivoRepo.buscarProyectoPorId(ProyectoId);
     }
 
     @Override
@@ -309,7 +350,82 @@ public class ProyectoService implements IProyectoService {
         }
 
     }
+    
+    @Override
+    public void addObserverCoordinador(ObserverCoordinador o) {
+        observersCoordinador.add(o);
+    }
 
+    @Override
+    public void notifyCoordinadores() {
+        for (ObserverCoordinador o : observersCoordinador) {
+            o.updateEstadisticasCoordinador();
+        }
+    }
+    
+    IEmailService emailService = new LoggingEmailService();
+    @Override
+    public int subirObservacion (long proyectoId, Archivo archivo, String correoProfesor) {
+        AuthResult auth = Sesion.getInstancia().getUsuarioActual();
+        
+        if (!proyectoRepo.existeProyecto(proyectoId))
+            throw new IllegalArgumentException("Proyecto no existe");
+
+        String estado = proyectoRepo.getEstadoProyecto(proyectoId);
+        if (!"EN_TRAMITE".equalsIgnoreCase(estado))
+            throw new IllegalStateException("El proyecto no está en curso");
+
+        int max = archivoRepo.getMaxVersionFormatoA(proyectoId);
+        if (max > 3)
+            throw new IllegalStateException("Se alcanzó el maximo de 3 versiones del Formato A");
+        
+        
+        if (archivo.getEstado().toString().equals("APROBADO")) {
+            archivo.setNroVersion(max);
+            Proyecto proyecto = buscarProyectoPorId(proyectoId);
+            
+            actualizarEstadoProyecto(proyectoId, EstadoProyecto.TERMINADO);
+            
+            proyecto.setArchivo(archivo);
+            
+            archivo.setEstado(EstadoArchivo.OBSERVADO);
+            
+            archivoRepo.actualizarFormatoA(archivo);
+
+            EmailMessage messageA = new EmailMessage(
+                auth.correo(),
+                correoProfesor,
+                "Formato A APROBADO",
+                "En hora buena! Su formato A ha sido aceptado."
+            );
+            emailService.sendEmail(messageA);
+  
+            notifyCoordinadores();
+            
+            return 1;
+        } else if (archivo.getEstado().toString().equals("OBSERVADO")) {
+            archivo.setNroVersion(max);
+
+            Proyecto proyecto = buscarProyectoPorId(proyectoId);
+            proyecto.setArchivo(archivo);
+            
+            archivoRepo.actualizarFormatoA(archivo);
+
+            EmailMessage messageR = new EmailMessage(
+                auth.correo(),    
+                correoProfesor,
+                "Formato A RECHAZADO",
+                "Su formato a ha sido rechazado, lo invitamos a que revise las obsevaciones."
+            );
+            emailService.sendEmail(messageR);
+            
+            notifyCoordinadores();
+
+            return 2;
+        }
+        return 3;
+    }
+    
     private String normalizeEstudianteIdOrResolve(String estudianteIdOrCorreo) {
         if (isBlank(estudianteIdOrCorreo)) {
             throw new IllegalArgumentException("Estudiante es obligatorio");

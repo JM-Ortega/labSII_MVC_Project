@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 <AnchorPane xmlns="http://javafx.com/javafx/21.0.3"
@@ -14,29 +23,25 @@
             stylesheets="@../styles/FormatoADocente.css">
 
     <children>
-        <VBox spacing="16.0"
-              AnchorPane.topAnchor="10.0"
-              AnchorPane.leftAnchor="10.0"
-              AnchorPane.rightAnchor="10.0"
-              AnchorPane.bottomAnchor="10.0">
+        <VBox spacing="16.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
 
             <!-- Header -->
             <HBox spacing="12.0" styleClass="header">
-                <Text text="Formato A / Docente" styleClass="title">
+                <Text styleClass="title" text="Formato A / Docente">
                     <font>
-                        <Font size="24.0"/>
+                        <Font size="24.0" />
                     </font>
                 </Text>
                 <Pane HBox.hgrow="ALWAYS"/>
                 <HBox spacing="8.0" alignment="CENTER_LEFT">
                     <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                         <image>
-                            <Image url="@../images/iconUsuario.png"/>
+                            <Image url="@../images/iconUsuario.png" />
                         </image>
                     </ImageView>
                     <VBox spacing="2.0">
-                        <Label fx:id="nombreDocente" text="Docente" styleClass="label-strong"/>
-                        <Label text="Docente"/>
+                        <Label fx:id="nombreDocente" styleClass="label-strong" text="Docente" />
+                        <Label text="Docente" />
                     </VBox>
                 </HBox>
             </HBox>
@@ -101,10 +106,10 @@
                             </HBox>
 
                             <!-- Acciones -->
-                            <HBox spacing="8.0" alignment="CENTER_LEFT">
-                                <Button fx:id="btnCrearProyecto" text="Crear proyecto" onAction="#onCrearProyecto"/>
-                                <Button fx:id="btnCancelarNuevo" text="Cancelar" onAction="#onCancelarNuevo"/>
-                                <Label fx:id="lblNuevoProyectoMsg" text="" styleClass="label-error"/>
+                            <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                <Button fx:id="btnCrearProyecto" onAction="#onCrearProyecto" text="Crear proyecto" />
+                                <Button fx:id="btnCancelarNuevo" onAction="#onCancelarNuevo" text="Cancelar" />
+                                <Label fx:id="lblNuevoProyectoMsg" styleClass="label-error" text="" />
                             </HBox>
 
                         </VBox>
@@ -114,7 +119,11 @@
 
             <!-- Tabla -->
             <VBox spacing="8.0" VBox.vgrow="ALWAYS">
-                <Label text="Mis proyectos de grado" styleClass="subtitle"/>
+                <Label styleClass="subtitle" text="Mis proyectos de grado">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font></Label>
+            <Button fx:id="btnVerEstadisticas" mnemonicParsing="false" onAction="#onVerEstadisticas" text="Ver Estadisticas" />
                 <TableView fx:id="tblProyectos" VBox.vgrow="ALWAYS">
                     <columns>
                         <TableColumn fx:id="colTitulo" text="Título" prefWidth="260.0"/>
@@ -125,7 +134,7 @@
                         <TableColumn fx:id="colAccion" text="Acción" prefWidth="140.0"/>
                     </columns>
                 </TableView>
-                <Label fx:id="lblTablaMsg" text="" styleClass="label-error"/>
+                <Label fx:id="lblTablaMsg" styleClass="label-error" text="" />
             </VBox>
 
         </VBox>

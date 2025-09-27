@@ -20,10 +20,17 @@ public interface IArchivoRepository {
     int countFormatoAByEstado(long proyectoId, EstadoArchivo estado);
 
     Archivo getUltimoFormatoA(long proyectoId);
+
+    //Coordinador
+    List<Archivo> listarArchivos();
     
-    public int countArchivosByEstadoYTipo(TipoArchivo tipo, EstadoArchivo estado);
+    int countArchivosFormatoAByProyectoYEstado(String tipoProyecto, String estadoArchivo);
     
-    public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
+    List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
     
-    Proyecto buscarProyectoPorId(long ProyectoId);
+    Archivo getFormatoA(long archivoId);
+    
+    int obtenerUltimaVersionFormatoA(long proyectoId);
+    
+    void actualizarFormatoA(Archivo archivo);   
 }

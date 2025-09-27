@@ -32,16 +32,33 @@ public interface IProyectoService extends ObservableService{
 
     boolean estudianteLibrePorCorreo(String correo);
 
-    public boolean tieneObservacionesFormatoA(long proyectoId);
+    boolean tieneObservacionesFormatoA(long proyectoId);
 
-    public Archivo obtenerUltimoFormatoAConObservaciones(long proyectoId);
+    Archivo obtenerUltimoFormatoAConObservaciones(long proyectoId);
 
-    public EstadoProyecto enforceAutoCancelIfNeeded(long proyectoId);
+    EstadoProyecto enforceAutoCancelIfNeeded(long proyectoId);
 
-    int countArchivosByEstadoYTipo(String tipo, String estado);
+    List<Archivo> listarTodosArchivos();
+
+    Proyecto buscarProyectoPorId(long proyectoId);
+
+    void actualizarEstadoProyecto(long proyectoId, EstadoProyecto nuevoEstado);
+
+    String obtenerNombreDocente(String docenteId);
+
+    String obtenerCorreoDocente(String docenteId);
+
+    Archivo obtenerFormatoA(long proyectoId);
+
+    int subirObservacion (long proyectoId, Archivo archivo, String correoProfesor);
+
+    int countArchivosByProyectoYEstado(String tipoProyecto, String estadoArchivo);
+
+    void addObserverCoordinador(ObserverCoordinador o);
+
+    void notifyCoordinadores();
+
+    int countProyectosByEstadoYTipo(String tipo, String estado, String idDocente);
     
-    public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
-    
-    Proyecto buscarProyectoPorId(long ProyectoId);
-
+    List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
 }

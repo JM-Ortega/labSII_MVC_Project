@@ -22,4 +22,9 @@ public interface IProyectoRepository {
 
     boolean existeEstudiante(String estudianteId);
 
+    boolean existeEstudiantePorCorreo(String correo);
+
+    String getEstudianteIdPorCorreo(String correo);
+
+    boolean estudianteTieneProyectoEnTramitePorCorreo(String correo);
 }

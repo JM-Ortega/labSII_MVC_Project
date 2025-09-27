@@ -34,6 +34,8 @@ replay_pid*
 nbproject/private/
 
 # SQLite side files (volátiles)
+*.db
+*.sqlite
 *.db-journal
 *.sqlite-journal
 *.db-shm

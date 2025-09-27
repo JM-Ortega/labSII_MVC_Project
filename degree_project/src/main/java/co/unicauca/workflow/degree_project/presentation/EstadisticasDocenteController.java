@@ -30,11 +30,11 @@ public class EstadisticasDocenteController implements Initializable, Observer{
     
     private void cargarEstadisticas() {
         seriesTesis.getData().add(new XYChart.Data("TERMINADOS", obtenerCantidad("TESIS", "TERMINADO")));
-        seriesTesis.getData().add(new XYChart.Data("CANCELADOS", obtenerCantidad("TESIS", "CANCELADO")));
+        seriesTesis.getData().add(new XYChart.Data("RECHAZADOS", obtenerCantidad("TESIS", "RECHAZADO")));
         seriesTesis.getData().add(new XYChart.Data("EN TRAMITE", obtenerCantidad("TESIS", "EN_TRAMITE")));
 
         seriesPractica.getData().add(new XYChart.Data("TERMINADOS", obtenerCantidad("PRACTICA_PROFESIONAL", "TERMINADO")));
-        seriesPractica.getData().add(new XYChart.Data("CANCELADOS", obtenerCantidad("PRACTICA_PROFESIONAL", "CANCELADO")));
+        seriesPractica.getData().add(new XYChart.Data("RECHAZADOS", obtenerCantidad("PRACTICA_PROFESIONAL", "RECHAZADO")));
         seriesPractica.getData().add(new XYChart.Data("EN TRAMITE", obtenerCantidad("PRACTICA_PROFESIONAL", "EN_TRAMITE")));
 
     }

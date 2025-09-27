@@ -86,6 +86,29 @@ class ProyectoRepositorySqliteTest {
         List<Proyecto> filtroEstudiante = repo.listarPorDocente("doc-1", "Ana");
         assertEquals(1, filtroEstudiante.size());
     }
+    
+    @Test
+    void countProyectosByEstadoYTipo() throws SQLException {
+        assertEquals(0, repo.countProyectosByEstadoYTipo("TESIS", EstadoProyecto.EN_TRAMITE, "doc-1"));
+
+        long p1 = repo.crearProyecto(baseProyecto("TESIS", "Proyecto 1", "est-1", "doc-1"));
+        long p2 = repo.crearProyecto(baseProyecto("TESIS", "Proyecto 2", "est-2", "doc-1"));
+        assertTrue(p1 > 0 && p2 > 0);
+
+        long p3 = repo.crearProyecto(baseProyecto("TESIS", "Proyecto cancelado", "est-3", "doc-1"));
+        assertTrue(p3 > 0);
+        try (PreparedStatement ps = conn.prepareStatement("UPDATE Proyecto SET estado='CANCELADO' WHERE id=?")) {
+            ps.setLong(1, p3);
+            ps.executeUpdate();
+        }
+
+        long p4 = repo.crearProyecto(baseProyecto("PRACTICA_PROFESIONAL", "Práctica 1", "est-1", "doc-1"));
+        assertTrue(p4 > 0);
+
+        assertEquals(2, repo.countProyectosByEstadoYTipo("TESIS", EstadoProyecto.EN_TRAMITE, "doc-1"));
+        assertEquals(1, repo.countProyectosByEstadoYTipo("TESIS", EstadoProyecto.CANCELADO, "doc-1"));
+        assertEquals(1, repo.countProyectosByEstadoYTipo("PRACTICA_PROFESIONAL", EstadoProyecto.EN_TRAMITE, "doc-1"));
+    }
 
     private static void initSchema(Connection c) throws Exception {
         String fkOn = "PRAGMA foreign_keys = ON;";

@@ -2,6 +2,7 @@ package co.unicauca.workflow.degree_project.access;
 
 import co.unicauca.workflow.degree_project.domain.models.Archivo;
 import co.unicauca.workflow.degree_project.domain.models.EstadoArchivo;
+import co.unicauca.workflow.degree_project.domain.models.Proyecto;
 import co.unicauca.workflow.degree_project.domain.models.TipoArchivo;
 import org.junit.jupiter.api.*;
 
@@ -84,6 +85,17 @@ void listar_archivos_por_proyecto_ordenados_por_version() {
     assertEquals(3, lista.get(2).getNroVersion());
 }
 
+    @Test
+    void listarFormatosAPorEstudiante() {
+        repoArchivos.insertarFormatoA(archivo(proyectoId, 1, "v1.pdf", "V1".getBytes()));
+        repoArchivos.insertarFormatoA(archivo(proyectoId, 2, "v2.pdf", "V2".getBytes()));
+
+        List<Proyecto> proyectos = repoArchivos.listarFormatosAPorEstudiante("est-1");
+
+        assertEquals(2, proyectos.size());
+        assertEquals(1, proyectos.get(0).getArchivo().getNroVersion());
+        assertEquals(2, proyectos.get(1).getArchivo().getNroVersion());
+    }
 
     private static void initSchema(Connection c) throws Exception {
         String sqlRol = """

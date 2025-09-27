@@ -40,6 +40,8 @@ public class ProyectoService implements IProyectoService {
             throw new IllegalArgumentException("Solo se admite FORMATO_A");
         PdfValidator.assertPdf(archivo.getNombreArchivo(), archivo.getBlob());
 
+        proyecto.setEstudianteId(normalizeEstudianteIdOrResolve(proyecto.getEstudianteId()));
+
         if (!docenteTieneCupo(proyecto.getDocenteId()))
             throw new IllegalStateException("El docente alcanzó el límite de 7 proyectos en curso");
 
@@ -85,6 +87,8 @@ public class ProyectoService implements IProyectoService {
             throw new IllegalArgumentException("Datos incompletos");
         if (isBlank(proyecto.getTitulo()) || isBlank(proyecto.getEstudianteId()) || isBlank(proyecto.getDocenteId()))
             throw new IllegalArgumentException("Título, estudiante y docente son obligatorios");
+
+        proyecto.setEstudianteId(normalizeEstudianteIdOrResolve(proyecto.getEstudianteId()));
 
         boolean prevAutoCommit;
         try {
@@ -190,7 +194,6 @@ public class ProyectoService implements IProyectoService {
         return !proyectoRepo.estudianteTieneProyectoEnTramite(estudianteId);
     }
 
-
     @Override
     public int maxVersionFormatoA(long proyectoId) {
         return archivoRepo.getMaxVersionFormatoA(proyectoId);
@@ -210,7 +213,6 @@ public class ProyectoService implements IProyectoService {
         return ultimo.getEstado() == EstadoArchivo.OBSERVADO;
     }
 
-
     @Override
     public List<Proyecto> listarProyectosDocente(String docenteId, String filtro) {
         return proyectoRepo.listarPorDocente(docenteId, filtro);
@@ -227,6 +229,14 @@ public class ProyectoService implements IProyectoService {
     }
 
     @Override
+    public boolean estudianteLibrePorCorreo(String correo) {
+        if (!proyectoRepo.existeEstudiantePorCorreo(correo)) {
+            throw new IllegalArgumentException("El correo no pertenece a un estudiante");
+        }
+        return !proyectoRepo.estudianteTieneProyectoEnTramitePorCorreo(correo);
+    }
+
+    @Override
     public boolean tieneObservacionesFormatoA(long proyectoId) {
         Archivo ultimo = archivoRepo.getUltimoFormatoA(proyectoId);
         return ultimo != null && ultimo.getEstado() == EstadoArchivo.OBSERVADO;
@@ -239,16 +249,31 @@ public class ProyectoService implements IProyectoService {
         return null;
     }
 
-
     @Override
     public EstadoProyecto enforceAutoCancelIfNeeded(long proyectoId) {
         int observados = archivoRepo.countFormatoAByEstado(proyectoId, EstadoArchivo.OBSERVADO);
         if (observados >= 3) {
-            proyectoRepo.actualizarEstadoProyecto(proyectoId, EstadoProyecto.CANCELADO);
-            return EstadoProyecto.CANCELADO;
+            proyectoRepo.actualizarEstadoProyecto(proyectoId, EstadoProyecto.RECHAZADO);
         }
-        return EstadoProyecto.EN_TRAMITE;
+        String est = proyectoRepo.getEstadoProyecto(proyectoId);
+        return est == null ? EstadoProyecto.EN_TRAMITE : EstadoProyecto.valueOf(est);
     }
 
+    private String resolveEstudianteIdFromCorreoOrThrow(String correo) {
+        if (isBlank(correo)) throw new IllegalArgumentException("Correo del estudiante es obligatorio");
+        String id = proyectoRepo.getEstudianteIdPorCorreo(correo);
+        if (id == null) throw new IllegalArgumentException("El correo no pertenece a un estudiante");
+        return id;
+    }
 
+    private String normalizeEstudianteIdOrResolve(String estudianteIdOrCorreo) {
+        if (isBlank(estudianteIdOrCorreo)) {
+            throw new IllegalArgumentException("Estudiante es obligatorio");
+        }
+        String v = estudianteIdOrCorreo.trim();
+        if (v.contains("@")) {
+            return resolveEstudianteIdFromCorreoOrThrow(v);
+        }
+        return v;
+    }
 }

@@ -30,13 +30,12 @@ public interface IProyectoService {
 
     List<Archivo> listarArchivosPorProyecto(long proyectoId, TipoArchivo tipo);
 
+    boolean estudianteLibrePorCorreo(String correo);
 
     public boolean tieneObservacionesFormatoA(long proyectoId);
 
     public Archivo obtenerUltimoFormatoAConObservaciones(long proyectoId);
 
-
     public EstadoProyecto enforceAutoCancelIfNeeded(long proyectoId);
-
 
 }

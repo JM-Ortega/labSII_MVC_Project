@@ -22,4 +22,9 @@ public interface IProyectoRepository {
     boolean existeEstudiante(String estudianteId);
     
     public int countProyectosByEstadoYTipo(String tipo, EstadoProyecto estado, String idDocente);
+    //Coordinador
+    Proyecto proyectoPorId(long proyectoId);
+    String nombreDocente(String docenteId);
+    String correoDocente(String docenteId);
+    void update(Proyecto proyecto);
 }

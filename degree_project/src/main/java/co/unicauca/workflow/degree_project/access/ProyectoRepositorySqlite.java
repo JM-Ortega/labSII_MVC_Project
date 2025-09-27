@@ -193,4 +193,98 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
         }
     }
 
+    //Coordinador
+    @Override
+    public Proyecto proyectoPorId(long proyectoId){
+        Proyecto proyecto = null;
+
+        String sql = "SELECT id, tipo, estado, titulo, estudiante_id, docente_id, fecha_creacion " +
+                     "FROM Proyecto WHERE id = ?";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setLong(1, proyectoId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    proyecto = new Proyecto();
+                    proyecto.setId(rs.getLong("id"));
+                    proyecto.setTipo(rs.getString("tipo"));
+                    proyecto.setEstado(EstadoProyecto.valueOf(rs.getString("estado")));
+                    proyecto.setTitulo(rs.getString("titulo"));
+                    proyecto.setEstudianteId(rs.getString("estudiante_id"));
+                    proyecto.setDocenteId(rs.getString("docente_id"));
+                    proyecto.setFechaCreacion(rs.getString("fecha_creacion"));
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return proyecto;
+    }
+    
+    @Override
+    public String nombreDocente(String docenteId){
+        String nombreDocente = null;
+
+        String sql = """
+                    SELECT u.nombre, u.apellido
+                    FROM Usuario u
+                    JOIN Rol r ON u.rol = r.idRol
+                    WHERE u.id = ? AND r.tipo = 'Docente'
+                     """;
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, docenteId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    nombreDocente = rs.getString("nombre") + " " + rs.getString("apellido");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return nombreDocente;
+    }
+    
+    @Override
+    public String correoDocente(String docenteId){
+        String correoDocente = "";
+
+        String sql = """
+                    SELECT u.correo
+                    FROM Usuario u
+                    JOIN Rol r ON u.rol = r.idRol
+                    WHERE u.id = ? AND r.tipo = 'Docente'
+                     """;
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, docenteId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    correoDocente = rs.getString("correo"); 
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return correoDocente;
+    }
+    
+    @Override
+    public void update(Proyecto proyecto){
+        String sql = "UPDATE Proyecto SET tipo=?, estado=?, titulo=?, estudiante_id=?, docente_id=?, fecha_creacion=? WHERE id=?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, proyecto.getTipo());
+            ps.setString(2, proyecto.getEstado().name()); // si es enum
+            ps.setString(3, proyecto.getTitulo());
+            ps.setString(4, proyecto.getEstudianteId());
+            ps.setString(5, proyecto.getDocenteId());
+            ps.setString(6, proyecto.getFechaCreacion());
+            ps.setLong(7, proyecto.getId());
+            ps.executeUpdate();
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

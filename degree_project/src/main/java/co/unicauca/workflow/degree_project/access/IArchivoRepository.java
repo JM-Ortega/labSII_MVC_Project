@@ -28,8 +28,6 @@ public interface IArchivoRepository {
     
     List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
     
-    Proyecto buscarProyectoPorId(long ProyectoId);
-    
     Archivo getFormatoA(long archivoId);
     
     int obtenerUltimaVersionFormatoA(long proyectoId);

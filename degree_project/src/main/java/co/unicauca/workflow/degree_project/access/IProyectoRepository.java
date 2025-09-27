@@ -23,7 +23,7 @@ public interface IProyectoRepository {
     
     int countProyectosByEstadoYTipo(String tipo, EstadoProyecto estado, String idDocente);
 
-    Proyecto proyectoPorId(long proyectoId);
+    Proyecto buscarProyectoPorId(long proyectoId);
 
     String nombreDocente(String docenteId);
 

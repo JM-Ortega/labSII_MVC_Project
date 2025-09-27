@@ -286,34 +286,6 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
             throw new RuntimeException(e);
         }
     }
-
-    @Override
-    public Proyecto buscarProyectoPorId(long proyectoId) {
-        final String sql = """
-            SELECT id, tipo, estado, titulo, estudiante_id, docente_id, fecha_creacion
-            FROM Proyecto
-            WHERE id = ?
-        """;
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, proyectoId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    Proyecto p = new Proyecto();
-                    p.setId(rs.getLong("id"));
-                    p.setTipo(rs.getString("tipo"));
-                    p.setEstado(EstadoProyecto.valueOf(rs.getString("estado")));
-                    p.setTitulo(rs.getString("titulo"));
-                    p.setEstudianteId(rs.getString("estudiante_id"));
-                    p.setDocenteId(rs.getString("docente_id"));
-                    p.setFechaCreacion(rs.getString("fecha_creacion"));
-                    return p;
-                }
-            }
-            return null;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
     
     @Override
     public Archivo getFormatoA(long archivoId) {

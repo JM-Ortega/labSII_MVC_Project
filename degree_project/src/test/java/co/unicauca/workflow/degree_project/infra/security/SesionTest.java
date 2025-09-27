@@ -22,7 +22,7 @@ class SesionTest {
 
     @Test
     void setYGetUsuarioActual() {
-        AuthResult usuario = new AuthResult("u1", "Estudiante", "Ana Pérez");
+        AuthResult usuario = new AuthResult("u1", "Estudiante", "Ana Pérez", "Automática Industrial", "Ana@unicauca.edu.co");
         Sesion sesion = Sesion.getInstancia();
 
         sesion.setUsuarioActual(usuario);
@@ -34,7 +34,7 @@ class SesionTest {
 
     @Test
     void limpiarDejaUsuarioEnNull() {
-        AuthResult usuario = new AuthResult("u2", "Docente", "Carlos Rojas");
+        AuthResult usuario = new AuthResult("u2", "Docente", "Carlos Rojas", "Automática Industrial", "Carlos@unicauca.edu.co");
         Sesion sesion = Sesion.getInstancia();
         sesion.setUsuarioActual(usuario);
 

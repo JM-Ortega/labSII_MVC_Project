@@ -188,31 +188,31 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
 
     //Coordinador
     @Override
-    public Proyecto proyectoPorId(long proyectoId){
-        Proyecto proyecto = null;
-
-        String sql = "SELECT id, tipo, estado, titulo, estudiante_id, docente_id, fecha_creacion " +
-                     "FROM Proyecto WHERE id = ?";
-
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setLong(1, proyectoId);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
+    public Proyecto buscarProyectoPorId(long proyectoId) {
+        final String sql = """
+            SELECT id, tipo, estado, titulo, estudiante_id, docente_id, fecha_creacion
+            FROM Proyecto
+            WHERE id = ?
+        """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setLong(1, proyectoId);
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    proyecto = new Proyecto();
-                    proyecto.setId(rs.getLong("id"));
-                    proyecto.setTipo(rs.getString("tipo"));
-                    proyecto.setEstado(EstadoProyecto.valueOf(rs.getString("estado")));
-                    proyecto.setTitulo(rs.getString("titulo"));
-                    proyecto.setEstudianteId(rs.getString("estudiante_id"));
-                    proyecto.setDocenteId(rs.getString("docente_id"));
-                    proyecto.setFechaCreacion(rs.getString("fecha_creacion"));
+                    Proyecto p = new Proyecto();
+                    p.setId(rs.getLong("id"));
+                    p.setTipo(rs.getString("tipo"));
+                    p.setEstado(EstadoProyecto.valueOf(rs.getString("estado")));
+                    p.setTitulo(rs.getString("titulo"));
+                    p.setEstudianteId(rs.getString("estudiante_id"));
+                    p.setDocenteId(rs.getString("docente_id"));
+                    p.setFechaCreacion(rs.getString("fecha_creacion"));
+                    return p;
                 }
             }
+            return null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return proyecto;
     }
     
     @Override

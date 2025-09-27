@@ -284,7 +284,7 @@ public class ProyectoService implements IProyectoService {
     
     @Override
     public Proyecto buscarProyectoPorId(long proyectoId){
-        return proyectoRepo.proyectoPorId(proyectoId);
+        return proyectoRepo.buscarProyectoPorId(proyectoId);
     }
     
     @Override
@@ -331,11 +331,6 @@ public class ProyectoService implements IProyectoService {
     @Override
     public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId) {
         return archivoRepo.listarFormatosAPorEstudiante(estudianteId);
-    }
-
-    @Override
-    public Proyecto buscarProyectoPorId(long ProyectoId) {
-        return archivoRepo.buscarProyectoPorId(ProyectoId);
     }
 
     @Override

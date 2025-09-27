@@ -97,7 +97,6 @@ public class Co_Proyecto_Controller implements Initializable{
             e.printStackTrace();
         }
     }
-
     
     public void setService(IProyectoService proyectoService) {
         this.proyectoService = proyectoService;
@@ -136,7 +135,6 @@ public class Co_Proyecto_Controller implements Initializable{
         colDescargar.setSortable(false);
     }
 
-    
     private void cargarTabla() {
         if (proyectoService == null) {
             System.err.println("⚠️ Error: proyectoService no fue inicializado.");

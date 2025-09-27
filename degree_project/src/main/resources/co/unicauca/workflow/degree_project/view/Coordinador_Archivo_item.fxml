@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox prefHeight="50.0" prefWidth="919.0" styleClass="fondo2" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<HBox prefHeight="50.0" prefWidth="919.0" styleClass="fondo2" xmlns="http://javafx.com/javafx/21.0.3" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label fx:id="titulo" minHeight="50.0" prefHeight="50.0" prefWidth="307.0" text="Sistema de predicción de fallas en equipos industriales usando aprendizaje automático" wrapText="true">
          <HBox.margin>

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.*;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -68,8 +69,7 @@ class ProyectoServiceTest {
 
         IllegalStateException ex = assertThrows(IllegalStateException.class,
                 () -> service.crearProyectoConFormatoA(p8, pdf("v1.pdf", "x")));
-        assertTrue(ex.getMessage().toLowerCase().contains("límite")
-                || ex.getMessage().toLowerCase().contains("limite"));
+        assertTrue(ex.getMessage().toLowerCase().contains("límite") || ex.getMessage().toLowerCase().contains("limite"));
     }
 
     @Test
@@ -102,182 +102,12 @@ class ProyectoServiceTest {
         assertEquals(3, service.maxVersionFormatoA(id));
     }
 
-    @Test
-    void rf2_crear_proyecto_con_correo_estudiante_ok() {
-        // est-1 ya existe con correo e1@unicauca.edu.co
-        Proyecto p = baseProyecto("TESIS", "Sistema con correo", "e1@unicauca.edu.co", "doc-1");
-        Archivo a = pdf("v1.pdf", "PDF V1");
-
-        Proyecto creado = service.crearProyectoConFormatoA(p, a);
-
-        assertTrue(creado.getId() > 0);
-        assertEquals(1, service.maxVersionFormatoA(creado.getId()));
-    }
-
-    @Test
-    void rf2_crear_proyecto_rechaza_correo_de_docente() {
-        // doc-2 existe con correo doc2@unicauca.edu.co (semilla)
-        Proyecto p = baseProyecto("TESIS", "Inválido", "doc2@unicauca.edu.co", "doc-1");
-        Archivo a = pdf("v1.pdf", "V1");
-
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> service.crearProyectoConFormatoA(p, a));
-        assertTrue(ex.getMessage().toLowerCase().contains("correo")
-                || ex.getMessage().toLowerCase().contains("estudiante"));
-    }
-
-    @Test
-    void estudianteLibrePorCorreo_ok_y_error_por_rol() {
-        assertTrue(service.estudianteLibrePorCorreo("e1@unicauca.edu.co"));
-
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> service.estudianteLibrePorCorreo("doc2@unicauca.edu.co"));
-        assertTrue(ex.getMessage().toLowerCase().contains("no pertenece")
-                || ex.getMessage().toLowerCase().contains("estudiante"));
-    }
-
-
-    @Test
-    void crear_proyecto_practica_con_carta_ok() {
-        Proyecto p = baseProyecto("PRACTICA_PROFESIONAL", "Práctica con carta", "e1@unicauca.edu.co", "doc-1");
-
-        Archivo formatoA = pdf("formatoA.pdf", "A");
-        Archivo carta = pdf("carta.pdf", "C");
-        carta.setTipo(TipoArchivo.CARTA_ACEPTACION);
-
-        long id = service.crearProyectoConArchivos(p, java.util.List.of(formatoA, carta));
-        assertTrue(id > 0);
-        assertEquals(1, service.maxVersionFormatoA(id));
-    }
-
-    @Test
-    void subir_carta_aceptacion_ok() {
-        var creado = service.crearProyectoConFormatoA(
-            baseProyecto("TESIS", "Con carta luego", "e1@unicauca.edu.co", "doc-1"),
-            pdf("v1.pdf", "A")
-        );
-        Archivo carta = pdf("carta.pdf", "C");
-        carta.setTipo(TipoArchivo.CARTA_ACEPTACION);
-
-        assertDoesNotThrow(() -> service.subirCartaAceptacion(creado.getId(), carta));
-
-        var archivosCarta = service.listarArchivosPorProyecto(creado.getId(), TipoArchivo.CARTA_ACEPTACION);
-        assertEquals(1, archivosCarta.size());
-        assertEquals("carta.pdf", archivosCarta.get(0).getNombreArchivo());
-    }
-
-    @Test
-    void docenteTieneCupo_true_y_false() {
-        assertTrue(service.docenteTieneCupo("doc-1"));
-
-        // crear 7 en trámite
-        for (int i = 1; i <= 7; i++) {
-            seedEstudiante("est-x"+i, "ex"+i+"@unicauca.edu.co");
-            service.crearProyectoConFormatoA(
-                baseProyecto("TESIS", "T"+i, "est-x"+i, "doc-1"),
-                pdf("v1.pdf", "x")
-            );
-        }
-        assertFalse(service.docenteTieneCupo("doc-1"));
-    }
-
-
-    @Test
-    void canResubmit_depende_de_estado_y_versiones() throws Exception {
-        var creado = service.crearProyectoConFormatoA(
-            baseProyecto("TESIS", "Reintentos", "e1@unicauca.edu.co", "doc-1"),
-            pdf("v1.pdf", "A") // v1 PENDIENTE
-        );
-        long id = creado.getId();
-
-        // v1 = PENDIENTE -> NO puede reenviar
-        assertFalse(service.canResubmit(id));
-
-        // Sube v2 y márcala OBSERVADO -> ahora sí puede
-        var v2 = service.subirNuevaVersionFormatoA(id, pdf("v2.pdf", "B"));
-        long v2IdReal = getArchivoIdPorVersion(id, "FORMATO_A", v2.getNroVersion());
-        markArchivoEstado(v2IdReal, "OBSERVADO");
-        assertTrue(service.canResubmit(id));
-
-        // Sube v3 (ya serán 3 versiones) -> NO puede reenviar
-        service.subirNuevaVersionFormatoA(id, pdf("v3.pdf", "C"));
-        assertFalse(service.canResubmit(id));
-    }
-
-    @Test
-    void observaciones_helpers() throws Exception {
-        var creado = service.crearProyectoConFormatoA(
-            baseProyecto("TESIS", "Obs", "e1@unicauca.edu.co", "doc-1"),
-            pdf("v1.pdf", "A")
-        );
-        long id = creado.getId();
-
-        // No hay observaciones
-        assertFalse(service.tieneObservacionesFormatoA(id));
-        assertNull(service.obtenerUltimoFormatoAConObservaciones(id));
-
-        // Sube v2 y márcala OBSERVADO
-        var v2 = service.subirNuevaVersionFormatoA(id, pdf("v2.pdf", "B"));
-        long v2IdReal = getArchivoIdPorVersion(id, "FORMATO_A", v2.getNroVersion());
-        markArchivoEstado(v2IdReal, "OBSERVADO");
-
-        assertTrue(service.tieneObservacionesFormatoA(id));
-        var ultimoObs = service.obtenerUltimoFormatoAConObservaciones(id);
-        assertNotNull(ultimoObs);
-        assertEquals(v2.getNroVersion(), ultimoObs.getNroVersion());
-    }
-
-    @Test
-    void auto_rechazo_por_tres_observados() throws Exception {
-        var creado = service.crearProyectoConFormatoA(
-            baseProyecto("TESIS", "AutoRechazo", "e1@unicauca.edu.co", "doc-1"),
-            pdf("v1.pdf", "A")
-        );
-        long id = creado.getId();
-
-        // Marca dos OBSERVADO via updates
-        var v2 = service.subirNuevaVersionFormatoA(id, pdf("v2.pdf", "B"));
-        long v2IdReal = getArchivoIdPorVersion(id, "FORMATO_A", v2.getNroVersion());
-        markArchivoEstado(v2IdReal, "OBSERVADO");
-        var v3 = service.subirNuevaVersionFormatoA(id, pdf("v3.pdf", "C"));
-        long v3IdReal = getArchivoIdPorVersion(id, "FORMATO_A", v3.getNroVersion());
-        markArchivoEstado(v3IdReal, "OBSERVADO");
-
-        // Aún 2 observados -> EN_TRAMITE
-        assertEquals(EstadoProyecto.EN_TRAMITE, service.enforceAutoCancelIfNeeded(id));
-
-        // Inserta una versión extra OBSERVADO forzada (evita límites del service)
-        insertFormatoAForzadoObs(id);
-
-        // Ahora debe quedar RECHAZADO
-        assertEquals(EstadoProyecto.RECHAZADO, service.enforceAutoCancelIfNeeded(id));
-    }
-
-    @Test
-    void listar_y_descargar_basico() {
-        var creado = service.crearProyectoConFormatoA(
-            baseProyecto("TESIS", "Listado", "e1@unicauca.edu.co", "doc-1"),
-            pdf("v1.pdf", "A")
-        );
-
-        var lista = service.listarProyectosDocente("doc-1", "");
-        assertFalse(lista.isEmpty());
-
-        var archivos = service.listarArchivosPorProyecto(creado.getId(), TipoArchivo.FORMATO_A);
-        assertEquals(1, archivos.size());
-
-        var a0 = service.obtenerArchivo(archivos.get(0).getId());
-        assertNotNull(a0);
-        assertEquals("v1.pdf", a0.getNombreArchivo());
-    }
-
-
-    private static Proyecto baseProyecto(String tipo, String titulo, String estudianteIdOrCorreo, String docenteId) {
+    private static Proyecto baseProyecto(String tipo, String titulo, String estudianteId, String docenteId) {
         Proyecto p = new Proyecto();
         p.setTipo(tipo);
         p.setEstado(EstadoProyecto.EN_TRAMITE);
         p.setTitulo(titulo);
-        p.setEstudianteId(estudianteIdOrCorreo); // ahora puede ser UUID o correo
+        p.setEstudianteId(estudianteId);
         p.setDocenteId(docenteId);
         return p;
     }
@@ -309,7 +139,7 @@ class ProyectoServiceTest {
                 CREATE TABLE IF NOT EXISTS Proyecto (
                   id INTEGER PRIMARY KEY AUTOINCREMENT,
                   tipo TEXT NOT NULL CHECK (tipo IN ('TESIS','PRACTICA_PROFESIONAL')),
-                  estado TEXT NOT NULL CHECK (estado IN ('EN_TRAMITE','RECHAZADO','TERMINADO')) DEFAULT 'EN_TRAMITE',
+                  estado TEXT NOT NULL CHECK (estado IN ('EN_TRAMITE','CANCELADO','TERMINADO')) DEFAULT 'EN_TRAMITE',
                   titulo TEXT NOT NULL,
                   estudiante_id TEXT NOT NULL,
                   docente_id TEXT NOT NULL,
@@ -322,12 +152,12 @@ class ProyectoServiceTest {
                 CREATE TABLE IF NOT EXISTS Archivo (
                   id INTEGER PRIMARY KEY AUTOINCREMENT,
                   proyecto_id INTEGER NOT NULL,
-                  tipo TEXT NOT NULL CHECK (tipo IN ('FORMATO_A','CARTA_ACEPTACION','ANTEPROYECTO','FINAL','OTRO')),
+                  tipo TEXT NOT NULL CHECK (tipo IN ('FORMATO_A','ANTEPROYECTO','FINAL','OTRO')),
                   nro_version INTEGER NOT NULL CHECK (nro_version >= 1),
                   nombre_archivo TEXT NOT NULL CHECK (lower(nombre_archivo) LIKE '%.pdf'),
                   fecha_subida TEXT NOT NULL DEFAULT (datetime('now')),
                   blob BLOB NOT NULL,
-                  estado TEXT NOT NULL CHECK (estado IN ('PENDIENTE','APROBADO','OBSERVADO')) DEFAULT 'PENDIENTE',
+                  estado TEXT NOT NULL CHECK (estado IN ('PENDIENTE','APROBADO','RECHAZADO')) DEFAULT 'PENDIENTE',
                   FOREIGN KEY (proyecto_id) REFERENCES Proyecto(id) ON UPDATE CASCADE ON DELETE CASCADE,
                   UNIQUE (proyecto_id, tipo, nro_version)
                 );
@@ -353,12 +183,8 @@ class ProyectoServiceTest {
             INSERT INTO Usuario(id, correo, contrasena, rol, nombre, apellido, programa, celular)
             VALUES (?, ?, 'hash', ?, ?, ?, 1, null)
         """)) {
-            // estudiante base
             ps.setString(1, "est-1"); ps.setString(2, "e1@unicauca.edu.co"); ps.setInt(3, 1); ps.setString(4, "Ana"); ps.setString(5, "Pérez"); ps.executeUpdate();
-            // docentes
             ps.setString(1, "doc-1"); ps.setString(2, "d1@unicauca.edu.co"); ps.setInt(3, 2); ps.setString(4, "Carlos"); ps.setString(5, "Rojas"); ps.executeUpdate();
-            ps.setString(1, "doc-2"); ps.setString(2, "doc2@unicauca.edu.co"); ps.setInt(3, 2); ps.setString(4, "Lucia");  ps.setString(5, "Mora");  ps.executeUpdate();
-            // más estudiantes
             for (int i = 2; i <= 7; i++) {
                 ps.setString(1, "est-" + i);
                 ps.setString(2, "e" + i + "@unicauca.edu.co");
@@ -388,53 +214,6 @@ class ProyectoServiceTest {
             s.execute("DELETE FROM Archivo");
             s.execute("DELETE FROM Proyecto");
             s.execute("DELETE FROM Usuario");
-        }
-    }
-
-    // ---------------- Helpers específicos para manipular datos en tests ----------------
-
-    /** Devuelve el id real del archivo por (proyecto, tipo, nro_version) */
-    private static long getArchivoIdPorVersion(long proyectoId, String tipo, int nroVersion) throws Exception {
-        try (PreparedStatement ps = conn.prepareStatement(
-                "SELECT id FROM Archivo WHERE proyecto_id=? AND tipo=? AND nro_version=?")) {
-            ps.setLong(1, proyectoId);
-            ps.setString(2, tipo);
-            ps.setInt(3, nroVersion);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getLong(1);
-            }
-        }
-        throw new AssertionError("No se encontró el archivo insertado (ver versión/tipo/proyecto).");
-    }
-
-    /** Marca el estado de un archivo directamente en la tabla (para simular OBSERVADO/APROBADO) */
-    private static void markArchivoEstado(long archivoId, String estado) throws Exception {
-        try (PreparedStatement ps = conn.prepareStatement("UPDATE Archivo SET estado = ? WHERE id = ?")) {
-            ps.setString(1, estado);
-            ps.setLong(2, archivoId);
-            assertTrue(ps.executeUpdate() > 0, "No se pudo actualizar estado del archivo");
-        }
-    }
-
-    /** Inserta una versión de Formato A OBSERVADO de forma forzada (evita límites del service) */
-    private static void insertFormatoAForzadoObs(long proyectoId) throws Exception {
-        int nextVersion = 1;
-        try (PreparedStatement ps = conn.prepareStatement(
-                "SELECT COALESCE(MAX(nro_version),0)+1 FROM Archivo WHERE proyecto_id = ? AND tipo = 'FORMATO_A'")) {
-            ps.setLong(1, proyectoId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) nextVersion = rs.getInt(1);
-            }
-        }
-        try (PreparedStatement ins = conn.prepareStatement("""
-            INSERT INTO Archivo (proyecto_id, tipo, nro_version, nombre_archivo, blob, estado)
-            VALUES (?, 'FORMATO_A', ?, ?, ?, 'OBSERVADO')
-        """)) {
-            ins.setLong(1, proyectoId);
-            ins.setInt(2, nextVersion);
-            ins.setString(3, "forzado_v"+nextVersion+".pdf");
-            ins.setBytes(4, "X".getBytes(StandardCharsets.UTF_8));
-            ins.executeUpdate();
         }
     }
 }

@@ -3,7 +3,9 @@ package co.unicauca.workflow.degree_project.presentation;
 import co.unicauca.workflow.degree_project.domain.models.Archivo;
 import co.unicauca.workflow.degree_project.domain.models.EstadoArchivo;
 import co.unicauca.workflow.degree_project.domain.models.TipoArchivo;
+import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 import co.unicauca.workflow.degree_project.domain.services.IProyectoService;
+import co.unicauca.workflow.degree_project.infra.security.Sesion;
 import co.unicauca.workflow.degree_project.presentation.Co_Proyecto_Controller.RowVM;
 import java.io.File;
 import java.net.URL;
@@ -68,7 +70,6 @@ public class Co_Observaciones_Controller implements Initializable{
         lblTipoArchivo.setText(row.tipoAProperty().get());
         lblArchivo.setText("");
     }
-
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -135,7 +136,6 @@ public class Co_Observaciones_Controller implements Initializable{
         btnEnviar.setDisable(!habilitar);
     }
 
-    
     @FXML
     private void seleccionarArchivo(ActionEvent event) {
         try {
@@ -187,7 +187,7 @@ public class Co_Observaciones_Controller implements Initializable{
             archivoSeleccionado.setEstado(EstadoArchivo.OBSERVADO);
         }
 
-        int resultado = proyectoService.subirObservacion(rowActual.proyectoId(), archivoSeleccionado);
+        int resultado = proyectoService.subirObservacion(rowActual.proyectoId(), archivoSeleccionado, rowActual.correoProfesor().get());
 
         if (resultado == 1) {
             alerta(Alert.AlertType.INFORMATION, "Correcto", null,

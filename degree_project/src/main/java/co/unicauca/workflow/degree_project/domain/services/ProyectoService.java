@@ -3,7 +3,11 @@ package co.unicauca.workflow.degree_project.domain.services;
 import co.unicauca.workflow.degree_project.access.IArchivoRepository;
 import co.unicauca.workflow.degree_project.access.IProyectoRepository;
 import co.unicauca.workflow.degree_project.domain.models.*;
+import co.unicauca.workflow.degree_project.infra.communication.EmailMessage;
+import co.unicauca.workflow.degree_project.infra.communication.IEmailService;
+import co.unicauca.workflow.degree_project.infra.communication.LoggingEmailService;
 import co.unicauca.workflow.degree_project.infra.operation.PdfValidator;
+import co.unicauca.workflow.degree_project.infra.security.Sesion;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -271,6 +275,11 @@ public class ProyectoService implements IProyectoService{
     }
 
     @Override
+    public String obtenerCorreoDocente(String docenteId){
+        return proyectoRepo.correoDocente(docenteId);
+    }
+    
+    @Override
     public Archivo obtenerFormatoA(long archivoId) {
         Archivo ultimo = archivoRepo.getFormatoA(archivoId);
         if (ultimo != null) return ultimo;
@@ -311,8 +320,12 @@ public class ProyectoService implements IProyectoService{
         }
     }
 
+    
+    IEmailService emailService = new LoggingEmailService();
     @Override
-    public int subirObservacion (long proyectoId, Archivo archivo) {
+    public int subirObservacion (long proyectoId, Archivo archivo, String correoProfesor) {
+        AuthResult auth = Sesion.getInstancia().getUsuarioActual();
+        
         if (!proyectoRepo.existeProyecto(proyectoId))
             throw new IllegalArgumentException("Proyecto no existe");
 
@@ -334,6 +347,15 @@ public class ProyectoService implements IProyectoService{
             archivo.setEstado(EstadoArchivo.OBSERVADO);
             
             archivoRepo.actualizarFormatoA(archivo);
+
+            EmailMessage messageA = new EmailMessage(
+                auth.correo(),
+                correoProfesor,
+                "Formato A APROBADO",
+                "En hora buena! Su formato A ha sido aceptado."
+            );
+            emailService.sendEmail(messageA);
+  
             notifyObservers();
             
             return 1;
@@ -344,6 +366,15 @@ public class ProyectoService implements IProyectoService{
             proyecto.setArchivo(archivo);
             
             archivoRepo.actualizarFormatoA(archivo);
+
+            EmailMessage messageR = new EmailMessage(
+                auth.correo(),    
+                correoProfesor,
+                "Formato A RECHAZADO",
+                "Su formato a ha sido rechazado, lo invitamos a que revise las obsevaciones."
+            );
+            emailService.sendEmail(messageR);
+            
             notifyObservers();
 
             return 2;

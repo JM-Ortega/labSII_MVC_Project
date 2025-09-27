@@ -252,7 +252,7 @@ public class SqliteRepository implements IUserRepository {
             return null;
         }
     }
-
+    
     @Override
     public Optional<AuthResult> authenticate(String email, char[] passwordIngresada) {
         String sql = """
@@ -291,7 +291,7 @@ public class SqliteRepository implements IUserRepository {
                     default -> "";
                 };               
                 
-                return Optional.of(new AuthResult(userId, rol, nombreCompleto, programa));
+                return Optional.of(new AuthResult(userId, rol, nombreCompleto, programa, email));
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserService.class.getName()).log(Level.SEVERE, null, ex);

@@ -7,10 +7,11 @@ public class LoggingEmailService implements IEmailService {
 
     @Override
     public void sendEmail(EmailMessage message) {
-        log.info("----- SIMULATED EMAIL SEND -----");
-        log.info("To: " + String.join(", ", message.to));
-        log.info("Subject: " + message.subject);
-        log.info("Body:\n" + message.body);
-        log.info("----- END SIMULATED EMAIL -----");
+        System.out.println("----- SE ENVIA LA SIMULACION DE EMAIL -----");
+        System.out.println("De: " + message.sender);
+        System.out.println("Para: " + String.join(", ", message.to));
+        System.out.println("Asunto: " + message.subject);
+        System.out.println("Cuerpo:\n" + message.body);
+        System.out.println("----- FINALIZA LA SIMULACION DE EMAIL -----");
     }
 }

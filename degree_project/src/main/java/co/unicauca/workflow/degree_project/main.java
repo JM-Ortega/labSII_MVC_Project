@@ -184,18 +184,6 @@ public class main extends Application {
 
 
     public static void main(String[] args) {
-        /*
-            IEmailService emailService = new LoggingEmailService();
-
-            EmailMessage message = new EmailMessage(
-                "destinatario@ejemplo.com",
-                "Prueba de correo",
-                "Hola! Este es un correo simulado."
-            );
-
-            emailService.sendEmail(message);
-        */
-        
         launch(args);
     }
 }

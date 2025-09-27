@@ -1,115 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<AnchorPane xmlns="http://javafx.com/javafx/21.0.3"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="co.unicauca.workflow.degree_project.presentation.FormatoADocenteController"
-            prefWidth="950.0" prefHeight="700.0"
-            styleClass="root-white">
+
+<AnchorPane prefHeight="700.0" prefWidth="950.0" styleClass="root-white" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.unicauca.workflow.degree_project.presentation.FormatoADocenteController">
 
     <!-- Cargar stylesheet local -->
 
 
     <children>
-        <VBox spacing="16.0"
-              AnchorPane.topAnchor="10.0"
-              AnchorPane.leftAnchor="10.0"
-              AnchorPane.rightAnchor="10.0"
-              AnchorPane.bottomAnchor="10.0">
+        <VBox spacing="16.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
 
             <!-- Header -->
             <HBox spacing="12.0" styleClass="header">
-                <Text text="Formato A / Docente" styleClass="title">
+                <Text styleClass="title" text="Formato A / Docente">
                     <font>
-                        <Font size="24.0"/>
+                        <Font size="24.0" />
                     </font>
                 </Text>
 
-                <Pane HBox.hgrow="ALWAYS"/>
+                <Pane HBox.hgrow="ALWAYS" />
 
-                <HBox spacing="8.0" alignment="CENTER_LEFT">
+                <HBox alignment="CENTER_LEFT" spacing="8.0">
                     <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                         <image>
-                            <Image url="@../images/iconUsuario.png"/>
+                            <Image url="@../images/iconUsuario.png" />
                         </image>
                     </ImageView>
                     <VBox spacing="2.0">
-                        <Label fx:id="nombreDocente" text="Docente" styleClass="label-strong"/>
-                        <Label text="Docente"/>
+                        <Label fx:id="nombreDocente" styleClass="label-strong" text="Docente" />
+                        <Label text="Docente" />
                     </VBox>
                 </HBox>
             </HBox>
 
             <!-- Barra de acciones -->
             <HBox spacing="10.0" styleClass="section">
-                <Button fx:id="btnIniciarNuevoProyecto" text="Iniciar nuevo proyecto"
-                        onAction="#onIniciarNuevoProyecto"/>
-                <Label fx:id="lblCupoDocente" text="" styleClass="label-muted"/>
-                <Pane HBox.hgrow="ALWAYS"/>
-                <TextField fx:id="txtBuscar" promptText="Buscar por título o estudiante..." prefWidth="260.0"/>
-                <Button fx:id="btnRefrescar" text="Refrescar" onAction="#onRefrescar"/>
+                <Button fx:id="btnIniciarNuevoProyecto" onAction="#onIniciarNuevoProyecto" text="Iniciar nuevo proyecto" />
+                <Label fx:id="lblCupoDocente" styleClass="label-muted" text="" />
+                <Pane HBox.hgrow="ALWAYS" />
+                <TextField fx:id="txtBuscar" prefWidth="260.0" promptText="Buscar por título o estudiante..." />
+                <Button fx:id="btnRefrescar" onAction="#onRefrescar" text="Refrescar" />
             </HBox>
 
             <!-- Panel NUEVO PROYECTO (RF-2) -->
-            <TitledPane fx:id="pnNuevoProyecto"
-                        text="Nuevo proyecto"
-                        expanded="true" visible="false" managed="false">
+            <TitledPane fx:id="pnNuevoProyecto" expanded="true" managed="false" text="Nuevo proyecto" visible="false">
                 <content>
                     <VBox spacing="12.0" styleClass="section">
                         <VBox spacing="8.0">
 
                             <!-- Estudiante -->
-                            <HBox spacing="8.0" alignment="CENTER_LEFT">
-                                <Label text="ID estudiante:" minWidth="130.0"/>
-                                <TextField fx:id="txtEstudianteId" promptText="UUID del estudiante" prefWidth="280.0"/>
-                                <Button fx:id="btnBuscarEstudiante" text="Buscar" onAction="#onBuscarEstudiante"/>
-                                <Label fx:id="lblEstudianteNombre" text="" styleClass="label-success"/>
+                            <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                <Label minWidth="130.0" text="ID estudiante:" />
+                                <TextField fx:id="txtEstudianteId" prefWidth="280.0" promptText="UUID del estudiante" />
+                                <Button fx:id="btnBuscarEstudiante" onAction="#onBuscarEstudiante" text="Buscar" />
+                                <Label fx:id="lblEstudianteNombre" styleClass="label-success" text="" />
                             </HBox>
 
                             <!-- Título -->
-                            <HBox spacing="8.0" alignment="CENTER_LEFT">
-                                <Label text="Título del proyecto:" minWidth="130.0"/>
-                                <TextField fx:id="txtTitulo" promptText="Ingrese el título del proyecto"
-                                           HBox.hgrow="ALWAYS"/>
+                            <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                <Label minWidth="130.0" text="Título del proyecto:" />
+                                <TextField fx:id="txtTitulo" promptText="Ingrese el título del proyecto" HBox.hgrow="ALWAYS" />
                             </HBox>
 
                             <!-- Tipo de trabajo de grado -->
-                            <HBox spacing="8.0" alignment="CENTER_LEFT">
-                                <Label text="Tipo de trabajo:" minWidth="130.0"/>
-                                <ComboBox fx:id="cbTipoTrabajo" promptText="Seleccione..." prefWidth="280.0"/>
-                                <Label text="* Tesis: solo Formato A; Práctica: Formato A + Carta."
-                                       styleClass="label-muted"/>
+                            <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                <Label minWidth="130.0" text="Tipo de trabajo:" />
+                                <ComboBox fx:id="cbTipoTrabajo" prefWidth="280.0" promptText="Seleccione..." />
+                                <Label styleClass="label-muted" text="* Tesis: solo Formato A; Práctica: Formato A + Carta." />
                             </HBox>
 
                             <!-- Formato A -->
-                            <HBox spacing="8.0" alignment="CENTER_LEFT">
-                                <Label text="Formato A (PDF):" minWidth="130.0"/>
-                                <Button fx:id="btnSeleccionarPdf" text="Seleccionar PDF..."
-                                        onAction="#onSeleccionarPdf"/>
-                                <Label fx:id="lblPdfNombre" text="Ningún archivo seleccionado"
-                                       styleClass="label-muted"/>
+                            <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                <Label minWidth="130.0" text="Formato A (PDF):" />
+                                <Button fx:id="btnSeleccionarPdf" onAction="#onSeleccionarPdf" text="Seleccionar PDF..." />
+                                <Label fx:id="lblPdfNombre" styleClass="label-muted" text="Ningún archivo seleccionado" />
                             </HBox>
 
                             <!-- Carta de aceptación (solo para Práctica/Trabajo de grado) -->
-                            <HBox fx:id="rowCarta" spacing="8.0" alignment="CENTER_LEFT" visible="false"
-                                  managed="false">
-                                <Label text="Carta aceptación (PDF):" minWidth="130.0"/>
-                                <Button fx:id="btnSeleccionarCarta" text="Seleccionar PDF..."
-                                        onAction="#onSeleccionarCarta"/>
-                                <Label fx:id="lblCartaNombre" text="Ningún archivo seleccionado"
-                                       styleClass="label-muted"/>
+                            <HBox fx:id="rowCarta" alignment="CENTER_LEFT" managed="false" spacing="8.0" visible="false">
+                                <Label minWidth="130.0" text="Carta aceptación (PDF):" />
+                                <Button fx:id="btnSeleccionarCarta" onAction="#onSeleccionarCarta" text="Seleccionar PDF..." />
+                                <Label fx:id="lblCartaNombre" styleClass="label-muted" text="Ningún archivo seleccionado" />
                             </HBox>
 
                             <!-- Acciones -->
-                            <HBox spacing="8.0" alignment="CENTER_LEFT">
-                                <Button fx:id="btnCrearProyecto" text="Crear proyecto" onAction="#onCrearProyecto"/>
-                                <Button fx:id="btnCancelarNuevo" text="Cancelar" onAction="#onCancelarNuevo"/>
-                                <Label fx:id="lblNuevoProyectoMsg" text="" styleClass="label-error"/>
+                            <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                <Button fx:id="btnCrearProyecto" onAction="#onCrearProyecto" text="Crear proyecto" />
+                                <Button fx:id="btnCancelarNuevo" onAction="#onCancelarNuevo" text="Cancelar" />
+                                <Label fx:id="lblNuevoProyectoMsg" styleClass="label-error" text="" />
                             </HBox>
                         </VBox>
                     </VBox>
@@ -119,17 +111,21 @@
 
             <!-- Tabla de proyectos del docente -->
             <VBox spacing="8.0" VBox.vgrow="ALWAYS">
-                <Label text="Mis proyectos de grado" styleClass="subtitle"/>
+                <Label styleClass="subtitle" text="Mis proyectos de grado">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font></Label>
+            <Button fx:id="btnVerEstadisticas" mnemonicParsing="false" onAction="#onVerEstadisticas" text="Ver Estadisticas" />
                 <TableView fx:id="tblProyectos" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="colTitulo" text="Título" prefWidth="280.0"/>
-                        <TableColumn fx:id="colEstudiante" text="Estudiante" prefWidth="200.0"/>
-                        <TableColumn fx:id="colVersion" text="Versión Formato A" prefWidth="160.0"/>
-                        <TableColumn fx:id="colEstadoProyecto" text="Estado del proyecto" prefWidth="160.0"/>
-                        <TableColumn fx:id="colAccion" text="Acción" prefWidth="140.0"/>
+                        <TableColumn fx:id="colTitulo" prefWidth="280.0" text="Título" />
+                        <TableColumn fx:id="colEstudiante" prefWidth="200.0" text="Estudiante" />
+                        <TableColumn fx:id="colVersion" prefWidth="160.0" text="Versión Formato A" />
+                        <TableColumn fx:id="colEstadoProyecto" prefWidth="160.0" text="Estado del proyecto" />
+                        <TableColumn fx:id="colAccion" prefWidth="140.0" text="Acción" />
                     </columns>
                 </TableView>
-                <Label fx:id="lblTablaMsg" text="" styleClass="label-error"/>
+                <Label fx:id="lblTablaMsg" styleClass="label-error" text="" />
             </VBox>
         </VBox>
     </children>

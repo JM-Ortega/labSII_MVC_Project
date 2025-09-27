@@ -50,7 +50,7 @@ public interface IProyectoService extends ObservableService{
     
 
     
-    int countArchivosByEstadoYTipo(String tipo, String estado);
+    public int countProyectosByEstadoYTipo(String tipo, String estado, String idDocente);
     
     public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
 }

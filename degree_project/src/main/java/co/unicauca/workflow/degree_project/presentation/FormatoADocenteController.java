@@ -19,10 +19,15 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 public class FormatoADocenteController implements Initializable {
 
@@ -31,6 +36,8 @@ public class FormatoADocenteController implements Initializable {
     private Label nombreDocente;
     @FXML
     private Button btnIniciarNuevoProyecto;
+    @FXML
+    private Button btnVerEstadisticas;
     @FXML
     private Label lblCupoDocente;
     @FXML
@@ -96,11 +103,6 @@ public class FormatoADocenteController implements Initializable {
     
     private IProyectoService proyectoService;
 
-    // Inyección por constructor
-    public FormatoADocenteController(IProyectoService proyectoService) {
-        this.proyectoService = proyectoService;
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         configurarTabla();
@@ -165,6 +167,19 @@ public class FormatoADocenteController implements Initializable {
         lblNuevoProyectoMsg.setText("");
         mostrarPanelNuevo();
         limpiarNuevoProyecto();
+    }
+    
+    @FXML
+    private void onVerEstadisticas() throws IOException {
+        FXMLLoader loaderEstadisticas = main.newInjectedLoader(
+                "/co/unicauca/workflow/degree_project/view/EstadisticasDocente.fxml"
+            );
+            Parent estadisticasView = loaderEstadisticas.load();
+
+            Stage estadisticasStage = new Stage();
+            estadisticasStage.setTitle("Estadísticas - Docente");
+            estadisticasStage.setScene(new Scene(estadisticasView));
+            estadisticasStage.show();
     }
 
     @FXML

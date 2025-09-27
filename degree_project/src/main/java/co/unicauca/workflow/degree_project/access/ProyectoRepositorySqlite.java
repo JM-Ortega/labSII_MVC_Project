@@ -171,6 +171,27 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
             throw new RuntimeException(e);
         }
     }
+    
+    @Override
+    public int countProyectosByEstadoYTipo(String tipo, EstadoProyecto estado, String idDocente) {
+        final String sql = """
+            SELECT COUNT(*) AS c
+            FROM Proyecto
+            WHERE tipo = ? 
+              AND estado = ? 
+              AND docente_id = ?
+        """;
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, tipo);  
+            ps.setString(2, estado.name());
+            ps.setString(3, idDocente);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt("c") : 0;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     //Coordinador
     @Override

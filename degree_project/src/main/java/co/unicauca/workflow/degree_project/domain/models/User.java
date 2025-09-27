@@ -77,7 +77,7 @@ public class User {
         return email;
     }
 
-    public  void setEmail(String usuario) {
+    public void setEmail(String usuario) {
         email = usuario;
     }
 

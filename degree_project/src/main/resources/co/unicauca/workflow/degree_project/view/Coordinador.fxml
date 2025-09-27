@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="700.0" prefWidth="1200.0" styleClass="fondo" stylesheets="@../styles/Coordinador.css" xmlns="http://javafx.com/javafx/21.0.3" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.unicauca.workflow.degree_project.presentation.CoordinadorController">
+   <children>
+      <VBox prefHeight="700.0" prefWidth="281.0" styleClass="fondoPanel">
+         <children>
+            <ImageView fitHeight="195.0" fitWidth="136.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/Escudo%20blanco.png" />
+               </image>
+               <VBox.margin>
+                  <Insets bottom="50.0" left="75.0" top="30.0" />
+               </VBox.margin>
+            </ImageView>
+            <Button fx:id="btnProyectos" mnemonicParsing="false" prefHeight="50.0" prefWidth="281.0" text="Proyectos de grado" textFill="WHITE">
+               <font>
+                  <Font name="Roboto Bold" size="18.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="21.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/Documento.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="btnSalir" layoutX="10.0" layoutY="193.0" mnemonicParsing="false" onAction="#switchToSignin" prefHeight="50.0" prefWidth="281.0" text="Cerrar sesion" textFill="WHITE">
+               <font>
+                  <Font name="Roboto Bold" size="18.0" />
+               </font>
+               <graphic>
+                  <ImageView fitHeight="23.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/cerrar-sesion.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </children>
+      </VBox>
+      <Pane layoutX="281.0" prefHeight="66.0" prefWidth="919.0">
+         <children>
+            <ImageView fitHeight="62.0" fitWidth="51.0" layoutX="847.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/avatar.png" />
+               </image>
+            </ImageView>
+            <Label layoutX="724.0" layoutY="16.0" text="Nombre coordinador">
+               <font>
+                  <Font name="Roboto Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="724.0" layoutY="35.0" text="Programa" />
+         </children>
+      </Pane>
+      <AnchorPane fx:id="contentArea" layoutX="281.0" layoutY="107.0" prefHeight="593.0" prefWidth="919.0" />
+   </children>
+</AnchorPane>

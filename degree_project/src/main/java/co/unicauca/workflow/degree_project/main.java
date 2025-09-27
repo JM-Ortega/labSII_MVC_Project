@@ -1,17 +1,17 @@
 package co.unicauca.workflow.degree_project;
-
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-
 import co.unicauca.workflow.degree_project.access.Factory;
 import co.unicauca.workflow.degree_project.access.IArchivoRepository;
 import co.unicauca.workflow.degree_project.access.IProyectoRepository;
 import co.unicauca.workflow.degree_project.access.IUserRepository;
 import co.unicauca.workflow.degree_project.domain.services.*;
 import co.unicauca.workflow.degree_project.infra.security.Argon2PasswordHasher;
+import co.unicauca.workflow.degree_project.presentation.EstadisticasDocenteController;
 import co.unicauca.workflow.degree_project.presentation.FormatoADocenteController;
+import co.unicauca.workflow.degree_project.presentation.FormatoAEstudianteController;
 import co.unicauca.workflow.degree_project.presentation.RegisterController;
 import co.unicauca.workflow.degree_project.presentation.SigninController;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -76,7 +76,7 @@ public class main extends Application {
     public static void navigate(String name, String title) throws IOException {
         setRoot(name);
         if (primaryStage != null) {
-            
+
             scene.getRoot().applyCss();
             scene.getRoot().autosize();
             primaryStage.sizeToScene();
@@ -84,7 +84,7 @@ public class main extends Application {
             primaryStage.centerOnScreen();
         }
     }
-    
+
     // --- Navegación con inicialización de controlador ---
     public static Object navigateWithController(String name, String title) throws IOException {
         String path = "/co/unicauca/workflow/degree_project/view/" + name + ".fxml";
@@ -116,6 +116,7 @@ public class main extends Application {
                     case SigninController sc -> sc.setServices(signInService);
                     case RegisterController rc -> rc.setServices(registrationService);
                     case FormatoADocenteController fadc -> fadc.setService(proyectoService);
+                    case FormatoAEstudianteController faec -> faec.setService(proyectoService);
                     default -> { }
                 }
                 return controller;
@@ -128,27 +129,71 @@ public class main extends Application {
     }
 
 
+//    public static FXMLLoader newInjectedLoader(String path) {
+//        FXMLLoader loader = new FXMLLoader(main.class.getResource(path));
+//        loader.setControllerFactory(type -> {
+//            try {
+//                Object controller = type.getDeclaredConstructor().newInstance();
+//                switch (controller) {
+//                    case SigninController sc -> sc.setServices(signInService);
+//                    case RegisterController rc -> rc.setServices(registrationService);
+//                    case FormatoADocenteController fadc -> fadc.setService(proyectoService);
+//                    case EstadisticasDocenteController edc -> edc.setService(proyectoService);
+//                    case FormatoAEstudianteController faec -> faec.setService(proyectoService);
+//                    default -> { }
+//                }
+//                return controller;
+//            } catch (Exception e) {
+//                throw new RuntimeException("No se pudo crear el controlador: " + type, e);
+//            }
+//        });
+//        return loader;
+//    }
+    
     public static FXMLLoader newInjectedLoader(String path) {
-    FXMLLoader loader = new FXMLLoader(main.class.getResource(path));
-    loader.setControllerFactory(type -> {
-        try {
-            Object controller = type.getDeclaredConstructor().newInstance();
-            switch (controller) {
-                case SigninController sc -> sc.setServices(signInService);
-                case RegisterController rc -> rc.setServices(registrationService);
-                case FormatoADocenteController fadc -> fadc.setService(proyectoService);
-                default -> { }
+        FXMLLoader loader = new FXMLLoader(main.class.getResource(path));
+        loader.setControllerFactory(type -> {
+            try {
+                if (type == EstadisticasDocenteController.class) {
+                    return new EstadisticasDocenteController(proyectoService);
+                }
+                if (type == FormatoADocenteController.class) {
+                    return new FormatoADocenteController(proyectoService);
+                }
+
+                Object controller = type.getDeclaredConstructor().newInstance();
+                switch (controller) {
+                    case SigninController sc -> sc.setServices(signInService);
+                    case RegisterController rc -> rc.setServices(registrationService);
+                    case FormatoAEstudianteController faec -> faec.setService(proyectoService);
+                    default -> { }
+                }
+                return controller;
+            } catch (Exception e) {
+                throw new RuntimeException("No se pudo crear el controlador: " + type, e);
             }
-            return controller;
-        } catch (Exception e) {
-            throw new RuntimeException("No se pudo crear el controlador: " + type, e);
-        }
-    });
-    return loader;
-}
+        });
+        return loader;
+    }
+
 
 
     public static void main(String[] args) {
+        /*
+            IEmailService emailService = new LoggingEmailService();
+
+            EmailMessage message = new EmailMessage(
+                "destinatario@ejemplo.com",
+                "Prueba de correo",
+                "Hola! Este es un correo simulado."
+            );
+
+            emailService.sendEmail(message);
+        */
+        
         launch(args);
     }
 }
+
+
+

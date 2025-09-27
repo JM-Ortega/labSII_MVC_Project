@@ -89,13 +89,19 @@ public class FormatoADocenteController implements Initializable {
     @FXML
     private Label lblTablaMsg;
 
-    private IProyectoService proyectoService;
-
+    
     // Estado de archivos para nuevo proyecto
     private byte[] formatoABytes;
     private String formatoANombre;
     private byte[] cartaBytes;
     private String cartaNombre;
+    
+    private IProyectoService proyectoService;
+
+    // Inyección por constructor
+    public FormatoADocenteController(IProyectoService proyectoService) {
+        this.proyectoService = proyectoService;
+    }
 
     private static boolean isEmailLike(String s) {
         if (s == null) return false;
@@ -545,5 +551,4 @@ public class FormatoADocenteController implements Initializable {
             return estado;
         }
     }
-
 }

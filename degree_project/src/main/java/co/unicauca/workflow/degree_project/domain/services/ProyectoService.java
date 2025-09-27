@@ -7,10 +7,11 @@ import co.unicauca.workflow.degree_project.infra.operation.PdfValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProyectoService implements IProyectoService {
-
+    private final List<Observer> observers = new ArrayList<>();
     private final IProyectoRepository proyectoRepo;
     private final IArchivoRepository archivoRepo;
     private final Connection conn;
@@ -66,6 +67,7 @@ public class ProyectoService implements IProyectoService {
             conn.setAutoCommit(prevAutoCommit);
 
             proyecto.setId(proyectoId);
+            notifyObservers();
             return proyecto;
 
         } catch (Exception ex) {
@@ -123,6 +125,7 @@ public class ProyectoService implements IProyectoService {
 
             conn.commit();
             conn.setAutoCommit(prevAutoCommit);
+            notifyObservers();
             return proyectoId;
 
         } catch (Exception ex) {
@@ -159,6 +162,7 @@ public class ProyectoService implements IProyectoService {
         archivo.setEstado(EstadoArchivo.PENDIENTE);
 
         archivoRepo.insertarFormatoA(archivo);
+        notifyObservers();
         return archivo;
     }
 
@@ -259,11 +263,51 @@ public class ProyectoService implements IProyectoService {
         return est == null ? EstadoProyecto.EN_TRAMITE : EstadoProyecto.valueOf(est);
     }
 
+
     private String resolveEstudianteIdFromCorreoOrThrow(String correo) {
         if (isBlank(correo)) throw new IllegalArgumentException("Correo del estudiante es obligatorio");
         String id = proyectoRepo.getEstudianteIdPorCorreo(correo);
         if (id == null) throw new IllegalArgumentException("El correo no pertenece a un estudiante");
         return id;
+    }
+
+    @Override
+    public int countArchivosByEstadoYTipo(String tipo, String estado) {
+        try {
+            TipoArchivo tipoEnum = TipoArchivo.valueOf(tipo.toUpperCase());
+            EstadoArchivo estadoEnum = EstadoArchivo.valueOf(estado.toUpperCase());
+            return archivoRepo.countArchivosByEstadoYTipo(tipoEnum, estadoEnum);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Tipo o estado inválido: " + tipo + ", " + estado, e);
+        }
+    }
+
+    @Override
+    public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId) {
+        return archivoRepo.listarFormatosAPorEstudiante(estudianteId);
+    }
+
+    @Override
+    public Proyecto buscarProyectoPorId(long ProyectoId) {
+        return archivoRepo.buscarProyectoPorId(ProyectoId);
+    }
+
+    @Override
+    public void addObserver(Observer o) {
+        observers.add(o);
+    }
+
+    @Override
+    public void removeObserver(Observer o) {
+        observers.remove(o);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer o : observers) {
+            o.update();
+        }
+
     }
 
     private String normalizeEstudianteIdOrResolve(String estudianteIdOrCorreo) {

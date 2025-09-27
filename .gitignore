@@ -23,9 +23,8 @@
 hs_err_pid*
 replay_pid*
 
-# Build outputs
-/MVC/target/
-/degree_project/target/
+# Build outputs (cubre todos los módulos)
+target/
 
 # IDE configs
 .idea/
@@ -33,7 +32,7 @@ replay_pid*
 .vscode/
 nbproject/private/
 
-# SQLite side files (volátiles)
+# SQLite files (db y auxiliares)
 *.db
 *.sqlite
 *.db-journal

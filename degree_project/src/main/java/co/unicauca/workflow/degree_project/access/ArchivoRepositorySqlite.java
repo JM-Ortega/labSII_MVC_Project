@@ -201,28 +201,6 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
             throw new RuntimeException(e);
         }
     }
-    
-    @Override
-    public int countArchivosByEstadoYTipo(TipoArchivo tipo, EstadoArchivo estado, String idDocente) {
-        final String sql = """
-            SELECT COUNT(*) AS c
-            FROM Archivo a
-            INNER JOIN Proyecto p ON a.proyecto_id = p.id
-            WHERE a.tipo = ? 
-              AND a.estado = ? 
-              AND p.docente_id = ?
-        """;
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, tipo.name());  
-            ps.setString(2, estado.name());
-            ps.setString(3, idDocente);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next() ? rs.getInt("c") : 0;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Override
     public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId) {

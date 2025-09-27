@@ -21,8 +21,6 @@ public interface IArchivoRepository {
 
     Archivo getUltimoFormatoA(long proyectoId);
     
-    public int countArchivosByEstadoYTipo(TipoArchivo tipo, EstadoArchivo estado, String idDocente);
-    
     public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
     
     Proyecto buscarProyectoPorId(long ProyectoId);

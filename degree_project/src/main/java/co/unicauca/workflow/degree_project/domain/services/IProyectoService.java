@@ -39,7 +39,7 @@ public interface IProyectoService extends ObservableService{
     public EstadoProyecto enforceAutoCancelIfNeeded(long proyectoId);
     
     
-    public int countArchivosByEstadoYTipo(String tipo, String estado, String idDocente);
+    public int countProyectosByEstadoYTipo(String tipo, String estado, String idDocente);
     
     public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
     

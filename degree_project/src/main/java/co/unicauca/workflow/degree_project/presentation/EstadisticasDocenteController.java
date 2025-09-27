@@ -14,29 +14,34 @@ import javafx.scene.chart.BarChart;
 public class EstadisticasDocenteController implements Initializable, Observer{
     
     @FXML private BarChart<String, Number> BarChartEstadisticas;
+    private XYChart.Series<String, Number> seriesTesis;
+    private XYChart.Series<String, Number> seriesPractica;
     private IProyectoService proyectoService;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        cargarEstadisticasFormatoA();
-        
-    }    
-    
-    private void cargarEstadisticasFormatoA() {
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Formato A");
-
-        series.getData().add(new XYChart.Data<>("APROBADOS", obtenerCantidad("APROBADO")));
-        series.getData().add(new XYChart.Data<>("OBSERVADOS", obtenerCantidad("OBSERVADO")));
-        series.getData().add(new XYChart.Data<>("PENDIENTES", obtenerCantidad("PENDIENTE")));
-
-        BarChartEstadisticas.getData().clear();
-        BarChartEstadisticas.getData().add(series);
+        seriesTesis = new XYChart.Series();
+        seriesTesis.setName("TESIS");
+        seriesPractica = new XYChart.Series();
+        seriesPractica.setName("PRACTICA PROFESIONAL");
+        BarChartEstadisticas.getData().addAll(seriesTesis, seriesPractica);
+        cargarEstadisticas();
     }
     
-    private int obtenerCantidad(String estado){
+    private void cargarEstadisticas() {
+        seriesTesis.getData().add(new XYChart.Data("TERMINADOS", obtenerCantidad("TESIS", "TERMINADO")));
+        seriesTesis.getData().add(new XYChart.Data("CANCELADOS", obtenerCantidad("TESIS", "CANCELADO")));
+        seriesTesis.getData().add(new XYChart.Data("EN TRAMITE", obtenerCantidad("TESIS", "EN_TRAMITE")));
+
+        seriesPractica.getData().add(new XYChart.Data("TERMINADOS", obtenerCantidad("PRACTICA_PROFESIONAL", "TERMINADO")));
+        seriesPractica.getData().add(new XYChart.Data("CANCELADOS", obtenerCantidad("PRACTICA_PROFESIONAL", "CANCELADO")));
+        seriesPractica.getData().add(new XYChart.Data("EN TRAMITE", obtenerCantidad("PRACTICA_PROFESIONAL", "EN_TRAMITE")));
+
+    }
+    
+    private int obtenerCantidad(String tipo, String estado){
         AuthResult auth = Sesion.getInstancia().getUsuarioActual();
-        return proyectoService.countArchivosByEstadoYTipo("FORMATO_A", estado, auth.userId());
+        return proyectoService.countProyectosByEstadoYTipo(tipo, estado, auth.userId());
     }
     
     public void setService(IProyectoService proyectoService) {
@@ -46,7 +51,7 @@ public class EstadisticasDocenteController implements Initializable, Observer{
 
     @Override
     public void update() {
-        cargarEstadisticasFormatoA();
+        cargarEstadisticas();
     }
 
 }

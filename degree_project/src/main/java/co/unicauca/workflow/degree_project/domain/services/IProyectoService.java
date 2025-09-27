@@ -42,6 +42,7 @@ public interface IProyectoService extends ObservableService{
     
     List<Archivo> listarTodosArchivos();
     Proyecto buscarProyectoPorId(long proyectoId);
+    public void actualizarEstadoProyecto(long proyectoId, EstadoProyecto nuevoEstado);
     String obtenerNombreDocente(String docenteId);
     String obtenerCorreoDocente(String docenteId);
     Archivo obtenerFormatoA(long proyectoId);

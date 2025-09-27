@@ -270,6 +270,11 @@ public class ProyectoService implements IProyectoService{
     }
     
     @Override
+    public void actualizarEstadoProyecto(long proyectoId, EstadoProyecto nuevoEstado){
+        proyectoRepo.actualizarEstadoProyecto(proyectoId, nuevoEstado);
+    }
+    
+    @Override
     public String obtenerNombreDocente(String docenteId){
         return proyectoRepo.nombreDocente(docenteId);
     }
@@ -285,7 +290,6 @@ public class ProyectoService implements IProyectoService{
         if (ultimo != null) return ultimo;
         return null;
     }
-
     
     @Override
     public int countArchivosByEstadoYTipo(String tipo, String estado) {
@@ -341,7 +345,9 @@ public class ProyectoService implements IProyectoService{
         if (archivo.getEstado().toString().equals("APROBADO")) {
             archivo.setNroVersion(max);
             Proyecto proyecto = buscarProyectoPorId(proyectoId);
-            proyecto.setEstado(EstadoProyecto.TERMINADO);
+            
+            actualizarEstadoProyecto(proyectoId, EstadoProyecto.TERMINADO);
+            
             proyecto.setArchivo(archivo);
             
             archivo.setEstado(EstadoArchivo.OBSERVADO);

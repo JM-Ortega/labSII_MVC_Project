@@ -16,11 +16,11 @@ import java.util.List;
 
 public class ProyectoService implements IProyectoService{
     private final List<Observer> observers = new ArrayList<>();
+    private List<ObserverCoordinador> observersCoordinador = new ArrayList<>();
     private final IProyectoRepository proyectoRepo;
     private final IArchivoRepository archivoRepo;
     private final Connection conn;
 
-    
     public ProyectoService(IProyectoRepository proyectoRepo,
                            IArchivoRepository archivoRepo,
                            Connection conn) {
@@ -300,6 +300,15 @@ public class ProyectoService implements IProyectoService{
             throw new RuntimeException("Estado inválido: " + estado, e);
         }
     }
+    
+    @Override
+    public int countArchivosByProyectoYEstado(String tipoProyecto, String estadoArchivo){
+        try {
+            return archivoRepo.countArchivosFormatoAByProyectoYEstado(tipoProyecto, estadoArchivo);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Estado inválido");
+        }
+    }
 
     @Override
     public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId) {
@@ -322,7 +331,18 @@ public class ProyectoService implements IProyectoService{
             o.update();
         }
     }
+    
+    @Override
+    public void addObserverCoordinador(ObserverCoordinador o) {
+        observersCoordinador.add(o);
+    }
 
+    @Override
+    public void notifyCoordinadores() {
+        for (ObserverCoordinador o : observersCoordinador) {
+            o.updateEstadisticasCoordinador();
+        }
+    }
     
     IEmailService emailService = new LoggingEmailService();
     @Override
@@ -361,7 +381,7 @@ public class ProyectoService implements IProyectoService{
             );
             emailService.sendEmail(messageA);
   
-            notifyObservers();
+            notifyCoordinadores();
             
             return 1;
         } else if (archivo.getEstado().toString().equals("OBSERVADO")) {
@@ -380,7 +400,7 @@ public class ProyectoService implements IProyectoService{
             );
             emailService.sendEmail(messageR);
             
-            notifyObservers();
+            notifyCoordinadores();
 
             return 2;
         }

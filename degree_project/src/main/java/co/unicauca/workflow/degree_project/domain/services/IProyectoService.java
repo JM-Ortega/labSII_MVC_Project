@@ -46,7 +46,10 @@ public interface IProyectoService extends ObservableService{
     String obtenerNombreDocente(String docenteId);
     String obtenerCorreoDocente(String docenteId);
     Archivo obtenerFormatoA(long proyectoId);
-    public int subirObservacion (long proyectoId, Archivo archivo, String correoProfesor);
+    int subirObservacion (long proyectoId, Archivo archivo, String correoProfesor);
+    int countArchivosByProyectoYEstado(String tipoProyecto, String estadoArchivo);
+    void addObserverCoordinador(ObserverCoordinador o);
+    void notifyCoordinadores();
     
 
     

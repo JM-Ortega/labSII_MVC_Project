@@ -53,5 +53,4 @@ public class EstadisticasDocenteController implements Initializable, Observer{
     public void update() {
         cargarEstadisticas();
     }
-
 }

@@ -7,6 +7,7 @@ import co.unicauca.workflow.degree_project.domain.services.*;
 import co.unicauca.workflow.degree_project.infra.security.Argon2PasswordHasher;
 import co.unicauca.workflow.degree_project.presentation.Co_Observaciones_Controller;
 import co.unicauca.workflow.degree_project.presentation.Co_Proyecto_Controller;
+import co.unicauca.workflow.degree_project.presentation.EstadisticasCoordinadorController;
 import co.unicauca.workflow.degree_project.presentation.EstadisticasDocenteController;
 import co.unicauca.workflow.degree_project.presentation.FormatoADocenteController;
 import co.unicauca.workflow.degree_project.presentation.FormatoAEstudianteController;
@@ -142,6 +143,7 @@ public class main extends Application {
                     case RegisterController rc -> rc.setServices(registrationService);
                     case FormatoADocenteController fadc -> fadc.setService(proyectoService);
                     case EstadisticasDocenteController edc -> edc.setService(proyectoService);
+                    case EstadisticasCoordinadorController edc -> edc.setService(proyectoService);
                     case Co_Proyecto_Controller cop -> cop.setService(proyectoService);
                     case FormatoAEstudianteController faec -> faec.setService(proyectoService);
                     case Co_Observaciones_Controller coc -> coc.setService(proyectoService);

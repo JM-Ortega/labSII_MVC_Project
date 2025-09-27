@@ -235,15 +235,18 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
     }
     
     @Override
-    public int countArchivosByEstadoYTipo(TipoArchivo tipo, EstadoArchivo estado) {
+    public int countArchivosFormatoAByProyectoYEstado(String tipoProyecto, String estadoArchivo) {
         final String sql = """
             SELECT COUNT(*) AS c
-            FROM Archivo
-            WHERE tipo = ? AND estado = ?
+            FROM Archivo a
+            JOIN Proyecto p ON a.proyecto_id = p.id
+            WHERE a.tipo = 'FORMATO_A'
+              AND p.tipo = ?
+              AND a.estado = ?
         """;
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, tipo.name());  
-            ps.setString(2, estado.name());
+            ps.setString(1, tipoProyecto);
+            ps.setString(2, estadoArchivo);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? rs.getInt("c") : 0;
             }
@@ -251,7 +254,6 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
             throw new RuntimeException(e);
         }
     }
-
     @Override
     public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId) {
         final String sql = """

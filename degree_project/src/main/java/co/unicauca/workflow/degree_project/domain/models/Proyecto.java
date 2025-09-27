@@ -3,7 +3,7 @@ package co.unicauca.workflow.degree_project.domain.models;
 public class Proyecto {
 
     private long id;
-    private String tipo;
+    private TipoTrabajoGrado tipo;
     private EstadoProyecto estado;
     private String titulo;
     private String estudianteId;
@@ -14,7 +14,7 @@ public class Proyecto {
     public Proyecto() {
     }
 
-    public Proyecto(long id, String tipo, EstadoProyecto estado, String titulo,
+    public Proyecto(long id, TipoTrabajoGrado tipo, EstadoProyecto estado, String titulo,
                     String estudianteId, String docenteId, String fechaCreacion, Archivo archivo) {
         this.id = id;
         this.tipo = tipo;
@@ -34,11 +34,11 @@ public class Proyecto {
         this.id = id;
     }
 
-    public String getTipo() {
+    public TipoTrabajoGrado getTipo() {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
+    public void setTipo(TipoTrabajoGrado tipo) {
         this.tipo = tipo;
     }
 

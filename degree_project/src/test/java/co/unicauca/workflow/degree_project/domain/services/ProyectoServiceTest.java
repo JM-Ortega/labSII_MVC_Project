@@ -1,18 +1,31 @@
 package co.unicauca.workflow.degree_project.domain.services;
 
 import co.unicauca.workflow.degree_project.access.ArchivoRepositorySqlite;
+import co.unicauca.workflow.degree_project.access.IArchivoRepository;
+import co.unicauca.workflow.degree_project.access.IProyectoRepository;
 import co.unicauca.workflow.degree_project.access.ProyectoRepositorySqlite;
 import co.unicauca.workflow.degree_project.domain.models.Archivo;
+import co.unicauca.workflow.degree_project.domain.models.EstadoArchivo;
 import co.unicauca.workflow.degree_project.domain.models.EstadoProyecto;
 import co.unicauca.workflow.degree_project.domain.models.Proyecto;
 import co.unicauca.workflow.degree_project.domain.models.TipoArchivo;
+import co.unicauca.workflow.degree_project.infra.communication.IEmailService;
+import co.unicauca.workflow.degree_project.infra.security.Sesion;
 import org.junit.jupiter.api.*;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+
+@ExtendWith(MockitoExtension.class)
 class ProyectoServiceTest {
 
     static Connection conn;
@@ -37,6 +50,10 @@ class ProyectoServiceTest {
         proyectoRepo = new ProyectoRepositorySqlite(conn);
         archivoRepo  = new ArchivoRepositorySqlite(conn);
         service      = new ProyectoService(proyectoRepo, archivoRepo, conn);
+        
+        // Creamos un AuthResult falso y lo dejamos en Sesion
+        AuthResult fakeAuth = new AuthResult("coor1", "Coordinador", "Juan Carlos","Ingenieria de Sistemas", "coordinador@unicauca.edu.co");
+        Sesion.getInstancia().setUsuarioActual(fakeAuth);
     }
 
     @AfterAll
@@ -271,6 +288,83 @@ class ProyectoServiceTest {
         assertEquals("v1.pdf", a0.getNombreArchivo());
     }
 
+    @Mock
+    private IProyectoRepository proyectoRepoI;
+
+    @Mock
+    private IArchivoRepository archivoRepoI;
+
+    @Mock
+    private IEmailService emailService;
+
+    @InjectMocks
+    private ProyectoService proyectoService;
+ 
+    @Test
+    void testSubirObservacionTresObservadosRechazaProyecto() {
+        long proyectoId = 1L;
+
+        Proyecto proyecto = new Proyecto(
+            proyectoId,
+            "TESIS",
+            EstadoProyecto.EN_TRAMITE,
+            "titulo de prueba",
+            "estudiante123",
+            "docente456",
+            "2025-09-27",
+            null
+        );
+
+        Archivo archivoObs1 = new Archivo(1L, proyectoId, TipoArchivo.FORMATO_A, 1,
+                "formatoA_v1.pdf", "2025-09-20", null, EstadoArchivo.OBSERVADO);
+        Archivo archivoObs2 = new Archivo(2L, proyectoId, TipoArchivo.FORMATO_A, 2,
+                "formatoA_v2.pdf", "2025-09-21", null, EstadoArchivo.OBSERVADO);
+        Archivo archivoObs3 = new Archivo(3L, proyectoId, TipoArchivo.FORMATO_A, 3,
+                "formatoA_v3.pdf", "2025-09-22", null, EstadoArchivo.OBSERVADO);
+
+        when(proyectoRepoI.existeProyecto(proyectoId)).thenReturn(true);
+        when(proyectoRepoI.getEstadoProyecto(proyectoId)).thenReturn("EN_TRAMITE");
+        when(proyectoRepoI.buscarProyectoPorId(proyectoId)).thenReturn(proyecto);
+        when(archivoRepoI.getMaxVersionFormatoA(proyectoId)).thenReturn(3);
+
+        // Act
+        int resultado = proyectoService.subirObservacion(proyectoId, archivoObs3, "profesor@unicauca.edu.co");
+
+        // Assert
+        assertEquals(2, resultado, "Debe retornar 2 al subir la tercera observación");
+        verify(proyectoRepoI).actualizarEstadoProyecto(proyectoId, EstadoProyecto.RECHAZADO);
+    }
+
+    @Test
+    void testSubirObservacionAprobadoTerminaProyecto() {
+        long proyectoId = 2L;
+
+        Proyecto proyecto = new Proyecto(
+            proyectoId,
+            "PRACTICA_PROFESIONAL",
+            EstadoProyecto.EN_TRAMITE,
+            "titulo de prueba",
+            "estudiante123",
+            "docente456",
+            "2025-09-27",
+            null
+        );
+
+        Archivo archivoAprobado = new Archivo(4L, proyectoId, TipoArchivo.FORMATO_A, 1,
+                "formatoA_final.pdf", "2025-09-25", null, EstadoArchivo.APROBADO);
+
+        when(proyectoRepoI.existeProyecto(proyectoId)).thenReturn(true);
+        when(proyectoRepoI.getEstadoProyecto(proyectoId)).thenReturn("EN_TRAMITE");
+        when(proyectoRepoI.buscarProyectoPorId(proyectoId)).thenReturn(proyecto);
+        when(archivoRepoI.getMaxVersionFormatoA(proyectoId)).thenReturn(1);
+
+        // Act
+        int resultado = proyectoService.subirObservacion(proyectoId, archivoAprobado, "profesor@unicauca.edu.co");
+
+        // Assert
+        assertEquals(1, resultado, "Debe retornar 1 al aprobar el archivo");
+        verify(proyectoRepoI).actualizarEstadoProyecto(proyectoId, EstadoProyecto.TERMINADO);
+    }
 
     private static Proyecto baseProyecto(String tipo, String titulo, String estudianteIdOrCorreo, String docenteId) {
         Proyecto p = new Proyecto();

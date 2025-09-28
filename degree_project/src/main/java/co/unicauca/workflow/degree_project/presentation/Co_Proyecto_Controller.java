@@ -148,6 +148,7 @@ public class Co_Proyecto_Controller implements Initializable{
 
                 String nombreDocente = proyectoService.obtenerNombreDocente(p.getDocenteId());
                 String correoDocente = proyectoService.obtenerCorreoDocente(p.getDocenteId());
+                String correoEstudiante = proyectoService.obtenerCorreoEstudiante(p.getEstudianteId());
                 
                 rows.add(new RowVM(
                     a.getId(),
@@ -158,7 +159,8 @@ public class Co_Proyecto_Controller implements Initializable{
                     p.getTipo().name(),
                     a.getFechaSubida(),
                     a.getEstado().name(),
-                    correoDocente
+                    correoDocente,
+                    correoEstudiante
                 ));
             }
 
@@ -192,9 +194,10 @@ public class Co_Proyecto_Controller implements Initializable{
         private final StringProperty fecha = new SimpleStringProperty();
         private final StringProperty estado = new SimpleStringProperty();
         private final StringProperty correoProfesor = new SimpleStringProperty();
+        private final StringProperty correoEstudiante = new SimpleStringProperty();
 
         public RowVM(long archivoId, long proyectoId, String nombreProyecto, String nombreDocente, String tipoA, String tipoP, 
-                String fecha, String estado, String correoProfesor) {
+                String fecha, String estado, String correoProfesor, String correoEstudiante) {
             this.archivoId = archivoId;
             this.proyectoId = proyectoId;
             this.nombreProyecto.set(nombreProyecto);
@@ -204,6 +207,7 @@ public class Co_Proyecto_Controller implements Initializable{
             this.fecha.set(fecha);
             this.estado.set(estado);
             this.correoProfesor.set(correoProfesor);
+            this.correoEstudiante.set(correoEstudiante);
         }
 
         public long archivoId() {return archivoId;}
@@ -215,6 +219,7 @@ public class Co_Proyecto_Controller implements Initializable{
         public StringProperty fechaProperty() { return fecha; }
         public StringProperty estadoProperty() { return estado; }
         public StringProperty correoProfesor() { return correoProfesor; }
+        public StringProperty correoEstudiante() { return correoEstudiante; }
     }
 
     public void setParentController(CoordinadorController parent) {

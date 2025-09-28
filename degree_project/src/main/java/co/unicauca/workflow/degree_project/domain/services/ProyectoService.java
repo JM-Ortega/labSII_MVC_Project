@@ -303,6 +303,11 @@ public class ProyectoService implements IProyectoService {
     }
     
     @Override
+    public String obtenerCorreoEstudiante(String estudianteId){
+        return proyectoRepo.correoEstudainte(estudianteId);
+    }
+    
+    @Override
     public Archivo obtenerFormatoA(long archivoId) {
         Archivo ultimo = archivoRepo.getFormatoA(archivoId);
         if (ultimo != null) return ultimo;
@@ -365,7 +370,7 @@ public class ProyectoService implements IProyectoService {
     
     IEmailService emailService = new LoggingEmailService();
     @Override
-    public int subirObservacion (long proyectoId, Archivo archivo, String correoProfesor) {
+    public int subirObservacion (long proyectoId, Archivo archivo, String correoProfesor, String correoEstudiante) {
         AuthResult auth = Sesion.getInstancia().getUsuarioActual();
         
         if (!proyectoRepo.existeProyecto(proyectoId))
@@ -394,7 +399,7 @@ public class ProyectoService implements IProyectoService {
 
             EmailMessage messageA = new EmailMessage(
                 auth.correo(),
-                correoProfesor,
+                correoProfesor+", "+ correoEstudiante,
                 "Formato A APROBADO",
                 "En hora buena! Su formato A ha sido aceptado."
             );
@@ -416,7 +421,7 @@ public class ProyectoService implements IProyectoService {
 
             EmailMessage messageR = new EmailMessage(
                 auth.correo(),    
-                correoProfesor,
+                correoProfesor+", "+ correoEstudiante,
                 "Formato A RECHAZADO",
                 "Su formato a ha sido rechazado, lo invitamos a que revise las obsevaciones."
             );

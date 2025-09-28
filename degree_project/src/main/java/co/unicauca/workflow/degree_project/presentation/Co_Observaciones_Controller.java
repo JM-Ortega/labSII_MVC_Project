@@ -185,7 +185,8 @@ public class Co_Observaciones_Controller implements Initializable{
             archivoSeleccionado.setEstado(EstadoArchivo.OBSERVADO);
         }
 
-        int resultado = proyectoService.subirObservacion(rowActual.proyectoId(), archivoSeleccionado, rowActual.correoProfesor().get());
+        int resultado = proyectoService.subirObservacion(rowActual.proyectoId(), archivoSeleccionado, 
+                rowActual.correoProfesor().get(), rowActual.correoEstudiante().get());
 
         if (resultado == 1) {
             alerta(Alert.AlertType.INFORMATION, "Correcto", null,

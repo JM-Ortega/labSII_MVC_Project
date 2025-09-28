@@ -302,7 +302,7 @@ public class ProyectoService implements IProyectoService{
     
     @Override
     public String obtenerCorreoEstudiante(String estudianteId){
-        return proyectoRepo.correoEstudainte(estudianteId);
+        return proyectoRepo.correoEstudiante(estudianteId);
     }
     
     @Override
@@ -405,27 +405,29 @@ public class ProyectoService implements IProyectoService{
             notifyCoordinadores();
             
             return 1;
-        } else if (archivo.getEstado().toString().equals("OBSERVADO")) {
+        } else if (archivo.getEstado() == EstadoArchivo.OBSERVADO) {
             archivo.setNroVersion(max);
 
             Proyecto proyecto = buscarProyectoPorId(proyectoId);
-            
-            actualizarEstadoProyecto(proyectoId, EstadoProyecto.RECHAZADO);
-            
             proyecto.setArchivo(archivo);
-            
+
             archivoRepo.actualizarFormatoA(archivo);
 
+            // 🔹 Nueva lógica: contar observados
+            int observados = archivoRepo.countFormatoAByEstado(proyectoId, EstadoArchivo.OBSERVADO);
+            if (observados >= 3) {
+                proyectoRepo.actualizarEstadoProyecto(proyectoId, EstadoProyecto.RECHAZADO);
+            }
+
             EmailMessage messageR = new EmailMessage(
-                auth.correo(),    
-                correoProfesor+", "+ correoEstudiante,
+                auth.correo(),
+                correoProfesor + ", " + correoEstudiante,
                 "Formato A RECHAZADO",
-                "Su formato a ha sido rechazado, lo invitamos a que revise las obsevaciones."
+                "Su formato a ha sido rechazado, lo invitamos a que revise las observaciones."
             );
             emailService.sendEmail(messageR);
-            
-            notifyCoordinadores();
 
+            notifyCoordinadores();
             return 2;
         }else{
             return 3;

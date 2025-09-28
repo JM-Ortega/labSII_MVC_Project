@@ -45,8 +45,6 @@ public class Co_Proyecto_Controller implements Initializable{
     private TableColumn<RowVM, RowVM> colEstado;
     @FXML
     private TableColumn<RowVM, RowVM> colDescargar;
-    @FXML
-    private Button btnEstadisticas;
 
     private CoordinadorController parent;  
     private IProyectoService proyectoService; // referencia al controlador padre para loadUI
@@ -55,45 +53,37 @@ public class Co_Proyecto_Controller implements Initializable{
     public void initialize(URL location, ResourceBundle resources) {
         configurarTabla();
         cargarTabla();
-        
-        FXMLLoader loaderEstadisticas = main.newInjectedLoader(
-                "/co/unicauca/workflow/degree_project/view/EstadisticasCoordinador.fxml"
-        );
-        
-        try {
-            Parent estadisticasView = loaderEstadisticas.load();
-            
-            Stage estadisticasStage = new Stage();
-            estadisticasStage.setTitle("Estadísticas - Coordinador");
-            estadisticasStage.setScene(new Scene(estadisticasView));
-            estadisticasStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
     
     private Stage estadisticasStage;
     @FXML
     private void onVerEstadisticas(ActionEvent event) {
-        if (estadisticasStage != null && estadisticasStage.isShowing()) {
-            estadisticasStage.toFront(); // lo trae al frente
-            return;
-        }
+        if (estadisticasStage == null) { 
+            try {
+                FXMLLoader loaderEstadisticas = main.newInjectedLoader(
+                        "/co/unicauca/workflow/degree_project/view/EstadisticasCoordinador.fxml"
+                );
+                Parent estadisticasView = loaderEstadisticas.load();
 
-        try {
-            FXMLLoader loaderEstadisticas = main.newInjectedLoader(
-                    "/co/unicauca/workflow/degree_project/view/EstadisticasCoordinador.fxml"
-            );
-            Parent estadisticasView = loaderEstadisticas.load();
+                estadisticasStage = new Stage();
+                estadisticasStage.setTitle("Estadísticas - Coordinador");
+                estadisticasStage.setScene(new Scene(estadisticasView));
 
-            estadisticasStage = new Stage();
-            estadisticasStage.setTitle("Estadísticas - Coordinador");
-            estadisticasStage.setScene(new Scene(estadisticasView));
-            estadisticasStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+                Stage mainStage = (Stage) tabla.getScene().getWindow();
+                estadisticasStage.initOwner(mainStage);
+
+                // 🔑 importante: limpiar la referencia cuando se cierra
+                estadisticasStage.setOnHidden(event1 -> estadisticasStage = null);
+
+                estadisticasStage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            estadisticasStage.toFront();
         }
     }
+
     
     public void setService(IProyectoService proyectoService) {
         this.proyectoService = proyectoService;
@@ -134,7 +124,7 @@ public class Co_Proyecto_Controller implements Initializable{
 
     private void cargarTabla() {
         if (proyectoService == null) {
-            System.err.println("⚠️ Error: proyectoService no fue inicializado.");
+            System.err.println("Error: proyectoService no fue inicializado.");
             return;
         }
         
@@ -241,7 +231,7 @@ public class Co_Proyecto_Controller implements Initializable{
                         if (parent != null) {
                             parent.loadUI(
                                 "/co/unicauca/workflow/degree_project/view/Coordinador_Observaciones",
-                                row // 🔹 pasamos el RowVM
+                                row //pasamos el RowVM
                             );
                         }
                     } else {

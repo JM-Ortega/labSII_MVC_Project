@@ -307,14 +307,14 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
     }
 
     @Override
-    public String correoEstudainte(String estudianteId){
+    public String correoEstudiante(String estudianteId){
         String correoEstudiante = "";
 
         String sql = """
                     SELECT u.correo
                     FROM Usuario u
                     JOIN Rol r ON u.rol = r.idRol
-                    WHERE u.id = ? AND r.tipo = 'Docente'
+                    WHERE u.id = ? AND r.tipo = 'Estudiante'
                      """;
         
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {

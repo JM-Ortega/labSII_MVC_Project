@@ -29,7 +29,7 @@ public interface IProyectoRepository {
 
     String correoDocente(String docenteId);
     
-    String correoEstudainte(String estudianteId);
+    String correoEstudiante(String estudianteId);
 
     void update(Proyecto proyecto);
 

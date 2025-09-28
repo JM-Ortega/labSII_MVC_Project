@@ -46,7 +46,7 @@ public class FormatoADocenteController implements Initializable {
     @FXML
     private TitledPane pnNuevoProyecto;
     @FXML
-    private TextField txtEstudianteCorreo; // <-- ahora se usa para CORREO
+    private TextField txtEstudianteId;
     @FXML
     private Button btnBuscarEstudiante;
     @FXML
@@ -133,7 +133,7 @@ public class FormatoADocenteController implements Initializable {
         lbl.setStyle("-fx-text-fill:#2E7D32;");
         lbl.setText(msg);
     }
-
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         configurarTabla();
@@ -207,13 +207,13 @@ public class FormatoADocenteController implements Initializable {
         lblEstudianteNombre.setStyle("");
         lblNuevoProyectoMsg.setText("");
 
-        String correo = safeText(txtEstudianteCorreo);
-        if (!isEmailLike(correo)) {
-            setError(lblEstudianteNombre, "Ingrese el correo institucional del estudiante");
+        String estId = safeText(txtEstudianteId);
+        if (estId.isEmpty()) {
+            setError(lblEstudianteNombre, "Ingrese el ID del estudiante");
             return;
         }
         try {
-            boolean libre = proyectoService.estudianteLibrePorCorreo(correo);
+            boolean libre = proyectoService.estudianteLibre(estId);
             if (libre) setOk(lblEstudianteNombre, "Estudiante disponible");
             else setError(lblEstudianteNombre, "Estudiante con proyecto en curso");
         } catch (IllegalArgumentException ex) {
@@ -267,7 +267,7 @@ public class FormatoADocenteController implements Initializable {
             return;
         }
 
-        String correo = safeText(txtEstudianteCorreo);
+        String estId = safeText(txtEstudianteId);
         String titulo = safeText(txtTitulo);
         TipoTrabajoGrado tipoTrabajo = cbTipoTrabajo != null ? cbTipoTrabajo.getValue() : TipoTrabajoGrado.TESIS;
 
@@ -275,8 +275,8 @@ public class FormatoADocenteController implements Initializable {
             setError(lblNuevoProyectoMsg, "Seleccione el tipo de trabajo.");
             return;
         }
-        if (!isEmailLike(correo)) {
-            setError(lblNuevoProyectoMsg, "Ingrese el correo institucional válido del estudiante.");
+        if (estId.isEmpty()) {
+            setError(lblNuevoProyectoMsg, "Ingrese el ID del estudiante.");
             return;
         }
         if (titulo.isEmpty()) {
@@ -297,7 +297,7 @@ public class FormatoADocenteController implements Initializable {
             p.setTipo(tipoTrabajo); // ya es un TipoTrabajoGrado
             p.setTitulo(titulo);
             p.setDocenteId(auth.userId());
-            p.setEstudianteId(correo);
+            p.setEstudianteId(estId);
 
             Archivo formatoA = new Archivo();
             formatoA.setTipo(TipoArchivo.FORMATO_A);
@@ -436,6 +436,7 @@ public class FormatoADocenteController implements Initializable {
         tblProyectos.refresh();
     }
 
+
     private void subirNuevaVersion(RowVM row) {
         try {
             FileChooser fc = new FileChooser();
@@ -509,7 +510,7 @@ public class FormatoADocenteController implements Initializable {
     }
 
     private void limpiarNuevoProyecto() {
-        txtEstudianteCorreo.clear();
+        txtEstudianteId.clear();
         lblEstudianteNombre.setText("");
         txtTitulo.clear();
         if (cbTipoTrabajo != null) cbTipoTrabajo.getSelectionModel().clearSelection();
@@ -525,7 +526,6 @@ public class FormatoADocenteController implements Initializable {
             rowCarta.setManaged(false);
         }
     }
-
 
     // =================== ViewModel ===================
     public static class RowVM {

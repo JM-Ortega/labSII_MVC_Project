@@ -13,6 +13,7 @@ import co.unicauca.workflow.degree_project.infra.communication.IEmailService;
 import co.unicauca.workflow.degree_project.infra.security.Sesion;
 import org.junit.jupiter.api.*;
 import co.unicauca.workflow.degree_project.domain.models.*;
+import co.unicauca.workflow.degree_project.infra.communication.EmailMessage;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,9 +21,11 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
@@ -265,9 +268,6 @@ class ProyectoServiceTest {
     @Mock
     private IArchivoRepository archivoRepoI;
 
-    @Mock
-    private IEmailService emailService;
-
     @InjectMocks
     private ProyectoService proyectoService;
  
@@ -286,25 +286,33 @@ class ProyectoServiceTest {
             null
         );
 
-        Archivo archivoObs1 = new Archivo(1L, proyectoId, TipoArchivo.FORMATO_A, 1,
-                "formatoA_v1.pdf", "2025-09-20", null, EstadoArchivo.OBSERVADO);
-        Archivo archivoObs2 = new Archivo(2L, proyectoId, TipoArchivo.FORMATO_A, 2,
-                "formatoA_v2.pdf", "2025-09-21", null, EstadoArchivo.OBSERVADO);
         Archivo archivoObs3 = new Archivo(3L, proyectoId, TipoArchivo.FORMATO_A, 3,
                 "formatoA_v3.pdf", "2025-09-22", null, EstadoArchivo.OBSERVADO);
 
+        // Mocks
         when(proyectoRepoI.existeProyecto(proyectoId)).thenReturn(true);
         when(proyectoRepoI.getEstadoProyecto(proyectoId)).thenReturn("EN_TRAMITE");
         when(proyectoRepoI.buscarProyectoPorId(proyectoId)).thenReturn(proyecto);
         when(archivoRepoI.getMaxVersionFormatoA(proyectoId)).thenReturn(3);
 
+        // 🔹 Simular que ya existen 3 observados (incluido el nuevo)
+        when(archivoRepoI.countFormatoAByEstado(proyectoId, EstadoArchivo.OBSERVADO))
+            .thenReturn(3);
+
         // Act
-        int resultado = proyectoService.subirObservacion(proyectoId, archivoObs3, "profesor@unicauca.edu.co", "estudiante@unicauca.edu.co");
+        int resultado = proyectoService.subirObservacion(
+            proyectoId,
+            archivoObs3,
+            "profesor@unicauca.edu.co",
+            "estudiante@unicauca.edu.co"
+        );
 
         // Assert
         assertEquals(2, resultado, "Debe retornar 2 al subir la tercera observación");
         verify(proyectoRepoI).actualizarEstadoProyecto(proyectoId, EstadoProyecto.RECHAZADO);
     }
+
+
 
     @Test
     void testSubirObservacionAprobadoTerminaProyecto() {

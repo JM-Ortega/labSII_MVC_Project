@@ -135,6 +135,7 @@
     -fx-font-family: "Roboto", sans-serif;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
+    -fx-alignment: CENTER-LEFT;
 }
 
 .table-row-cell:selected {

@@ -203,7 +203,9 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
     public List<Archivo> listarArchivos(){
         List<Archivo> archivos = new ArrayList<>();
 
-        String sql = "SELECT id, proyecto_id, tipo, nro_version, nombre_archivo, fecha_subida, blob, estado FROM Archivo";
+        String sql = "SELECT id, proyecto_id, tipo, nro_version, nombre_archivo, fecha_subida, blob, estado "
+                + "FROM Archivo "
+                + "WHERE tipo!='CARTA_ACEPTACION'";
 
         try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {

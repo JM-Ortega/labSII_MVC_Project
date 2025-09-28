@@ -6,19 +6,19 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="607.0" prefWidth="920.0" styleClass="fondo" stylesheets="@../styles/Coordinador.css" xmlns="http://javafx.com/javafx/21.0.3" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.unicauca.workflow.degree_project.presentation.Co_Proyecto_Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="607.0" prefWidth="920.0" styleClass="fondo" stylesheets="@../styles/Coordinador.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.unicauca.workflow.degree_project.presentation.Co_Proyecto_Controller">
    <children>
       <ScrollPane layoutX="4.0" layoutY="36.0" prefHeight="564.0" prefWidth="913.0">
          <content>
-            <TableView fx:id="tabla" focusTraversable="false" prefHeight="564.0" prefWidth="1079.0" scaleShape="false" stylesheets="@../styles/Coordinador.css">
+            <TableView fx:id="tabla" focusTraversable="false" prefHeight="564.0" prefWidth="955.0" scaleShape="false" stylesheets="@../styles/Coordinador.css">
               <columns>
-                <TableColumn fx:id="colNombreProyecto" editable="false" prefWidth="245.0" resizable="false" text="Nombre del proyecto" />
-                <TableColumn fx:id="colNombreProfesor" editable="false" minWidth="0.0" prefWidth="172.0" resizable="false" text="Nombre del profesor" />
-                  <TableColumn fx:id="colTipoP" editable="false" prefWidth="169.0" resizable="false" text="Tipo de Proyecto" />
-                  <TableColumn fx:id="colTipoA" editable="false" minWidth="0.0" prefWidth="188.0" resizable="false" text="Tipo de Archivo" />
-                  <TableColumn fx:id="colFecha" editable="false" prefWidth="89.0" resizable="false" text="Fecha" />
-                  <TableColumn fx:id="colEstado" editable="false" minWidth="0.0" prefWidth="128.0" resizable="false" text="Estado" />
-                  <TableColumn fx:id="colDescargar" editable="false" resizable="false" text="Descargar" />
+                <TableColumn fx:id="colNombreProyecto" editable="false" prefWidth="236.0" resizable="false" text="Nombre del proyecto" />
+                <TableColumn fx:id="colNombreProfesor" editable="false" minWidth="0.0" prefWidth="160.0" resizable="false" text="Nombre del profesor" />
+                  <TableColumn fx:id="colTipoP" editable="false" prefWidth="152.0" resizable="false" text="Tipo de Proyecto" />
+                  <TableColumn fx:id="colTipoA" editable="false" minWidth="0.0" prefWidth="133.0" resizable="false" text="Tipo de Archivo" />
+                  <TableColumn fx:id="colFecha" editable="false" prefWidth="96.0" resizable="false" text="Fecha" />
+                  <TableColumn fx:id="colEstado" editable="false" minWidth="0.0" prefWidth="107.0" resizable="false" text="Estado" />
+                  <TableColumn fx:id="colDescargar" editable="false" prefWidth="69.0" resizable="false" text="Descargar" />
               </columns>
             </TableView>
          </content>

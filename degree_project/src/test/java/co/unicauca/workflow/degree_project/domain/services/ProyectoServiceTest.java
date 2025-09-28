@@ -4,34 +4,24 @@ import co.unicauca.workflow.degree_project.access.ArchivoRepositorySqlite;
 import co.unicauca.workflow.degree_project.access.IArchivoRepository;
 import co.unicauca.workflow.degree_project.access.IProyectoRepository;
 import co.unicauca.workflow.degree_project.access.ProyectoRepositorySqlite;
-import co.unicauca.workflow.degree_project.domain.models.Archivo;
-import co.unicauca.workflow.degree_project.domain.models.EstadoArchivo;
-import co.unicauca.workflow.degree_project.domain.models.EstadoProyecto;
-import co.unicauca.workflow.degree_project.domain.models.Proyecto;
-import co.unicauca.workflow.degree_project.domain.models.TipoArchivo;
-import co.unicauca.workflow.degree_project.infra.communication.IEmailService;
-import co.unicauca.workflow.degree_project.infra.security.Sesion;
-import org.junit.jupiter.api.*;
 import co.unicauca.workflow.degree_project.domain.models.*;
-import co.unicauca.workflow.degree_project.infra.communication.EmailMessage;
+import co.unicauca.workflow.degree_project.infra.security.Sesion;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -52,17 +42,51 @@ class ProyectoServiceTest {
         seedCatalogos(conn);
     }
 
-    @BeforeEach
-    void setUp() throws Exception {
-        cleanTables(conn);
-        seedUsuarios(conn);
-        proyectoRepo = new ProyectoRepositorySqlite(conn);
-        archivoRepo  = new ArchivoRepositorySqlite(conn);
-        service      = new ProyectoService(proyectoRepo, archivoRepo, conn);
-        
-        // Creamos un AuthResult falso y lo dejamos en Sesion
-        AuthResult fakeAuth = new AuthResult("coor1", "Coordinador", "Juan Carlos","Ingenieria de Sistemas", "coordinador@unicauca.edu.co");
-        Sesion.getInstancia().setUsuarioActual(fakeAuth);
+    private static void initSchema(Connection c) throws Exception {
+        try (Statement s = c.createStatement()) {
+            s.execute("""
+                CREATE TABLE IF NOT EXISTS Rol (idRol INTEGER PRIMARY KEY, tipo TEXT NOT NULL UNIQUE);
+            """);
+            s.execute("""
+                CREATE TABLE IF NOT EXISTS Programa (idPrograma INTEGER PRIMARY KEY, tipo TEXT NOT NULL UNIQUE);
+            """);
+            s.execute("""
+                CREATE TABLE IF NOT EXISTS Usuario (
+                  id TEXT PRIMARY KEY, correo TEXT NOT NULL UNIQUE, contrasena TEXT NOT NULL, rol INTEGER NOT NULL,
+                  nombre TEXT NOT NULL, apellido TEXT NOT NULL, programa INTEGER NOT NULL, celular TEXT,
+                  FOREIGN KEY (rol) REFERENCES Rol(idRol), FOREIGN KEY (programa) REFERENCES Programa(idPrograma)
+                );
+            """);
+            s.execute("""
+                        CREATE TABLE IF NOT EXISTS Proyecto (
+                          id INTEGER PRIMARY KEY AUTOINCREMENT,
+                          tipo TEXT NOT NULL CHECK (tipo IN ('TESIS','PRACTICA_PROFESIONAL')),
+                          estado TEXT NOT NULL CHECK (estado IN ('EN_TRAMITE','TERMINADO','RECHAZADO')) DEFAULT 'EN_TRAMITE',
+                          titulo TEXT NOT NULL,
+                          estudiante_id TEXT NOT NULL,
+                          docente_id TEXT NOT NULL,
+                          fecha_creacion TEXT NOT NULL DEFAULT (datetime('now')),
+                          FOREIGN KEY (estudiante_id) REFERENCES Usuario(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+                          FOREIGN KEY (docente_id)  REFERENCES Usuario(id) ON UPDATE CASCADE ON DELETE RESTRICT
+                        );
+                    """);
+
+            s.execute("""
+                        CREATE TABLE IF NOT EXISTS Archivo (
+                          id INTEGER PRIMARY KEY AUTOINCREMENT,
+                          proyecto_id INTEGER NOT NULL,
+                          tipo TEXT NOT NULL CHECK (tipo IN ('FORMATO_A','ANTEPROYECTO','FINAL','CARTA_ACEPTACION','OTRO')),
+                          nro_version INTEGER NOT NULL CHECK (nro_version >= 1),
+                          nombre_archivo TEXT NOT NULL CHECK (lower(nombre_archivo) LIKE '%.pdf'),
+                          fecha_subida TEXT NOT NULL DEFAULT (datetime('now')),
+                          blob BLOB NOT NULL,
+                          estado TEXT NOT NULL CHECK (estado IN ('PENDIENTE','APROBADO','RECHAZADO','OBSERVADO')) DEFAULT 'PENDIENTE',
+                          FOREIGN KEY (proyecto_id) REFERENCES Proyecto(id) ON UPDATE CASCADE ON DELETE CASCADE,
+                          UNIQUE (proyecto_id, tipo, nro_version)
+                        );
+                    """);
+
+        }
     }
 
     @AfterAll
@@ -128,7 +152,7 @@ class ProyectoServiceTest {
         assertTrue(ex.getMessage().toLowerCase().contains("3 versiones"));
         assertEquals(3, service.maxVersionFormatoA(id));
     }
-    
+
     @Test
     void count_proyectos_by_estado_y_tipo() {
         Proyecto p1 = baseProyecto(TipoTrabajoGrado.TESIS, "Proyecto A", "est-1", "doc-1");
@@ -139,7 +163,7 @@ class ProyectoServiceTest {
         int total = service.countProyectosByEstadoYTipo("TESIS", "EN_TRAMITE", "doc-1");
         assertEquals(2, total);
     }
-    
+
     @Test
     void listar_formatosA_por_estudiante() {
         Proyecto p = baseProyecto(TipoTrabajoGrado.TESIS, "Proyecto C", "est-1", "doc-1");
@@ -151,7 +175,7 @@ class ProyectoServiceTest {
 
         assertEquals(3, proyectos.size());
     }
-    
+    @Test
     void rf2_crear_proyecto_con_correo_estudiante_ok() {
         Proyecto p = baseProyecto(TipoTrabajoGrado.TESIS, "Sistema con correo", "e1@unicauca.edu.co", "doc-1");
         Archivo a = pdf("v1.pdf", "PDF V1");
@@ -292,49 +316,19 @@ class ProyectoServiceTest {
 
     @InjectMocks
     private ProyectoService proyectoService;
- 
-    @Test
-    void testSubirObservacionTresObservadosRechazaProyecto() {
-        long proyectoId = 1L;
 
-        Proyecto proyecto = new Proyecto(
-            proyectoId,
-            TipoTrabajoGrado.TESIS,
-            EstadoProyecto.EN_TRAMITE,
-            "titulo de prueba",
-            "estudiante123",
-            "docente456",
-            "2025-09-27",
-            null
-        );
+    @BeforeEach
+    void setUp() throws Exception {
+        cleanTables(conn);
+        seedUsuarios(conn);
+        proyectoRepo = new ProyectoRepositorySqlite(conn);
+        archivoRepo  = new ArchivoRepositorySqlite(conn);
+        service      = new ProyectoService(proyectoRepo, archivoRepo, conn);
 
-        Archivo archivoObs3 = new Archivo(3L, proyectoId, TipoArchivo.FORMATO_A, 3,
-                "formatoA_v3.pdf", "2025-09-22", null, EstadoArchivo.OBSERVADO);
-
-        // Mocks
-        when(proyectoRepoI.existeProyecto(proyectoId)).thenReturn(true);
-        when(proyectoRepoI.getEstadoProyecto(proyectoId)).thenReturn("EN_TRAMITE");
-        when(proyectoRepoI.buscarProyectoPorId(proyectoId)).thenReturn(proyecto);
-        when(archivoRepoI.getMaxVersionFormatoA(proyectoId)).thenReturn(3);
-
-        // 🔹 Simular que ya existen 3 observados (incluido el nuevo)
-        when(archivoRepoI.countFormatoAByEstado(proyectoId, EstadoArchivo.OBSERVADO))
-            .thenReturn(3);
-
-        // Act
-        int resultado = proyectoService.subirObservacion(
-            proyectoId,
-            archivoObs3,
-            "profesor@unicauca.edu.co",
-            "estudiante@unicauca.edu.co"
-        );
-
-        // Assert
-        assertEquals(2, resultado, "Debe retornar 2 al subir la tercera observación");
-        verify(proyectoRepoI).actualizarEstadoProyecto(proyectoId, EstadoProyecto.RECHAZADO);
+        // Creamos un AuthResult falso y lo dejamos en Sesion
+        AuthResult fakeAuth = new AuthResult("coor1", "Coordinador", "Juan Carlos","Ingenieria de Sistemas", "coordinador@unicauca.edu.co");
+        Sesion.getInstancia().setUsuarioActual(fakeAuth);
     }
-
-
 
     @Test
     void testSubirObservacionAprobadoTerminaProyecto() {
@@ -359,10 +353,8 @@ class ProyectoServiceTest {
         when(proyectoRepoI.buscarProyectoPorId(proyectoId)).thenReturn(proyecto);
         when(archivoRepoI.getMaxVersionFormatoA(proyectoId)).thenReturn(1);
 
-        // Act
         int resultado = proyectoService.subirObservacion(proyectoId, archivoAprobado, "profesor@unicauca.edu.co", "estudiante@unicauca.edu.co");
 
-        // Assert
         assertEquals(1, resultado, "Debe retornar 1 al aprobar el archivo");
         verify(proyectoRepoI).actualizarEstadoProyecto(proyectoId, EstadoProyecto.TERMINADO);
     }
@@ -375,49 +367,39 @@ class ProyectoServiceTest {
         return a;
     }
 
-    private static void initSchema(Connection c) throws Exception {
-        try (Statement s = c.createStatement()) {
-            s.execute("""
-                CREATE TABLE IF NOT EXISTS Rol (idRol INTEGER PRIMARY KEY, tipo TEXT NOT NULL UNIQUE);
-            """);
-            s.execute("""
-                CREATE TABLE IF NOT EXISTS Programa (idPrograma INTEGER PRIMARY KEY, tipo TEXT NOT NULL UNIQUE);
-            """);
-            s.execute("""
-                CREATE TABLE IF NOT EXISTS Usuario (
-                  id TEXT PRIMARY KEY, correo TEXT NOT NULL UNIQUE, contrasena TEXT NOT NULL, rol INTEGER NOT NULL,
-                  nombre TEXT NOT NULL, apellido TEXT NOT NULL, programa INTEGER NOT NULL, celular TEXT,
-                  FOREIGN KEY (rol) REFERENCES Rol(idRol), FOREIGN KEY (programa) REFERENCES Programa(idPrograma)
-                );
-            """);
-            s.execute("""
-                CREATE TABLE IF NOT EXISTS Proyecto (
-                  id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  tipo TEXT NOT NULL CHECK (tipo IN ('TESIS','PRACTICA_PROFESIONAL')),
-                  estado TEXT NOT NULL CHECK (estado IN ('EN_TRAMITE','CANCELADO','TERMINADO')) DEFAULT 'EN_TRAMITE',
-                  titulo TEXT NOT NULL,
-                  estudiante_id TEXT NOT NULL,
-                  docente_id TEXT NOT NULL,
-                  fecha_creacion TEXT NOT NULL DEFAULT (datetime('now')),
-                  FOREIGN KEY (estudiante_id) REFERENCES Usuario(id) ON UPDATE CASCADE ON DELETE RESTRICT,
-                  FOREIGN KEY (docente_id)  REFERENCES Usuario(id) ON UPDATE CASCADE ON DELETE RESTRICT
-                );
-            """);
-            s.execute("""
-                CREATE TABLE IF NOT EXISTS Archivo (
-                  id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  proyecto_id INTEGER NOT NULL,
-                  tipo TEXT NOT NULL CHECK (tipo IN ('FORMATO_A','ANTEPROYECTO','FINAL','OTRO')),
-                  nro_version INTEGER NOT NULL CHECK (nro_version >= 1),
-                  nombre_archivo TEXT NOT NULL CHECK (lower(nombre_archivo) LIKE '%.pdf'),
-                  fecha_subida TEXT NOT NULL DEFAULT (datetime('now')),
-                  blob BLOB NOT NULL,
-                  estado TEXT NOT NULL CHECK (estado IN ('PENDIENTE','APROBADO','RECHAZADO')) DEFAULT 'PENDIENTE',
-                  FOREIGN KEY (proyecto_id) REFERENCES Proyecto(id) ON UPDATE CASCADE ON DELETE CASCADE,
-                  UNIQUE (proyecto_id, tipo, nro_version)
-                );
-            """);
-        }
+    @Test
+    void testSubirObservacionTresObservadosRechazaProyecto() {
+        long proyectoId = 1L;
+
+        Proyecto proyecto = new Proyecto(
+            proyectoId,
+            TipoTrabajoGrado.TESIS,
+            EstadoProyecto.EN_TRAMITE,
+            "titulo de prueba",
+            "estudiante123",
+            "docente456",
+            "2025-09-27",
+            null
+        );
+
+        Archivo archivoObs3 = new Archivo(3L, proyectoId, TipoArchivo.FORMATO_A, 3,
+                "formatoA_v3.pdf", "2025-09-22", null, EstadoArchivo.OBSERVADO);
+
+        when(proyectoRepoI.existeProyecto(proyectoId)).thenReturn(true);
+        when(proyectoRepoI.getEstadoProyecto(proyectoId)).thenReturn("EN_TRAMITE");
+        when(proyectoRepoI.buscarProyectoPorId(proyectoId)).thenReturn(proyecto);
+        when(archivoRepoI.getMaxVersionFormatoA(proyectoId)).thenReturn(3);
+        when(archivoRepoI.countFormatoAByEstado(proyectoId, EstadoArchivo.OBSERVADO)).thenReturn(3);
+
+        int resultado = proyectoService.subirObservacion(
+            proyectoId,
+            archivoObs3,
+            "profesor@unicauca.edu.co",
+            "estudiante@unicauca.edu.co"
+        );
+
+        assertEquals(2, resultado, "Debe retornar 2 al subir la tercera observación");
+        verify(proyectoRepoI).actualizarEstadoProyecto(proyectoId, EstadoProyecto.RECHAZADO);
     }
 
     private static void seedCatalogos(Connection c) throws Exception {
@@ -471,8 +453,8 @@ class ProyectoServiceTest {
             s.execute("DELETE FROM Usuario");
         }
     }
-    
-     // ---------------- Helpers específicos para manipular datos en tests ----------------
+
+    // ---------------- Helpers específicos para manipular datos en tests ----------------
 
     /** Devuelve el id real del archivo por (proyecto, tipo, nro_version) */
     private static long getArchivoIdPorVersion(long proyectoId, String tipo, int nroVersion) throws Exception {

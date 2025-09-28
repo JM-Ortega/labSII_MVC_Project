@@ -43,3 +43,5 @@ class SesionTest {
         assertNull(sesion.getUsuarioActual(), "Después de limpiar debe quedar en null");
     }
 }
+
+

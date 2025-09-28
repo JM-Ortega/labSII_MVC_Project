@@ -8,11 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -67,10 +63,12 @@ class ProyectoRepositorySqliteTest {
         long p1 = repo.crearProyecto(baseProyecto(TipoTrabajoGrado.TESIS, "T1", "est-1", "doc-1"));
         assertTrue(p1 > 0);
         assertTrue(repo.estudianteTieneProyectoEnTramite("est-1"));
-        try (PreparedStatement ps = conn.prepareStatement("UPDATE Proyecto SET estado='CANCELADO' WHERE id=?")) {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "UPDATE Proyecto SET estado='RECHAZADO' WHERE id=?")) {
             ps.setLong(1, p1);
             ps.executeUpdate();
         }
+
         assertFalse(repo.estudianteTieneProyectoEnTramite("est-1"));
     }
 
@@ -97,7 +95,7 @@ class ProyectoRepositorySqliteTest {
         long p2 = repo.crearProyecto(baseProyecto(TipoTrabajoGrado.TESIS, "Proyecto 2", "est-2", "doc-1"));
         assertTrue(p1 > 0 && p2 > 0);
 
-        long p3 = repo.crearProyecto(baseProyecto(TipoTrabajoGrado.TESIS, "Proyecto cancelado", "est-3", "doc-1"));
+        long p3 = repo.crearProyecto(baseProyecto(TipoTrabajoGrado.TESIS, "Proyecto rechazado", "est-3", "doc-1"));
         assertTrue(p3 > 0);
         try (PreparedStatement ps = conn.prepareStatement("UPDATE Proyecto SET estado='TERMINADO' WHERE id=?")) {
             ps.setLong(1, p3);
@@ -144,7 +142,7 @@ class ProyectoRepositorySqliteTest {
             CREATE TABLE IF NOT EXISTS Proyecto (
               id             INTEGER PRIMARY KEY AUTOINCREMENT,
               tipo           TEXT NOT NULL CHECK (tipo IN ('TESIS','PRACTICA_PROFESIONAL')),
-              estado         TEXT NOT NULL CHECK (estado IN ('EN_TRAMITE','CANCELADO','TERMINADO')) DEFAULT 'EN_TRAMITE',
+              estado         TEXT NOT NULL CHECK (estado IN ('EN_TRAMITE','RECHAZADO','TERMINADO')) DEFAULT 'EN_TRAMITE',
               titulo         TEXT NOT NULL,
               estudiante_id  TEXT NOT NULL,
               docente_id     TEXT NOT NULL,

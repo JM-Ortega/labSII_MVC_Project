@@ -31,26 +31,33 @@ public interface IProyectoService extends ObservableService{
     List<Archivo> listarArchivosPorProyecto(long proyectoId, TipoArchivo tipo);
 
 
-    public boolean tieneObservacionesFormatoA(long proyectoId);
+    boolean tieneObservacionesFormatoA(long proyectoId);
 
-    public Archivo obtenerUltimoFormatoAConObservaciones(long proyectoId);
+    Archivo obtenerUltimoFormatoAConObservaciones(long proyectoId);
 
+    EstadoProyecto enforceAutoCancelIfNeeded(long proyectoId);
 
-    public EstadoProyecto enforceAutoCancelIfNeeded(long proyectoId);
-
-    //Coordinador
-    
     List<Archivo> listarTodosArchivos();
-    Proyecto buscarProyectoPorId(long proyectoId);
-    public void actualizarEstadoProyecto(long proyectoId, EstadoProyecto nuevoEstado);
-    String obtenerNombreDocente(String docenteId);
-    String obtenerCorreoDocente(String docenteId);
-    Archivo obtenerFormatoA(long proyectoId);
-    public int subirObservacion (long proyectoId, Archivo archivo, String correoProfesor);
-    
 
+    Proyecto buscarProyectoPorId(long proyectoId);
+
+    void actualizarEstadoProyecto(long proyectoId, EstadoProyecto nuevoEstado);
+
+    String obtenerNombreDocente(String docenteId);
+
+    String obtenerCorreoDocente(String docenteId);
+
+    Archivo obtenerFormatoA(long proyectoId);
+
+    int subirObservacion (long proyectoId, Archivo archivo, String correoProfesor);
+
+    int countArchivosByProyectoYEstado(String tipoProyecto, String estadoArchivo);
+
+    void addObserverCoordinador(ObserverCoordinador o);
+
+    void notifyCoordinadores();
+
+    int countProyectosByEstadoYTipo(String tipo, String estado, String idDocente);
     
-    public int countProyectosByEstadoYTipo(String tipo, String estado, String idDocente);
-    
-    public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
+    List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
 }

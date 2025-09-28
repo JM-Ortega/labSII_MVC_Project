@@ -66,6 +66,6 @@
                </font></Label>
          </children>
       </Pane>
-      <AnchorPane fx:id="contentArea" layoutX="281.0" layoutY="107.0" prefHeight="593.0" prefWidth="919.0" />
+      <AnchorPane fx:id="contentArea" layoutX="281.0" layoutY="74.0" prefHeight="626.0" prefWidth="919.0" />
    </children>
 </AnchorPane>

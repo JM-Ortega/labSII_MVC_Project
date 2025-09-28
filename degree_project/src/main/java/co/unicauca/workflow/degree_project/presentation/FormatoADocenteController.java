@@ -1,9 +1,6 @@
 package co.unicauca.workflow.degree_project.presentation;
 
-import co.unicauca.workflow.degree_project.domain.models.Archivo;
-import co.unicauca.workflow.degree_project.domain.models.EstadoProyecto;
-import co.unicauca.workflow.degree_project.domain.models.Proyecto;
-import co.unicauca.workflow.degree_project.domain.models.TipoArchivo;
+import co.unicauca.workflow.degree_project.domain.models.*;
 import co.unicauca.workflow.degree_project.domain.services.AuthResult;
 import co.unicauca.workflow.degree_project.domain.services.IProyectoService;
 import co.unicauca.workflow.degree_project.infra.security.Sesion;
@@ -12,11 +9,15 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,10 +25,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.ResourceBundle;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 
 public class FormatoADocenteController implements Initializable {
 
@@ -103,25 +100,17 @@ public class FormatoADocenteController implements Initializable {
     
     private IProyectoService proyectoService;
 
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        configurarTabla();
+    // Inyección por constructor
+    public FormatoADocenteController(IProyectoService proyectoService) {
+        this.proyectoService = proyectoService;
+    }
 
-        if (cbTipoTrabajo != null) {
-            cbTipoTrabajo.getItems().setAll(TipoTrabajoGrado.TESIS, TipoTrabajoGrado.PRACTICA_PROFESIONAL);
-            cbTipoTrabajo.valueProperty().addListener((obs, old, val) -> {
-                boolean requiereCarta = (val == TipoTrabajoGrado.PRACTICA_PROFESIONAL);
-                if (rowCarta != null) {
-                    rowCarta.setVisible(requiereCarta);
-                    rowCarta.setManaged(requiereCarta);
-                }
-                if (!requiereCarta) {
-                    cartaBytes = null;
-                    cartaNombre = null;
-                    if (lblCartaNombre != null) lblCartaNombre.setText("Ningún archivo seleccionado");
-                }
-            });
-        }
+    private static boolean isEmailLike(String s) {
+        if (s == null) return false;
+        String v = s.trim().toLowerCase();
+        int at = v.indexOf('@');
+        if (at <= 0 || at == v.length() - 1) return false;
+        return v.matches("^[A-Za-z0-9._%+-]+@unicauca\\.edu\\.co$");
     }
 
     public void setService(IProyectoService proyectoService) {
@@ -280,7 +269,7 @@ public class FormatoADocenteController implements Initializable {
 
         try {
             Proyecto p = new Proyecto();
-            p.setTipo(tipoTrabajo.name());
+            p.setTipo(tipoTrabajo); // ya es un TipoTrabajoGrado
             p.setTitulo(titulo);
             p.setDocenteId(auth.userId());
             p.setEstudianteId(estId);
@@ -289,6 +278,7 @@ public class FormatoADocenteController implements Initializable {
             formatoA.setTipo(TipoArchivo.FORMATO_A);
             formatoA.setNombreArchivo(formatoANombre);
             formatoA.setBlob(formatoABytes);
+
 
             if (tipoTrabajo == TipoTrabajoGrado.PRACTICA_PROFESIONAL) {
                 Archivo carta = new Archivo();
@@ -482,7 +472,6 @@ public class FormatoADocenteController implements Initializable {
         }
     }
 
-    public enum TipoTrabajoGrado {TESIS, PRACTICA_PROFESIONAL}
 
     // =================== ViewModel ===================
     public static class RowVM {

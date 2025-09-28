@@ -2,7 +2,8 @@ package co.unicauca.workflow.degree_project.domain.models;
 
 public enum Rol {
     Estudiante("Estudiante"),
-    Docente("Docente");
+    Docente("Docente"),
+    Coordinador("Coordinador");
     
     private final String displayName;
     

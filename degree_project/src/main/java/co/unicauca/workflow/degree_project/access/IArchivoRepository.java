@@ -24,15 +24,13 @@ public interface IArchivoRepository {
     //Coordinador
     List<Archivo> listarArchivos();
     
-    public int countArchivosByEstadoYTipo(TipoArchivo tipo, EstadoArchivo estado);
+    int countArchivosFormatoAByProyectoYEstado(String tipoProyecto, String estadoArchivo);
     
-    public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
+    List<Proyecto> listarFormatosAPorEstudiante(String estudianteId);
     
-    Proyecto buscarProyectoPorId(long ProyectoId);
+    Archivo getFormatoA(long archivoId);
     
-    public Archivo getFormatoA(long archivoId);
+    int obtenerUltimaVersionFormatoA(long proyectoId);
     
-    public int obtenerUltimaVersionFormatoA(long proyectoId);
-    
-    public void actualizarFormatoA(Archivo archivo);
+    void actualizarFormatoA(Archivo archivo);   
 }

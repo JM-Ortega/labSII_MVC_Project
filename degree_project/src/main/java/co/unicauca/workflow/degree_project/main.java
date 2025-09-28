@@ -1,164 +1,145 @@
 package co.unicauca.workflow.degree_project;
+
 import co.unicauca.workflow.degree_project.access.Factory;
 import co.unicauca.workflow.degree_project.access.IArchivoRepository;
 import co.unicauca.workflow.degree_project.access.IProyectoRepository;
 import co.unicauca.workflow.degree_project.access.IUserRepository;
 import co.unicauca.workflow.degree_project.domain.services.*;
 import co.unicauca.workflow.degree_project.infra.security.Argon2PasswordHasher;
-import co.unicauca.workflow.degree_project.presentation.Co_Observaciones_Controller;
-import co.unicauca.workflow.degree_project.presentation.Co_Proyecto_Controller;
-import co.unicauca.workflow.degree_project.presentation.EstadisticasDocenteController;
-import co.unicauca.workflow.degree_project.presentation.FormatoADocenteController;
-import co.unicauca.workflow.degree_project.presentation.FormatoAEstudianteController;
-import co.unicauca.workflow.degree_project.presentation.RegisterController;
-import co.unicauca.workflow.degree_project.presentation.SigninController;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import co.unicauca.workflow.degree_project.presentation.*;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.util.Objects;
+
 public class main extends Application {
+  private static Stage primaryStage;
+  private static Scene scene;
 
-    // --- Stage/Scene únicos ---
-    private static Stage primaryStage;
-    private static Scene scene;
+  // --- Servicios únicos (composition root) ---
+  private static IUserRepository repo;
+  private static IPasswordHasher hasher;
+  private static UserService userService;
+  private static ISignInService signInService;
+  private static IRegistrationService registrationService;
+  private static IProyectoRepository proyectoRepo;
+  private static IArchivoRepository archivoRepo;
+  private static IProyectoService proyectoService;
 
-    // --- Servicios únicos para toda la app ---
-    private static IUserRepository repo;
-    private static IPasswordHasher hasher;
-    private static UserService userService;
-    private static ISignInService signInService;
-    private static IRegistrationService registrationService;
+  @Override
+  public void start(Stage stage) throws Exception {
+    // Composición de dependencias
+    var f = Factory.getInstance();
+    repo         = f.getRepository("default");
+    proyectoRepo = f.getProyectoRepository("default");
+    archivoRepo  = f.getArchivoRepository("default");
 
-    private static IProyectoRepository proyectoRepo;
-    private static IArchivoRepository  archivoRepo;
-    private static IProyectoService proyectoService;
+    proyectoService     = new ProyectoService(proyectoRepo, archivoRepo, f.getConnection());
+    hasher              = new Argon2PasswordHasher();
+    userService         = new UserService(repo, hasher);
+    signInService       = userService;
+    registrationService = userService;
 
+    primaryStage = stage;
 
-    @Override
-    public void start(Stage stage) throws Exception {
-        // 1) Composición de dependencias
-        repo = Factory.getInstance().getRepository("default");
-        proyectoRepo = Factory.getInstance().getProyectoRepository("default");
-        archivoRepo = Factory.getInstance().getArchivoRepository("default");
+    // Vista inicial
+    Parent root = loadView("/co/unicauca/workflow/degree_project/view/signin.fxml");
+    scene = new Scene(root);
+    stage.setTitle("Login");
+    stage.setScene(scene);
+    stage.setResizable(false);
+    stage.sizeToScene();
+    stage.centerOnScreen();
+    stage.show();
+  }
 
-        proyectoService = new ProyectoService(proyectoRepo,archivoRepo,Factory.getInstance().getConnection());
-        hasher = new Argon2PasswordHasher();
-        userService = new UserService(repo, hasher);
-        signInService = userService;
-        registrationService = userService;
+  public static void setRoot(String name) throws IOException {
+    String path = "/co/unicauca/workflow/degree_project/view/" + name + ".fxml";
+    Parent newRoot = loadView(path);
+    scene.setRoot(newRoot);
+  }
 
-        // 2) Guarda el stage principal
-        primaryStage = stage;
-
-        // 3) Carga vista inicial
-        Parent root = loadFXML("/co/unicauca/workflow/degree_project/view/signin.fxml");
-
-        // 4) Configura escena/ventana
-        scene = new Scene(root);
-        stage.setTitle("Login");
-        stage.setScene(scene);
-        stage.setResizable(false);
-        stage.sizeToScene();
-        stage.centerOnScreen();
-        stage.show();
+  public static void navigate(String name, String title) throws IOException {
+    setRoot(name);
+    if (primaryStage != null) {
+      scene.getRoot().applyCss();
+      scene.getRoot().autosize();
+      primaryStage.sizeToScene();
+      primaryStage.setTitle(title);
+      primaryStage.centerOnScreen();
     }
+  }
 
-    // Cambia el root de la escena a /view/{name}.fxml
-    public static void setRoot(String name) throws IOException {
-        String path = "/co/unicauca/workflow/degree_project/view/" + name + ".fxml";
-        Parent newRoot = loadFXML(path);
-        scene.setRoot(newRoot);
+  public static Object navigateWithController(String name, String title) throws IOException {
+    String path = "/co/unicauca/workflow/degree_project/view/" + name + ".fxml";
+    FXMLLoader loader = newInjectedLoader(path);
+    Parent root = loader.load();
+    Object controller = loader.getController();
+
+    scene.setRoot(root);
+    if (primaryStage != null) {
+      scene.getRoot().applyCss();
+      scene.getRoot().autosize();
+      primaryStage.sizeToScene();
+      primaryStage.setTitle(title);
+      primaryStage.centerOnScreen();
     }
+    return controller;
+  }
 
-    //Navega, cambia título y AJUSTA el tamaño al definido en el FXML destino.
-    public static void navigate(String name, String title) throws IOException {
-        setRoot(name);
-        if (primaryStage != null) {
+  private static Parent loadView(String absolutePath) throws IOException {
+    FXMLLoader loader = newInjectedLoader(absolutePath);
+    return loader.load();
+  }
 
-            scene.getRoot().applyCss();
-            scene.getRoot().autosize();
-            primaryStage.sizeToScene();
-            primaryStage.setTitle(title);
-            primaryStage.centerOnScreen();
-        }
-    }
+  public static FXMLLoader newInjectedLoader(String path) {
+    URL url = Objects.requireNonNull(main.class.getResource(path),
+        () -> "FXML no encontrado: " + path);
 
-    // --- Navegación con inicialización de controlador ---
-    public static Object navigateWithController(String name, String title) throws IOException {
-        String path = "/co/unicauca/workflow/degree_project/view/" + name + ".fxml";
-        FXMLLoader loader = new FXMLLoader(main.class.getResource(path));
+    FXMLLoader loader = new FXMLLoader(url);
+    loader.setControllerFactory(type -> {
+      try {
+        Constructor<?> ctor;
+        try {
+          ctor = type.getDeclaredConstructor(IProyectoService.class);
+          return ctor.newInstance(proyectoService);
+        } catch (NoSuchMethodException ignored) {}
 
-        Parent root = loader.load();
-        Object controller = loader.getController();
+        try {
+          ctor = type.getDeclaredConstructor(ISignInService.class, IRegistrationService.class);
+          return ctor.newInstance(signInService, registrationService);
+        } catch (NoSuchMethodException ignored) {}
 
-        scene.setRoot(root);
+        Object controller = type.getDeclaredConstructor().newInstance();
 
-        if (primaryStage != null) {
-            scene.getRoot().applyCss();
-            scene.getRoot().autosize();
-            primaryStage.sizeToScene();
-            primaryStage.setTitle(title);
-            primaryStage.centerOnScreen();
-        }
+        if (controller instanceof SigninController sc)              sc.setServices(signInService);
+        if (controller instanceof RegisterController rc)            rc.setServices(registrationService);
+        if (controller instanceof FormatoADocenteController fdc)    fdc.setService(proyectoService);
+        if (controller instanceof FormatoAEstudianteController fec) fec.setService(proyectoService);
+        if (controller instanceof EstadisticasDocenteController ed) ed.setService(proyectoService);
+        if (controller instanceof EstadisticasCoordinadorController ec) ec.setService(proyectoService);
+        if (controller instanceof Co_Proyecto_Controller cop)       cop.setService(proyectoService);
+        if (controller instanceof Co_Observaciones_Controller cob)  cob.setService(proyectoService);
 
         return controller;
-    }
 
-    //Carga FXML e INYECTA servicios si el controlador los necesita.
-    private static Parent loadFXML(String absolutePath) throws IOException {
-        FXMLLoader loader = new FXMLLoader(main.class.getResource(absolutePath));
-        loader.setControllerFactory(type -> {
-            try {
-                Object controller = type.getDeclaredConstructor().newInstance();
-                switch (controller) {
-                    case SigninController sc -> sc.setServices(signInService);
-                    case RegisterController rc -> rc.setServices(registrationService);
-                    case FormatoADocenteController fadc -> fadc.setService(proyectoService);
-                    case Co_Proyecto_Controller cop -> cop.setService(proyectoService);
-                    case FormatoAEstudianteController faec -> faec.setService(proyectoService);
-                    case Co_Observaciones_Controller coc -> coc.setService(proyectoService);
-                    default -> { }
-                }
-                return controller;
-            } catch (InstantiationException | IllegalAccessException |
-                     InvocationTargetException | NoSuchMethodException e) {
-                throw new RuntimeException("No se pudo crear el controlador: " + type, e);
-            }
-        });
-        return loader.load();
-    }
+      } catch (InstantiationException | IllegalAccessException |
+               InvocationTargetException | NoSuchMethodException e) {
+        throw new RuntimeException("No se pudo crear el controlador: " + type, e);
+      }
+    });
+    return loader;
+  }
 
-    public static FXMLLoader newInjectedLoader(String path) {
-        FXMLLoader loader = new FXMLLoader(main.class.getResource(path));
-        loader.setControllerFactory(type -> {
-            try {
-                Object controller = type.getDeclaredConstructor().newInstance();
-                switch (controller) {
-                    case SigninController sc -> sc.setServices(signInService);
-                    case RegisterController rc -> rc.setServices(registrationService);
-                    case FormatoADocenteController fadc -> fadc.setService(proyectoService);
-                    case EstadisticasDocenteController edc -> edc.setService(proyectoService);
-                    case Co_Proyecto_Controller cop -> cop.setService(proyectoService);
-                    case FormatoAEstudianteController faec -> faec.setService(proyectoService);
-                    case Co_Observaciones_Controller coc -> coc.setService(proyectoService);
-                    default -> { }
-                }
-                return controller;
-            } catch (Exception e) {
-                throw new RuntimeException("No se pudo crear el controlador: " + type, e);
-            }
-        });
-        return loader;
-    }
-    
-    public static void main(String[] args) {
-        launch(args);
-    }
+  public static void main(String[] args) {
+    launch(args);
+  }
 }
-
-
-

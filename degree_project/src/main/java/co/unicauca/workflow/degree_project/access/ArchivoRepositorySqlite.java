@@ -1,10 +1,6 @@
 package co.unicauca.workflow.degree_project.access;
 
-import co.unicauca.workflow.degree_project.domain.models.Archivo;
-import co.unicauca.workflow.degree_project.domain.models.EstadoArchivo;
-import co.unicauca.workflow.degree_project.domain.models.EstadoProyecto;
-import co.unicauca.workflow.degree_project.domain.models.Proyecto;
-import co.unicauca.workflow.degree_project.domain.models.TipoArchivo;
+import co.unicauca.workflow.degree_project.domain.models.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -235,15 +231,18 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
     }
     
     @Override
-    public int countArchivosByEstadoYTipo(TipoArchivo tipo, EstadoArchivo estado) {
+    public int countArchivosFormatoAByProyectoYEstado(String tipoProyecto, String estadoArchivo) {
         final String sql = """
             SELECT COUNT(*) AS c
-            FROM Archivo
-            WHERE tipo = ? AND estado = ?
+            FROM Archivo a
+            JOIN Proyecto p ON a.proyecto_id = p.id
+            WHERE a.tipo = 'FORMATO_A'
+              AND p.tipo = ?
+              AND a.estado = ?
         """;
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, tipo.name());  
-            ps.setString(2, estado.name());
+            ps.setString(1, tipoProyecto);
+            ps.setString(2, estadoArchivo);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? rs.getInt("c") : 0;
             }
@@ -251,7 +250,6 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
             throw new RuntimeException(e);
         }
     }
-
     @Override
     public List<Proyecto> listarFormatosAPorEstudiante(String estudianteId) {
         final String sql = """
@@ -270,7 +268,8 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
                     Archivo a = new Archivo();
                     p.setArchivo(a);
                     p.setId(rs.getLong("id"));
-                    p.setTipo(rs.getString("tipo"));
+                    String tipoStr = rs.getString("tipo");
+                    p.setTipo(TipoTrabajoGrado.valueOf(tipoStr));
                     p.getArchivo().setNroVersion(rs.getInt("nro_version"));
                     p.getArchivo().setNombreArchivo(rs.getString("nombre_archivo"));
                     p.getArchivo().setFechaSubida(rs.getString("fecha_subida"));
@@ -280,34 +279,6 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
                 }
             }
             return out;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public Proyecto buscarProyectoPorId(long proyectoId) {
-        final String sql = """
-            SELECT id, tipo, estado, titulo, estudiante_id, docente_id, fecha_creacion
-            FROM Proyecto
-            WHERE id = ?
-        """;
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, proyectoId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    Proyecto p = new Proyecto();
-                    p.setId(rs.getLong("id"));
-                    p.setTipo(rs.getString("tipo"));
-                    p.setEstado(EstadoProyecto.valueOf(rs.getString("estado")));
-                    p.setTitulo(rs.getString("titulo"));
-                    p.setEstudianteId(rs.getString("estudiante_id"));
-                    p.setDocenteId(rs.getString("docente_id"));
-                    p.setFechaCreacion(rs.getString("fecha_creacion"));
-                    return p;
-                }
-            }
-            return null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

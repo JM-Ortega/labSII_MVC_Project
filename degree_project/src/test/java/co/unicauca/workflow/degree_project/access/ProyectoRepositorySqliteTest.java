@@ -2,10 +2,16 @@ package co.unicauca.workflow.degree_project.access;
 
 import co.unicauca.workflow.degree_project.domain.models.EstadoProyecto;
 import co.unicauca.workflow.degree_project.domain.models.Proyecto;
-import org.junit.jupiter.api.*;
+import co.unicauca.workflow.degree_project.domain.models.TipoTrabajoGrado;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.sql.*;
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,18 +45,17 @@ class ProyectoRepositorySqliteTest {
 
     @Test
     void crearProyecto_y_verificar_existencia_y_estado() {
-        Proyecto p = baseProyecto("TESIS", "Título A", "est-1", "doc-1");
+        Proyecto p = baseProyecto(TipoTrabajoGrado.TESIS, "Título A", "est-1", "doc-1");
         long id = repo.crearProyecto(p);
-
         assertTrue(repo.existeProyecto(id));
-        assertEquals("EN_TRAMITE", repo.getEstadoProyecto(id));
+        assertEquals(EstadoProyecto.EN_TRAMITE.name(), repo.getEstadoProyecto(id));
     }
 
     @Test
     void contar_proyectos_en_tramite_por_docente() {
         assertEquals(0, repo.countProyectosEnTramiteDocente("doc-1"));
-        long p1 = repo.crearProyecto(baseProyecto("TESIS", "T1", "est-1", "doc-1"));
-        long p2 = repo.crearProyecto(baseProyecto("TESIS", "T2", "est-2", "doc-1"));
+        long p1 = repo.crearProyecto(baseProyecto(TipoTrabajoGrado.TESIS, "T1", "est-1", "doc-1"));
+        long p2 = repo.crearProyecto(baseProyecto(TipoTrabajoGrado.TESIS, "T2", "est-2", "doc-1"));
         assertTrue(p1 > 0 && p2 > 0);
         assertEquals(2, repo.countProyectosEnTramiteDocente("doc-1"));
     }
@@ -58,10 +63,9 @@ class ProyectoRepositorySqliteTest {
     @Test
     void estudiante_tiene_proyecto_en_tramite() throws Exception {
         assertFalse(repo.estudianteTieneProyectoEnTramite("est-1"));
-        long p1 = repo.crearProyecto(baseProyecto("TESIS", "T1", "est-1", "doc-1"));
+        long p1 = repo.crearProyecto(baseProyecto(TipoTrabajoGrado.TESIS, "T1", "est-1", "doc-1"));
         assertTrue(p1 > 0);
         assertTrue(repo.estudianteTieneProyectoEnTramite("est-1"));
-
         try (PreparedStatement ps = conn.prepareStatement("UPDATE Proyecto SET estado='CANCELADO' WHERE id=?")) {
             ps.setLong(1, p1);
             ps.executeUpdate();
@@ -71,18 +75,15 @@ class ProyectoRepositorySqliteTest {
 
     @Test
     void listar_por_docente_con_y_sin_filtro() {
-        long a = repo.crearProyecto(baseProyecto("TESIS", "Sistema de recomendación", "est-1", "doc-1"));
-        long b = repo.crearProyecto(baseProyecto("TESIS", "Visión por computador", "est-2", "doc-1"));
-        long c = repo.crearProyecto(baseProyecto("TESIS", "Procesamiento de lenguaje", "est-3", "doc-2"));
+        long a = repo.crearProyecto(baseProyecto(TipoTrabajoGrado.TESIS, "Sistema de recomendación", "est-1", "doc-1"));
+        long b = repo.crearProyecto(baseProyecto(TipoTrabajoGrado.TESIS, "Visión por computador", "est-2", "doc-1"));
+        long c = repo.crearProyecto(baseProyecto(TipoTrabajoGrado.TESIS, "Procesamiento de lenguaje", "est-3", "doc-2"));
         assertTrue(a > 0 && b > 0 && c > 0);
-
         List<Proyecto> todosDoc1 = repo.listarPorDocente("doc-1", "");
         assertEquals(2, todosDoc1.size());
-
         List<Proyecto> filtroTitulo = repo.listarPorDocente("doc-1", "visión");
         assertEquals(1, filtroTitulo.size());
         assertEquals("Visión por computador", filtroTitulo.get(0).getTitulo());
-
         List<Proyecto> filtroEstudiante = repo.listarPorDocente("doc-1", "Ana");
         assertEquals(1, filtroEstudiante.size());
     }
@@ -211,7 +212,7 @@ class ProyectoRepositorySqliteTest {
         }
     }
 
-    private Proyecto baseProyecto(String tipo, String titulo, String estudianteId, String docenteId) {
+    private Proyecto baseProyecto(TipoTrabajoGrado tipo, String titulo, String estudianteId, String docenteId) {
         Proyecto p = new Proyecto();
         p.setTipo(tipo);
         p.setEstado(EstadoProyecto.EN_TRAMITE);
@@ -220,4 +221,5 @@ class ProyectoRepositorySqliteTest {
         p.setDocenteId(docenteId);
         return p;
     }
+
 }

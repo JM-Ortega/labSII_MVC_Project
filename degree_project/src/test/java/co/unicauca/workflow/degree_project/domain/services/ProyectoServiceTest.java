@@ -277,7 +277,7 @@ class ProyectoServiceTest {
 
         Proyecto proyecto = new Proyecto(
             proyectoId,
-            "TESIS",
+            TipoTrabajoGrado.TESIS,
             EstadoProyecto.EN_TRAMITE,
             "titulo de prueba",
             "estudiante123",
@@ -299,7 +299,7 @@ class ProyectoServiceTest {
         when(archivoRepoI.getMaxVersionFormatoA(proyectoId)).thenReturn(3);
 
         // Act
-        int resultado = proyectoService.subirObservacion(proyectoId, archivoObs3, "profesor@unicauca.edu.co");
+        int resultado = proyectoService.subirObservacion(proyectoId, archivoObs3, "profesor@unicauca.edu.co", "estudiante@unicauca.edu.co");
 
         // Assert
         assertEquals(2, resultado, "Debe retornar 2 al subir la tercera observación");
@@ -312,7 +312,7 @@ class ProyectoServiceTest {
 
         Proyecto proyecto = new Proyecto(
             proyectoId,
-            "PRACTICA_PROFESIONAL",
+            TipoTrabajoGrado.PRACTICA_PROFESIONAL,
             EstadoProyecto.EN_TRAMITE,
             "titulo de prueba",
             "estudiante123",
@@ -330,7 +330,7 @@ class ProyectoServiceTest {
         when(archivoRepoI.getMaxVersionFormatoA(proyectoId)).thenReturn(1);
 
         // Act
-        int resultado = proyectoService.subirObservacion(proyectoId, archivoAprobado, "profesor@unicauca.edu.co");
+        int resultado = proyectoService.subirObservacion(proyectoId, archivoAprobado, "profesor@unicauca.edu.co", "estudiante@unicauca.edu.co");
 
         // Assert
         assertEquals(1, resultado, "Debe retornar 1 al aprobar el archivo");

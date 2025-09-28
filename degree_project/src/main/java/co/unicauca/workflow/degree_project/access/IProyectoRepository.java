@@ -28,6 +28,8 @@ public interface IProyectoRepository {
     String nombreDocente(String docenteId);
 
     String correoDocente(String docenteId);
+    
+    String correoEstudainte(String estudianteId);
 
     void update(Proyecto proyecto);
 

@@ -282,6 +282,31 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
     }
 
     @Override
+    public String correoEstudainte(String estudianteId){
+        String correoEstudiante = "";
+
+        String sql = """
+                    SELECT u.correo
+                    FROM Usuario u
+                    JOIN Rol r ON u.rol = r.idRol
+                    WHERE u.id = ? AND r.tipo = 'Docente'
+                     """;
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, estudianteId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    correoEstudiante = rs.getString("correo"); 
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return correoEstudiante;
+    }
+    
+    @Override
     public void update(Proyecto proyecto) {
         String sql = "UPDATE Proyecto SET tipo=?, estado=?, titulo=?, estudiante_id=?, docente_id=?, fecha_creacion=? WHERE id=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {

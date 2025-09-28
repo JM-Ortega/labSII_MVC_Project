@@ -101,6 +101,29 @@ class ProyectoServiceTest {
 
         assertEquals(3, service.maxVersionFormatoA(id));
     }
+    
+    @Test
+    void count_proyectos_by_estado_y_tipo() {
+        Proyecto p1 = baseProyecto("TESIS", "Proyecto A", "est-1", "doc-1");
+        Proyecto p2 = baseProyecto("TESIS", "Proyecto B", "est-2", "doc-1");
+        service.crearProyectoConFormatoA(p1, pdf("v1.pdf", "x"));
+        service.crearProyectoConFormatoA(p2, pdf("v1.pdf", "y"));
+
+        int total = service.countProyectosByEstadoYTipo("TESIS", "EN_TRAMITE", "doc-1");
+        assertEquals(2, total);
+    }
+    
+    @Test
+    void listar_formatosA_por_estudiante() {
+        Proyecto p = baseProyecto("TESIS", "Proyecto C", "est-1", "doc-1");
+        Proyecto creado = service.crearProyectoConFormatoA(p, pdf("v1.pdf", "V1"));
+        service.subirNuevaVersionFormatoA(creado.getId(), pdf("v2.pdf", "V2"));
+        service.subirNuevaVersionFormatoA(creado.getId(), pdf("v3.pdf", "V3"));
+
+        List<Proyecto> proyectos = service.listarFormatosAPorEstudiante("est-1");
+
+        assertEquals(3, proyectos.size());
+    }
 
     private static Proyecto baseProyecto(String tipo, String titulo, String estudianteId, String docenteId) {
         Proyecto p = new Proyecto();

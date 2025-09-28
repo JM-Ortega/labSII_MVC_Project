@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="426.0" prefWidth="487.0" style="-fx-background-color: #FFFFFF;" stylesheets="@../styles/EstadisticasDocente.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.unicauca.workflow.degree_project.presentation.EstadisticasDocenteController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="426.0" prefWidth="487.0" style="-fx-background-color: #FFFFFF;" stylesheets="@../styles/EstadisticasDocente.css" xmlns="http://javafx.com/javafx/21.0.3" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.unicauca.workflow.degree_project.presentation.EstadisticasDocenteController">
    <children>
       <Label layoutX="96.0" layoutY="49.0" text="ESTADISTICAS DE LOS PROYECTOS">
          <font>

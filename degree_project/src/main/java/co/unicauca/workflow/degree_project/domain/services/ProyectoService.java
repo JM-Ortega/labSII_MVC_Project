@@ -46,6 +46,8 @@ public class ProyectoService implements IProyectoService{
             throw new IllegalArgumentException("Solo se admite FORMATO_A");
         PdfValidator.assertPdf(archivo.getNombreArchivo(), archivo.getBlob());
 
+        proyecto.setEstudianteId(normalizeEstudianteIdOrResolve(proyecto.getEstudianteId()));
+
         if (!docenteTieneCupo(proyecto.getDocenteId()))
             throw new IllegalStateException("El docente alcanzó el límite de 7 proyectos en curso");
 
@@ -93,6 +95,8 @@ public class ProyectoService implements IProyectoService{
         if (isBlank(proyecto.getTitulo()) || isBlank(proyecto.getEstudianteId()) || isBlank(proyecto.getDocenteId()))
             throw new IllegalArgumentException("Título, estudiante y docente son obligatorios");
 
+        proyecto.setEstudianteId(normalizeEstudianteIdOrResolve(proyecto.getEstudianteId()));
+
         boolean prevAutoCommit;
         try {
             prevAutoCommit = conn.getAutoCommit();
@@ -102,6 +106,7 @@ public class ProyectoService implements IProyectoService{
                 throw new IllegalStateException("El docente alcanzó el límite de 7 proyectos en curso");
             if (!estudianteLibre(proyecto.getEstudianteId()))
                 throw new IllegalStateException("El estudiante ya tiene un proyecto en curso");
+
 
             proyecto.setEstado(EstadoProyecto.EN_TRAMITE);
             long proyectoId = proyectoRepo.crearProyecto(proyecto);
@@ -261,9 +266,9 @@ public class ProyectoService implements IProyectoService{
         int observados = archivoRepo.countFormatoAByEstado(proyectoId, EstadoArchivo.OBSERVADO);
         if (observados >= 3) {
             proyectoRepo.actualizarEstadoProyecto(proyectoId, EstadoProyecto.RECHAZADO);
-            return EstadoProyecto.RECHAZADO;
         }
-        return EstadoProyecto.EN_TRAMITE;
+        String est = proyectoRepo.getEstadoProyecto(proyectoId);
+        return est == null ? EstadoProyecto.EN_TRAMITE : EstadoProyecto.valueOf(est);
     }
 
     private String resolveEstudianteIdFromCorreoOrThrow(String correo) {

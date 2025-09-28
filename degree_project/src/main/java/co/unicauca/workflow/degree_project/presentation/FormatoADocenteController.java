@@ -46,7 +46,7 @@ public class FormatoADocenteController implements Initializable {
     @FXML
     private TitledPane pnNuevoProyecto;
     @FXML
-    private TextField txtEstudianteId;
+    private TextField txtEstudianteCorreo;
     @FXML
     private Button btnBuscarEstudiante;
     @FXML
@@ -93,13 +93,13 @@ public class FormatoADocenteController implements Initializable {
     @FXML
     private Label lblTablaMsg;
 
-    
+
     // Estado de archivos para nuevo proyecto
     private byte[] formatoABytes;
     private String formatoANombre;
     private byte[] cartaBytes;
     private String cartaNombre;
-    
+
     private IProyectoService proyectoService;
 
     // Inyección por constructor
@@ -133,7 +133,7 @@ public class FormatoADocenteController implements Initializable {
         lbl.setStyle("-fx-text-fill:#2E7D32;");
         lbl.setText(msg);
     }
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         configurarTabla();
@@ -182,7 +182,7 @@ public class FormatoADocenteController implements Initializable {
         mostrarPanelNuevo();
         limpiarNuevoProyecto();
     }
-    
+
     @FXML
     private void onVerEstadisticas() throws IOException {
         FXMLLoader loaderEstadisticas = main.newInjectedLoader(
@@ -207,13 +207,13 @@ public class FormatoADocenteController implements Initializable {
         lblEstudianteNombre.setStyle("");
         lblNuevoProyectoMsg.setText("");
 
-        String estId = safeText(txtEstudianteId);
-        if (estId.isEmpty()) {
-            setError(lblEstudianteNombre, "Ingrese el ID del estudiante");
+        String correo = safeText(txtEstudianteCorreo);
+        if (!isEmailLike(correo)) {
+            setError(lblEstudianteNombre, "Ingrese el correo institucional del estudiante");
             return;
         }
         try {
-            boolean libre = proyectoService.estudianteLibre(estId);
+            boolean libre = proyectoService.estudianteLibrePorCorreo(correo);
             if (libre) setOk(lblEstudianteNombre, "Estudiante disponible");
             else setError(lblEstudianteNombre, "Estudiante con proyecto en curso");
         } catch (IllegalArgumentException ex) {
@@ -267,7 +267,7 @@ public class FormatoADocenteController implements Initializable {
             return;
         }
 
-        String estId = safeText(txtEstudianteId);
+        String correo = safeText(txtEstudianteCorreo);
         String titulo = safeText(txtTitulo);
         TipoTrabajoGrado tipoTrabajo = cbTipoTrabajo != null ? cbTipoTrabajo.getValue() : TipoTrabajoGrado.TESIS;
 
@@ -275,8 +275,8 @@ public class FormatoADocenteController implements Initializable {
             setError(lblNuevoProyectoMsg, "Seleccione el tipo de trabajo.");
             return;
         }
-        if (estId.isEmpty()) {
-            setError(lblNuevoProyectoMsg, "Ingrese el ID del estudiante.");
+        if (!isEmailLike(correo)) {
+            setError(lblNuevoProyectoMsg, "Ingrese el correo institucional válido del estudiante.");
             return;
         }
         if (titulo.isEmpty()) {
@@ -294,10 +294,10 @@ public class FormatoADocenteController implements Initializable {
 
         try {
             Proyecto p = new Proyecto();
-            p.setTipo(tipoTrabajo); // ya es un TipoTrabajoGrado
+            p.setTipo(tipoTrabajo);
             p.setTitulo(titulo);
             p.setDocenteId(auth.userId());
-            p.setEstudianteId(estId);
+            p.setEstudianteId(correo);
 
             Archivo formatoA = new Archivo();
             formatoA.setTipo(TipoArchivo.FORMATO_A);
@@ -436,7 +436,6 @@ public class FormatoADocenteController implements Initializable {
         tblProyectos.refresh();
     }
 
-
     private void subirNuevaVersion(RowVM row) {
         try {
             FileChooser fc = new FileChooser();
@@ -510,7 +509,7 @@ public class FormatoADocenteController implements Initializable {
     }
 
     private void limpiarNuevoProyecto() {
-        txtEstudianteId.clear();
+        txtEstudianteCorreo.clear();
         lblEstudianteNombre.setText("");
         txtTitulo.clear();
         if (cbTipoTrabajo != null) cbTipoTrabajo.getSelectionModel().clearSelection();
@@ -526,6 +525,7 @@ public class FormatoADocenteController implements Initializable {
             rowCarta.setManaged(false);
         }
     }
+
 
     // =================== ViewModel ===================
     public static class RowVM {

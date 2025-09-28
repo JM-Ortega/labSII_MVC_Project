@@ -102,35 +102,25 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
 
     @Override
     public List<Proyecto> listarPorDocente(String docenteId, String filtro) {
-        final boolean conFiltro = filtro != null && !filtro.trim().isEmpty();
-        final String like = "%" + (conFiltro ? filtro.trim().toLowerCase() : "") + "%";
-
-        final String sql = """
-                SELECT
-                  p.id,
-                  p.tipo,
-                  p.estado,
-                  p.titulo,
-                  p.estudiante_id,
-                  p.docente_id,
-                  p.fecha_creacion,
-                  COALESCE(MAX(a.nro_version), 0) AS version_formato_a
-                FROM Proyecto p
-                LEFT JOIN Archivo a
-                  ON a.proyecto_id = p.id AND a.tipo = 'FORMATO_A'
-                JOIN Usuario u
-                  ON u.id = p.estudiante_id
-                WHERE p.docente_id = ?
-                """ + (conFiltro ? """
-                AND (
-                  lower(p.titulo) LIKE ?
-                  OR lower(u.nombre || ' ' || u.apellido) LIKE ?
-                )
-                """ : "") + """
-                GROUP BY p.id, p.tipo, p.estado, p.titulo, p.estudiante_id, p.docente_id, p.fecha_creacion
-                ORDER BY p.fecha_creacion DESC
+        final String base = """
+                    SELECT
+                        p.id,
+                        p.titulo,
+                        p.tipo,
+                        p.estado,
+                        (u.nombre || ' ' || u.apellido) AS estudiante_nombre,
+                        u.correo AS estudiante_correo
+                    FROM Proyecto p
+                    JOIN Usuario u ON u.id = p.estudiante_id
+                    WHERE p.docente_id = ?
                 """;
 
+        final String whereFiltro = (filtro == null || filtro.trim().isEmpty()) ? ""
+                : " AND (lower(p.titulo) LIKE ? OR lower(u.nombre || ' ' || u.apellido) LIKE ? OR lower(u.correo) LIKE ?)";
+
+        final String sql = base + whereFiltro + " ORDER BY p.id DESC";
+
+        List<Proyecto> res = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             int idx = 1;
             ps.setString(idx++, docenteId);
@@ -140,7 +130,6 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
                 ps.setString(idx++, pat); // nombre completo
                 ps.setString(idx++, pat); // correo
             }
-            List<Proyecto> out = new ArrayList<>();
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Proyecto p = new Proyecto();
@@ -152,17 +141,18 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
                     p.setTipo(TipoTrabajoGrado.valueOf(tipoStr));
 
                     p.setEstado(EstadoProyecto.valueOf(rs.getString("estado")));
-                    p.setTitulo(rs.getString("titulo"));
-                    p.setEstudianteId(rs.getString("estudiante_id"));
-                    p.setDocenteId(rs.getString("docente_id"));
-                    p.setFechaCreacion(rs.getString("fecha_creacion"));
-                    out.add(p);
+
+                    String correo = rs.getString("estudiante_correo");
+                    String nombre = rs.getString("estudiante_nombre");
+                    p.setEstudianteId(nombre + " <" + correo + ">");
+
+                    res.add(p);
                 }
             }
-            return out;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return res;
     }
 
 
@@ -289,6 +279,31 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
             throw new RuntimeException(e);
         }
         return correoDocente;
+    }
+    
+    @Override
+    public String correoEstudainte(String estudianteId){
+        String correoEstudiante = "";
+
+        String sql = """
+                    SELECT u.correo
+                    FROM Usuario u
+                    JOIN Rol r ON u.rol = r.idRol
+                    WHERE u.id = ? AND r.tipo = 'Docente'
+                     """;
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, estudianteId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    correoEstudiante = rs.getString("correo"); 
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return correoEstudiante;
     }
 
     @Override

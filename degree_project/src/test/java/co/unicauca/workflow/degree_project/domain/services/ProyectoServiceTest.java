@@ -128,8 +128,8 @@ class ProyectoServiceTest {
     
     @Test
     void count_proyectos_by_estado_y_tipo() {
-        Proyecto p1 = baseProyecto("TESIS", "Proyecto A", "est-1", "doc-1");
-        Proyecto p2 = baseProyecto("TESIS", "Proyecto B", "est-2", "doc-1");
+        Proyecto p1 = baseProyecto(TipoTrabajoGrado.TESIS, "Proyecto A", "est-1", "doc-1");
+        Proyecto p2 = baseProyecto(TipoTrabajoGrado.TESIS, "Proyecto B", "est-2", "doc-1");
         service.crearProyectoConFormatoA(p1, pdf("v1.pdf", "x"));
         service.crearProyectoConFormatoA(p2, pdf("v1.pdf", "y"));
 
@@ -139,7 +139,7 @@ class ProyectoServiceTest {
     
     @Test
     void listar_formatosA_por_estudiante() {
-        Proyecto p = baseProyecto("TESIS", "Proyecto C", "est-1", "doc-1");
+        Proyecto p = baseProyecto(TipoTrabajoGrado.TESIS, "Proyecto C", "est-1", "doc-1");
         Proyecto creado = service.crearProyectoConFormatoA(p, pdf("v1.pdf", "V1"));
         service.subirNuevaVersionFormatoA(creado.getId(), pdf("v2.pdf", "V2"));
         service.subirNuevaVersionFormatoA(creado.getId(), pdf("v3.pdf", "V3"));
@@ -148,15 +148,7 @@ class ProyectoServiceTest {
 
         assertEquals(3, proyectos.size());
     }
-
-    private static Proyecto baseProyecto(String tipo, String titulo, String estudianteId, String docenteId) {
-        Proyecto p = new Proyecto();
-        p.setTipo(tipo);
-        p.setEstado(EstadoProyecto.EN_TRAMITE);
-        p.setTitulo(titulo);
-        p.setEstudianteId(estudianteId);
-        p.setDocenteId(docenteId);
-        return p;
+    
     void rf2_crear_proyecto_con_correo_estudiante_ok() {
         Proyecto p = baseProyecto(TipoTrabajoGrado.TESIS, "Sistema con correo", "e1@unicauca.edu.co", "doc-1");
         Archivo a = pdf("v1.pdf", "PDF V1");
@@ -307,7 +299,7 @@ class ProyectoServiceTest {
 
         Proyecto proyecto = new Proyecto(
             proyectoId,
-            "TESIS",
+            TipoTrabajoGrado.TESIS,
             EstadoProyecto.EN_TRAMITE,
             "titulo de prueba",
             "estudiante123",
@@ -329,7 +321,7 @@ class ProyectoServiceTest {
         when(archivoRepoI.getMaxVersionFormatoA(proyectoId)).thenReturn(3);
 
         // Act
-        int resultado = proyectoService.subirObservacion(proyectoId, archivoObs3, "profesor@unicauca.edu.co");
+        int resultado = proyectoService.subirObservacion(proyectoId, archivoObs3, "profesor@unicauca.edu.co", "estudiante@unicauca.edu.co");
 
         // Assert
         assertEquals(2, resultado, "Debe retornar 2 al subir la tercera observación");
@@ -342,7 +334,7 @@ class ProyectoServiceTest {
 
         Proyecto proyecto = new Proyecto(
             proyectoId,
-            "PRACTICA_PROFESIONAL",
+            TipoTrabajoGrado.PRACTICA_PROFESIONAL,
             EstadoProyecto.EN_TRAMITE,
             "titulo de prueba",
             "estudiante123",
@@ -360,7 +352,7 @@ class ProyectoServiceTest {
         when(archivoRepoI.getMaxVersionFormatoA(proyectoId)).thenReturn(1);
 
         // Act
-        int resultado = proyectoService.subirObservacion(proyectoId, archivoAprobado, "profesor@unicauca.edu.co");
+        int resultado = proyectoService.subirObservacion(proyectoId, archivoAprobado, "profesor@unicauca.edu.co", "estudiante@unicauca.edu.co");
 
         // Assert
         assertEquals(1, resultado, "Debe retornar 1 al aprobar el archivo");
@@ -469,6 +461,53 @@ class ProyectoServiceTest {
             s.execute("DELETE FROM Archivo");
             s.execute("DELETE FROM Proyecto");
             s.execute("DELETE FROM Usuario");
+        }
+    }
+    
+     // ---------------- Helpers específicos para manipular datos en tests ----------------
+
+    /** Devuelve el id real del archivo por (proyecto, tipo, nro_version) */
+    private static long getArchivoIdPorVersion(long proyectoId, String tipo, int nroVersion) throws Exception {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT id FROM Archivo WHERE proyecto_id=? AND tipo=? AND nro_version=?")) {
+            ps.setLong(1, proyectoId);
+            ps.setString(2, tipo);
+            ps.setInt(3, nroVersion);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) return rs.getLong(1);
+            }
+        }
+        throw new AssertionError("No se encontró el archivo insertado (ver versión/tipo/proyecto).");
+    }
+
+    /** Marca el estado de un archivo directamente en la tabla (para simular OBSERVADO/APROBADO) */
+    private static void markArchivoEstado(long archivoId, String estado) throws Exception {
+        try (PreparedStatement ps = conn.prepareStatement("UPDATE Archivo SET estado = ? WHERE id = ?")) {
+            ps.setString(1, estado);
+            ps.setLong(2, archivoId);
+            assertTrue(ps.executeUpdate() > 0, "No se pudo actualizar estado del archivo");
+        }
+    }
+
+    /** Inserta una versión de Formato A OBSERVADO de forma forzada (evita límites del service) */
+    private static void insertFormatoAForzadoObs(long proyectoId) throws Exception {
+        int nextVersion = 1;
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT COALESCE(MAX(nro_version),0)+1 FROM Archivo WHERE proyecto_id = ? AND tipo = 'FORMATO_A'")) {
+            ps.setLong(1, proyectoId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) nextVersion = rs.getInt(1);
+            }
+        }
+        try (PreparedStatement ins = conn.prepareStatement("""
+            INSERT INTO Archivo (proyecto_id, tipo, nro_version, nombre_archivo, blob, estado)
+            VALUES (?, 'FORMATO_A', ?, ?, ?, 'OBSERVADO')
+        """)) {
+            ins.setLong(1, proyectoId);
+            ins.setInt(2, nextVersion);
+            ins.setString(3, "forzado_v"+nextVersion+".pdf");
+            ins.setBytes(4, "X".getBytes(StandardCharsets.UTF_8));
+            ins.executeUpdate();
         }
     }
 }

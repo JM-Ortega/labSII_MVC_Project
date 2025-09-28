@@ -81,7 +81,9 @@ public class FormatoADocenteController implements Initializable {
     @FXML
     private TableColumn<RowVM, String> colTitulo;
     @FXML
-    private TableColumn<RowVM, String> colEstudiante;
+    private TableColumn<RowVM, String> colEstudianteNombre;
+    @FXML
+    private TableColumn<RowVM, String> colEstudianteCorreo;
     @FXML
     private TableColumn<RowVM, Number> colVersion;
     @FXML
@@ -130,6 +132,29 @@ public class FormatoADocenteController implements Initializable {
     private static void setOk(Label lbl, String msg) {
         lbl.setStyle("-fx-text-fill:#2E7D32;");
         lbl.setText(msg);
+    }
+    
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        configurarTabla();
+        tblProyectos.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+
+        if (cbTipoTrabajo != null) {
+            cbTipoTrabajo.getItems().setAll(TipoTrabajoGrado.TESIS, TipoTrabajoGrado.PRACTICA_PROFESIONAL);
+            cbTipoTrabajo.valueProperty().addListener((obs, old, val) -> {
+                boolean requiereCarta = (val == TipoTrabajoGrado.PRACTICA_PROFESIONAL);
+                if (rowCarta != null) {
+                    rowCarta.setVisible(requiereCarta);
+                    rowCarta.setManaged(requiereCarta);
+                }
+                if (!requiereCarta) {
+                    cartaBytes = null;
+                    cartaNombre = null;
+                    if (lblCartaNombre != null) lblCartaNombre.setText("Ningún archivo seleccionado");
+                }
+            });
+        }
     }
 
     // =================== Carga inicial ===================
@@ -309,9 +334,11 @@ public class FormatoADocenteController implements Initializable {
     // =================== Tabla ===================
     private void configurarTabla() {
         colTitulo.setCellValueFactory(d -> d.getValue().tituloProperty());
-        colEstudiante.setCellValueFactory(d -> d.getValue().estudianteProperty());
+        colEstudianteNombre.setCellValueFactory(d -> d.getValue().estudianteNombreProperty());
+        colEstudianteCorreo.setCellValueFactory(d -> d.getValue().estudianteCorreoProperty());
         colVersion.setCellValueFactory(d -> d.getValue().versionProperty());
         colEstadoProyecto.setCellValueFactory(d -> d.getValue().estadoProperty());
+
 
         colAccion.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
         colAccion.setCellFactory(col -> new TableCell<>() {
@@ -372,9 +399,37 @@ public class FormatoADocenteController implements Initializable {
             EstadoProyecto estadoFinal = proyectoService.enforceAutoCancelIfNeeded(id);
 
             int version = proyectoService.maxVersionFormatoA(id);
-            String estudianteId = p.getEstudianteId();
 
-            rows.add(new RowVM(id, titulo, estudianteId, version, estadoFinal.name()));
+            String packed = p.getEstudianteId();
+
+            String estNombre = "";
+            String estCorreo = "";
+
+            if (packed != null) {
+                String v = packed.trim();
+                if (v.contains("||")) {
+                    int sep = v.indexOf("||");
+                    estNombre = v.substring(0, sep).trim();
+                    estCorreo = v.substring(sep + 2).trim();
+                } else if (v.contains("<") && v.contains(">")) {
+                    int i1 = v.lastIndexOf('<');
+                    int i2 = v.lastIndexOf('>');
+                    if (i1 >= 0 && i2 > i1) {
+                        estNombre = v.substring(0, i1).trim();
+                        estCorreo = v.substring(i1 + 1, i2).trim();
+                    } else {
+                        estCorreo = v;
+                    }
+                } else if (v.contains("@")) {
+                    estCorreo = v;
+                } else {
+                    estNombre = v;
+                }
+            }
+
+            rows.add(new RowVM(id, titulo, estNombre, estCorreo, version, estadoFinal.name()));
+
+
         }
 
         tblProyectos.setItems(rows);
@@ -472,19 +527,20 @@ public class FormatoADocenteController implements Initializable {
         }
     }
 
-
     // =================== ViewModel ===================
     public static class RowVM {
         private final long proyectoId;
         private final StringProperty titulo = new SimpleStringProperty();
-        private final StringProperty estudiante = new SimpleStringProperty();
+        private final StringProperty estudianteNombre = new SimpleStringProperty();
+        private final StringProperty estudianteCorreo = new SimpleStringProperty();
         private final IntegerProperty version = new SimpleIntegerProperty();
         private final StringProperty estado = new SimpleStringProperty();
 
-        public RowVM(long proyectoId, String titulo, String estudiante, int version, String estado) {
+        public RowVM(long proyectoId, String titulo, String estudianteNombre, String estudianteCorreo, int version, String estado) {
             this.proyectoId = proyectoId;
             this.titulo.set(titulo);
-            this.estudiante.set(estudiante);
+            this.estudianteNombre.set(estudianteNombre);
+            this.estudianteCorreo.set(estudianteCorreo);
             this.version.set(version);
             this.estado.set(estado);
         }
@@ -497,8 +553,12 @@ public class FormatoADocenteController implements Initializable {
             return titulo;
         }
 
-        public StringProperty estudianteProperty() {
-            return estudiante;
+        public StringProperty estudianteNombreProperty() {
+            return estudianteNombre;
+        }
+
+        public StringProperty estudianteCorreoProperty() {
+            return estudianteCorreo;
         }
 
         public IntegerProperty versionProperty() {

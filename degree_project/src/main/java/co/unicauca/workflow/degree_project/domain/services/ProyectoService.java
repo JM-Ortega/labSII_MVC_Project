@@ -236,6 +236,14 @@ public class ProyectoService implements IProyectoService{
     }
 
     @Override
+    public boolean estudianteLibrePorCorreo(String correo) {
+        if (!proyectoRepo.existeEstudiantePorCorreo(correo)) {
+            throw new IllegalArgumentException("El correo no pertenece a un estudiante");
+        }
+        return !proyectoRepo.estudianteTieneProyectoEnTramitePorCorreo(correo);
+    }
+    
+    @Override
     public boolean tieneObservacionesFormatoA(long proyectoId) {
         Archivo ultimo = archivoRepo.getUltimoFormatoA(proyectoId);
         return ultimo != null && ultimo.getEstado() == EstadoArchivo.OBSERVADO;
@@ -252,11 +260,19 @@ public class ProyectoService implements IProyectoService{
     public EstadoProyecto enforceAutoCancelIfNeeded(long proyectoId) {
         int observados = archivoRepo.countFormatoAByEstado(proyectoId, EstadoArchivo.OBSERVADO);
         if (observados >= 3) {
-            proyectoRepo.actualizarEstadoProyecto(proyectoId, EstadoProyecto.CANCELADO);
-            return EstadoProyecto.CANCELADO;
+            proyectoRepo.actualizarEstadoProyecto(proyectoId, EstadoProyecto.RECHAZADO);
+            return EstadoProyecto.RECHAZADO;
         }
         return EstadoProyecto.EN_TRAMITE;
     }
+
+    private String resolveEstudianteIdFromCorreoOrThrow(String correo) {
+        if (isBlank(correo)) throw new IllegalArgumentException("Correo del estudiante es obligatorio");
+        String id = proyectoRepo.getEstudianteIdPorCorreo(correo);
+        if (id == null) throw new IllegalArgumentException("El correo no pertenece a un estudiante");
+        return id;
+    }
+
 
     //Coordinador
     @Override
@@ -282,6 +298,11 @@ public class ProyectoService implements IProyectoService{
     @Override
     public String obtenerCorreoDocente(String docenteId){
         return proyectoRepo.correoDocente(docenteId);
+    }
+    
+    @Override
+    public String obtenerCorreoEstudiante(String estudianteId){
+        return proyectoRepo.correoEstudainte(estudianteId);
     }
     
     @Override
@@ -346,7 +367,7 @@ public class ProyectoService implements IProyectoService{
     
     IEmailService emailService = new LoggingEmailService();
     @Override
-    public int subirObservacion (long proyectoId, Archivo archivo, String correoProfesor) {
+    public int subirObservacion (long proyectoId, Archivo archivo, String correoProfesor, String correoEstudiante) {
         AuthResult auth = Sesion.getInstancia().getUsuarioActual();
         
         if (!proyectoRepo.existeProyecto(proyectoId))
@@ -375,7 +396,7 @@ public class ProyectoService implements IProyectoService{
 
             EmailMessage messageA = new EmailMessage(
                 auth.correo(),
-                correoProfesor,
+                correoProfesor+", "+ correoEstudiante,
                 "Formato A APROBADO",
                 "En hora buena! Su formato A ha sido aceptado."
             );
@@ -397,7 +418,7 @@ public class ProyectoService implements IProyectoService{
 
             EmailMessage messageR = new EmailMessage(
                 auth.correo(),    
-                correoProfesor,
+                correoProfesor+", "+ correoEstudiante,
                 "Formato A RECHAZADO",
                 "Su formato a ha sido rechazado, lo invitamos a que revise las obsevaciones."
             );

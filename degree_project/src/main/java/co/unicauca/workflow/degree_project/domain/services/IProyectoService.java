@@ -30,6 +30,7 @@ public interface IProyectoService extends ObservableService{
 
     List<Archivo> listarArchivosPorProyecto(long proyectoId, TipoArchivo tipo);
 
+    boolean estudianteLibrePorCorreo(String correo);
 
     boolean tieneObservacionesFormatoA(long proyectoId);
 
@@ -46,10 +47,12 @@ public interface IProyectoService extends ObservableService{
     String obtenerNombreDocente(String docenteId);
 
     String obtenerCorreoDocente(String docenteId);
+    
+    String obtenerCorreoEstudiante(String estudianteId);
 
     Archivo obtenerFormatoA(long proyectoId);
 
-    int subirObservacion (long proyectoId, Archivo archivo, String correoProfesor);
+    int subirObservacion (long proyectoId, Archivo archivo, String correoProfesor, String correoEstudiante);
 
     int countArchivosByProyectoYEstado(String tipoProyecto, String estadoArchivo);
 

@@ -4,12 +4,6 @@ import co.unicauca.workflow.degree_project.domain.models.Archivo;
 import co.unicauca.workflow.degree_project.domain.models.Proyecto;
 import co.unicauca.workflow.degree_project.domain.services.IProyectoService;
 import co.unicauca.workflow.degree_project.main;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.util.List;
-import java.util.ResourceBundle;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -21,15 +15,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.ResourceBundle;
 
 public class Co_Proyecto_Controller implements Initializable{
     @FXML
@@ -158,7 +155,7 @@ public class Co_Proyecto_Controller implements Initializable{
                     p.getTitulo(),
                     nombreDocente,
                     a.getTipo().name(),
-                    p.getTipo(),
+                    p.getTipo().name(),
                     a.getFechaSubida(),
                     a.getEstado().name(),
                     correoDocente

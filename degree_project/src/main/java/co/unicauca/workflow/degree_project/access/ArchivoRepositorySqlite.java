@@ -1,10 +1,6 @@
 package co.unicauca.workflow.degree_project.access;
 
-import co.unicauca.workflow.degree_project.domain.models.Archivo;
-import co.unicauca.workflow.degree_project.domain.models.EstadoArchivo;
-import co.unicauca.workflow.degree_project.domain.models.EstadoProyecto;
-import co.unicauca.workflow.degree_project.domain.models.Proyecto;
-import co.unicauca.workflow.degree_project.domain.models.TipoArchivo;
+import co.unicauca.workflow.degree_project.domain.models.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -272,7 +268,8 @@ public class ArchivoRepositorySqlite implements IArchivoRepository {
                     Archivo a = new Archivo();
                     p.setArchivo(a);
                     p.setId(rs.getLong("id"));
-                    p.setTipo(rs.getString("tipo"));
+                    String tipoStr = rs.getString("tipo");
+                    p.setTipo(TipoTrabajoGrado.valueOf(tipoStr));
                     p.getArchivo().setNroVersion(rs.getInt("nro_version"));
                     p.getArchivo().setNombreArchivo(rs.getString("nombre_archivo"));
                     p.getArchivo().setFechaSubida(rs.getString("fecha_subida"));

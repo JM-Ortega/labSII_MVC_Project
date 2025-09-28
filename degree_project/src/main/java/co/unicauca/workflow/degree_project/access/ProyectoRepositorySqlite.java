@@ -2,6 +2,7 @@ package co.unicauca.workflow.degree_project.access;
 
 import co.unicauca.workflow.degree_project.domain.models.EstadoProyecto;
 import co.unicauca.workflow.degree_project.domain.models.Proyecto;
+import co.unicauca.workflow.degree_project.domain.models.TipoTrabajoGrado;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -22,12 +23,21 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
                     VALUES (?, ?, ?, ?, ?)
                 """;
         try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, proyecto.getTipo());
-            ps.setString(2, proyecto.getEstado() == null ? EstadoProyecto.EN_TRAMITE.name() : proyecto.getEstado().name());
+
+            // Convertir enum TipoTrabajoGrado a String antes de guardar
+            ps.setString(1, proyecto.getTipo() != null ? proyecto.getTipo().name() : null);
+
+            // EstadoProyecto: si es null, por defecto EN_TRAMITE
+            ps.setString(2, proyecto.getEstado() == null
+                    ? EstadoProyecto.EN_TRAMITE.name()
+                    : proyecto.getEstado().name());
+
             ps.setString(3, proyecto.getTitulo());
             ps.setString(4, proyecto.getEstudianteId());
             ps.setString(5, proyecto.getDocenteId());
+
             ps.executeUpdate();
+
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) return rs.getLong(1);
             }
@@ -36,6 +46,7 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
             throw new RuntimeException(e);
         }
     }
+
 
     @Override
     public boolean existeProyecto(long proyectoId) {
@@ -115,7 +126,7 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
             ps.setString(idx++, docenteId);
             if (!whereFiltro.isEmpty()) {
                 String pat = "%" + filtro.trim().toLowerCase() + "%";
-                ps.setString(idx++, pat); // titulo
+                ps.setString(idx++, pat); // título
                 ps.setString(idx++, pat); // nombre completo
                 ps.setString(idx++, pat); // correo
             }
@@ -124,7 +135,11 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
                     Proyecto p = new Proyecto();
                     p.setId(rs.getLong("id"));
                     p.setTitulo(rs.getString("titulo"));
-                    p.setTipo(rs.getString("tipo"));
+
+                    // Mapear a enum
+                    String tipoStr = rs.getString("tipo");
+                    p.setTipo(TipoTrabajoGrado.valueOf(tipoStr));
+
                     p.setEstado(EstadoProyecto.valueOf(rs.getString("estado")));
 
                     String correo = rs.getString("estudiante_correo");
@@ -139,6 +154,7 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
         }
         return res;
     }
+
 
     @Override
     public void actualizarEstadoProyecto(long proyectoId, EstadoProyecto nuevoEstado) {
@@ -190,17 +206,17 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
     @Override
     public Proyecto buscarProyectoPorId(long proyectoId) {
         final String sql = """
-            SELECT id, tipo, estado, titulo, estudiante_id, docente_id, fecha_creacion
-            FROM Proyecto
-            WHERE id = ?
-        """;
+                    SELECT id, tipo, estado, titulo, estudiante_id, docente_id, fecha_creacion
+                    FROM Proyecto
+                    WHERE id = ?
+                """;
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, proyectoId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     Proyecto p = new Proyecto();
                     p.setId(rs.getLong("id"));
-                    p.setTipo(rs.getString("tipo"));
+                    p.setTipo(TipoTrabajoGrado.valueOf(rs.getString("tipo")));
                     p.setEstado(EstadoProyecto.valueOf(rs.getString("estado")));
                     p.setTitulo(rs.getString("titulo"));
                     p.setEstudianteId(rs.getString("estudiante_id"));
@@ -214,7 +230,8 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
             throw new RuntimeException(e);
         }
     }
-    
+
+
     @Override
     public String nombreDocente(String docenteId){
         String nombreDocente = null;
@@ -263,23 +280,24 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
         }
         return correoDocente;
     }
-    
+
     @Override
-    public void update(Proyecto proyecto){
+    public void update(Proyecto proyecto) {
         String sql = "UPDATE Proyecto SET tipo=?, estado=?, titulo=?, estudiante_id=?, docente_id=?, fecha_creacion=? WHERE id=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, proyecto.getTipo());
-            ps.setString(2, proyecto.getEstado().name()); // si es enum
+            ps.setString(1, proyecto.getTipo().name());
+            ps.setString(2, proyecto.getEstado().name());
             ps.setString(3, proyecto.getTitulo());
             ps.setString(4, proyecto.getEstudianteId());
             ps.setString(5, proyecto.getDocenteId());
             ps.setString(6, proyecto.getFechaCreacion());
             ps.setLong(7, proyecto.getId());
             ps.executeUpdate();
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
 
     @Override
     public boolean existeEstudiantePorCorreo(String correo) {

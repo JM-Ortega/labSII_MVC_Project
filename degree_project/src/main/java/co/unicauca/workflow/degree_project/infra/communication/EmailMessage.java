@@ -15,4 +15,20 @@ public class EmailMessage {
         this.subject = subject;
         this.body = body;
     }
+
+    public List<String> getTo() {
+        return to;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public String getSender() {
+        return sender;
+    }
 }

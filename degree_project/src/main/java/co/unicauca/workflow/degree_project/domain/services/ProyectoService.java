@@ -407,6 +407,9 @@ public class ProyectoService implements IProyectoService {
             archivo.setNroVersion(max);
 
             Proyecto proyecto = buscarProyectoPorId(proyectoId);
+            
+            actualizarEstadoProyecto(proyectoId, EstadoProyecto.RECHAZADO);
+            
             proyecto.setArchivo(archivo);
             
             archivoRepo.actualizarFormatoA(archivo);
@@ -422,8 +425,9 @@ public class ProyectoService implements IProyectoService {
             notifyCoordinadores();
 
             return 2;
+        }else{
+            return 3;
         }
-        return 3;
     }
     
     private String normalizeEstudianteIdOrResolve(String estudianteIdOrCorreo) {

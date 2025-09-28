@@ -280,6 +280,31 @@ public class ProyectoRepositorySqlite implements IProyectoRepository {
         }
         return correoDocente;
     }
+    
+    @Override
+    public String correoEstudainte(String estudianteId){
+        String correoEstudiante = "";
+
+        String sql = """
+                    SELECT u.correo
+                    FROM Usuario u
+                    JOIN Rol r ON u.rol = r.idRol
+                    WHERE u.id = ? AND r.tipo = 'Docente'
+                     """;
+        
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, estudianteId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    correoEstudiante = rs.getString("correo"); 
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return correoEstudiante;
+    }
 
     @Override
     public String correoEstudiante(String estudianteId){

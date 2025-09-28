@@ -14,7 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProyectoService implements IProyectoService {
+public class ProyectoService implements IProyectoService{
     private final List<Observer> observers = new ArrayList<>();
     private List<ObserverCoordinador> observersCoordinador = new ArrayList<>();
     private final IProyectoRepository proyectoRepo;
@@ -45,8 +45,6 @@ public class ProyectoService implements IProyectoService {
         if (archivo.getTipo() != null && archivo.getTipo() != TipoArchivo.FORMATO_A)
             throw new IllegalArgumentException("Solo se admite FORMATO_A");
         PdfValidator.assertPdf(archivo.getNombreArchivo(), archivo.getBlob());
-
-        proyecto.setEstudianteId(normalizeEstudianteIdOrResolve(proyecto.getEstudianteId()));
 
         if (!docenteTieneCupo(proyecto.getDocenteId()))
             throw new IllegalStateException("El docente alcanzó el límite de 7 proyectos en curso");
@@ -94,8 +92,6 @@ public class ProyectoService implements IProyectoService {
             throw new IllegalArgumentException("Datos incompletos");
         if (isBlank(proyecto.getTitulo()) || isBlank(proyecto.getEstudianteId()) || isBlank(proyecto.getDocenteId()))
             throw new IllegalArgumentException("Título, estudiante y docente son obligatorios");
-
-        proyecto.setEstudianteId(normalizeEstudianteIdOrResolve(proyecto.getEstudianteId()));
 
         boolean prevAutoCommit;
         try {
@@ -203,6 +199,7 @@ public class ProyectoService implements IProyectoService {
         return !proyectoRepo.estudianteTieneProyectoEnTramite(estudianteId);
     }
 
+
     @Override
     public int maxVersionFormatoA(long proyectoId) {
         return archivoRepo.getMaxVersionFormatoA(proyectoId);
@@ -221,6 +218,7 @@ public class ProyectoService implements IProyectoService {
         if (ultimo == null) return true;
         return ultimo.getEstado() == EstadoArchivo.OBSERVADO;
     }
+
 
     @Override
     public List<Proyecto> listarProyectosDocente(String docenteId, String filtro) {
@@ -244,7 +242,7 @@ public class ProyectoService implements IProyectoService {
         }
         return !proyectoRepo.estudianteTieneProyectoEnTramitePorCorreo(correo);
     }
-
+    
     @Override
     public boolean tieneObservacionesFormatoA(long proyectoId) {
         Archivo ultimo = archivoRepo.getUltimoFormatoA(proyectoId);
@@ -263,11 +261,10 @@ public class ProyectoService implements IProyectoService {
         int observados = archivoRepo.countFormatoAByEstado(proyectoId, EstadoArchivo.OBSERVADO);
         if (observados >= 3) {
             proyectoRepo.actualizarEstadoProyecto(proyectoId, EstadoProyecto.RECHAZADO);
+            return EstadoProyecto.RECHAZADO;
         }
-        String est = proyectoRepo.getEstadoProyecto(proyectoId);
-        return est == null ? EstadoProyecto.EN_TRAMITE : EstadoProyecto.valueOf(est);
+        return EstadoProyecto.EN_TRAMITE;
     }
-
 
     private String resolveEstudianteIdFromCorreoOrThrow(String correo) {
         if (isBlank(correo)) throw new IllegalArgumentException("Correo del estudiante es obligatorio");
@@ -275,6 +272,7 @@ public class ProyectoService implements IProyectoService {
         if (id == null) throw new IllegalArgumentException("El correo no pertenece a un estudiante");
         return id;
     }
+
 
     //Coordinador
     @Override
@@ -353,7 +351,6 @@ public class ProyectoService implements IProyectoService {
         for (Observer o : observers) {
             o.update();
         }
-
     }
     
     @Override

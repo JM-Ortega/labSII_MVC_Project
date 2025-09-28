@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -100,8 +101,7 @@ class ProyectoServiceTest {
         seedEstudiante("est-99", "e99@unicauca.edu.co");
         IllegalStateException ex = assertThrows(IllegalStateException.class,
                 () -> service.crearProyectoConFormatoA(p8, pdf("v1.pdf", "x")));
-        assertTrue(ex.getMessage().toLowerCase().contains("límite")
-                || ex.getMessage().toLowerCase().contains("limite"));
+        assertTrue(ex.getMessage().toLowerCase().contains("límite") || ex.getMessage().toLowerCase().contains("limite"));
     }
 
     @Test
@@ -128,8 +128,30 @@ class ProyectoServiceTest {
         assertTrue(ex.getMessage().toLowerCase().contains("3 versiones"));
         assertEquals(3, service.maxVersionFormatoA(id));
     }
-
+    
     @Test
+    void count_proyectos_by_estado_y_tipo() {
+        Proyecto p1 = baseProyecto(TipoTrabajoGrado.TESIS, "Proyecto A", "est-1", "doc-1");
+        Proyecto p2 = baseProyecto(TipoTrabajoGrado.TESIS, "Proyecto B", "est-2", "doc-1");
+        service.crearProyectoConFormatoA(p1, pdf("v1.pdf", "x"));
+        service.crearProyectoConFormatoA(p2, pdf("v1.pdf", "y"));
+
+        int total = service.countProyectosByEstadoYTipo("TESIS", "EN_TRAMITE", "doc-1");
+        assertEquals(2, total);
+    }
+    
+    @Test
+    void listar_formatosA_por_estudiante() {
+        Proyecto p = baseProyecto(TipoTrabajoGrado.TESIS, "Proyecto C", "est-1", "doc-1");
+        Proyecto creado = service.crearProyectoConFormatoA(p, pdf("v1.pdf", "V1"));
+        service.subirNuevaVersionFormatoA(creado.getId(), pdf("v2.pdf", "V2"));
+        service.subirNuevaVersionFormatoA(creado.getId(), pdf("v3.pdf", "V3"));
+
+        List<Proyecto> proyectos = service.listarFormatosAPorEstudiante("est-1");
+
+        assertEquals(3, proyectos.size());
+    }
+    
     void rf2_crear_proyecto_con_correo_estudiante_ok() {
         Proyecto p = baseProyecto(TipoTrabajoGrado.TESIS, "Sistema con correo", "e1@unicauca.edu.co", "doc-1");
         Archivo a = pdf("v1.pdf", "PDF V1");
@@ -372,7 +394,7 @@ class ProyectoServiceTest {
                 CREATE TABLE IF NOT EXISTS Proyecto (
                   id INTEGER PRIMARY KEY AUTOINCREMENT,
                   tipo TEXT NOT NULL CHECK (tipo IN ('TESIS','PRACTICA_PROFESIONAL')),
-                  estado TEXT NOT NULL CHECK (estado IN ('EN_TRAMITE','RECHAZADO','TERMINADO')) DEFAULT 'EN_TRAMITE',
+                  estado TEXT NOT NULL CHECK (estado IN ('EN_TRAMITE','CANCELADO','TERMINADO')) DEFAULT 'EN_TRAMITE',
                   titulo TEXT NOT NULL,
                   estudiante_id TEXT NOT NULL,
                   docente_id TEXT NOT NULL,
@@ -385,12 +407,12 @@ class ProyectoServiceTest {
                 CREATE TABLE IF NOT EXISTS Archivo (
                   id INTEGER PRIMARY KEY AUTOINCREMENT,
                   proyecto_id INTEGER NOT NULL,
-                  tipo TEXT NOT NULL CHECK (tipo IN ('FORMATO_A','CARTA_ACEPTACION','ANTEPROYECTO','FINAL','OTRO')),
+                  tipo TEXT NOT NULL CHECK (tipo IN ('FORMATO_A','ANTEPROYECTO','FINAL','OTRO')),
                   nro_version INTEGER NOT NULL CHECK (nro_version >= 1),
                   nombre_archivo TEXT NOT NULL CHECK (lower(nombre_archivo) LIKE '%.pdf'),
                   fecha_subida TEXT NOT NULL DEFAULT (datetime('now')),
                   blob BLOB NOT NULL,
-                  estado TEXT NOT NULL CHECK (estado IN ('PENDIENTE','APROBADO','OBSERVADO')) DEFAULT 'PENDIENTE',
+                  estado TEXT NOT NULL CHECK (estado IN ('PENDIENTE','APROBADO','RECHAZADO')) DEFAULT 'PENDIENTE',
                   FOREIGN KEY (proyecto_id) REFERENCES Proyecto(id) ON UPDATE CASCADE ON DELETE CASCADE,
                   UNIQUE (proyecto_id, tipo, nro_version)
                 );
@@ -416,12 +438,8 @@ class ProyectoServiceTest {
             INSERT INTO Usuario(id, correo, contrasena, rol, nombre, apellido, programa, celular)
             VALUES (?, ?, 'hash', ?, ?, ?, 1, null)
         """)) {
-            // estudiante base
             ps.setString(1, "est-1"); ps.setString(2, "e1@unicauca.edu.co"); ps.setInt(3, 1); ps.setString(4, "Ana"); ps.setString(5, "Pérez"); ps.executeUpdate();
-            // docentes
             ps.setString(1, "doc-1"); ps.setString(2, "d1@unicauca.edu.co"); ps.setInt(3, 2); ps.setString(4, "Carlos"); ps.setString(5, "Rojas"); ps.executeUpdate();
-            ps.setString(1, "doc-2"); ps.setString(2, "doc2@unicauca.edu.co"); ps.setInt(3, 2); ps.setString(4, "Lucia");  ps.setString(5, "Mora");  ps.executeUpdate();
-            // más estudiantes
             for (int i = 2; i <= 7; i++) {
                 ps.setString(1, "est-" + i);
                 ps.setString(2, "e" + i + "@unicauca.edu.co");
@@ -453,8 +471,8 @@ class ProyectoServiceTest {
             s.execute("DELETE FROM Usuario");
         }
     }
-
-    // ---------------- Helpers específicos para manipular datos en tests ----------------
+    
+     // ---------------- Helpers específicos para manipular datos en tests ----------------
 
     /** Devuelve el id real del archivo por (proyecto, tipo, nro_version) */
     private static long getArchivoIdPorVersion(long proyectoId, String tipo, int nroVersion) throws Exception {

@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="593.0" prefWidth="919.0" styleClass="fondo" stylesheets="@../styles/Coordinador.css" xmlns="http://javafx.com/javafx/21.0.3" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.unicauca.workflow.degree_project.presentation.Co_Observaciones_Controller">
+<AnchorPane id="AnchorPane" prefHeight="593.0" prefWidth="919.0" styleClass="fondo" stylesheets="@../styles/Coordinador.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.unicauca.workflow.degree_project.presentation.Co_Observaciones_Controller">
    <children>
       <Pane layoutX="31.0" layoutY="50.0" prefHeight="468.0" prefWidth="857.0" styleClass="fondo2">
          <children>

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
@@ -86,6 +87,29 @@ class ProyectoRepositorySqliteTest {
         assertEquals("Visión por computador", filtroTitulo.get(0).getTitulo());
         List<Proyecto> filtroEstudiante = repo.listarPorDocente("doc-1", "Ana");
         assertEquals(1, filtroEstudiante.size());
+    }
+    
+    @Test
+    void countProyectosByEstadoYTipo() throws SQLException {
+        assertEquals(0, repo.countProyectosByEstadoYTipo("TESIS", EstadoProyecto.EN_TRAMITE, "doc-1"));
+
+        long p1 = repo.crearProyecto(baseProyecto(TipoTrabajoGrado.TESIS, "Proyecto 1", "est-1", "doc-1"));
+        long p2 = repo.crearProyecto(baseProyecto(TipoTrabajoGrado.TESIS, "Proyecto 2", "est-2", "doc-1"));
+        assertTrue(p1 > 0 && p2 > 0);
+
+        long p3 = repo.crearProyecto(baseProyecto(TipoTrabajoGrado.TESIS, "Proyecto cancelado", "est-3", "doc-1"));
+        assertTrue(p3 > 0);
+        try (PreparedStatement ps = conn.prepareStatement("UPDATE Proyecto SET estado='TERMINADO' WHERE id=?")) {
+            ps.setLong(1, p3);
+            ps.executeUpdate();
+        }
+
+        long p4 = repo.crearProyecto(baseProyecto(TipoTrabajoGrado.PRACTICA_PROFESIONAL, "Práctica 1", "est-1", "doc-1"));
+        assertTrue(p4 > 0);
+
+        assertEquals(2, repo.countProyectosByEstadoYTipo("TESIS", EstadoProyecto.EN_TRAMITE, "doc-1"));
+        assertEquals(1, repo.countProyectosByEstadoYTipo("TESIS", EstadoProyecto.TERMINADO, "doc-1"));
+        assertEquals(1, repo.countProyectosByEstadoYTipo("PRACTICA_PROFESIONAL", EstadoProyecto.EN_TRAMITE, "doc-1"));
     }
 
     private static void initSchema(Connection c) throws Exception {

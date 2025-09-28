@@ -111,13 +111,13 @@
                                 <Button fx:id="btnCancelarNuevo" onAction="#onCancelarNuevo" text="Cancelar" />
                                 <Label fx:id="lblNuevoProyectoMsg" styleClass="label-error" text="" />
                             </HBox>
-
                         </VBox>
                     </VBox>
                 </content>
             </TitledPane>
 
-            <!-- Tabla -->
+
+            <!-- Tabla de proyectos del docente -->
             <VBox spacing="8.0" VBox.vgrow="ALWAYS">
                 <Label styleClass="subtitle" text="Mis proyectos de grado">
                <font>
@@ -136,7 +136,6 @@
                 </TableView>
                 <Label fx:id="lblTablaMsg" styleClass="label-error" text="" />
             </VBox>
-
         </VBox>
     </children>
 </AnchorPane>
